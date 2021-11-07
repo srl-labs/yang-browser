@@ -67,14 +67,12 @@ function updatePageInfo(tableName) {
 
 // PAGE ON-LOAD
 window.onload = function() {
-  console.log(window.location.href);
   var version = window.location.href.split("/");
   version = version[version.length - 2];
   document.title = "Nokia SR Linux " + version + " YANG Model";
   $("#version").html(version);
   $("#source").attr("href", "https://github.com/nokia/srlinux-yang-models/tree/" + version);
-  var urlPrefix = "https://srl-labs.github.io/yang-browser/";
-  var url = urlPrefix + version + "/paths.json"
+  var url = window.location.href + "/paths.json"
   let sentData = {
     mode: "cors",
     method: "GET",
