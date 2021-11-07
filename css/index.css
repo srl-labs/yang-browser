@@ -1,0 +1,78 @@
+@font-face {
+  font-style: normal;
+  font-weight: normal;
+  font-family: "NokiaPureHeadline";
+  src: url("NokiaPureHeadline_Rg.ttf");
+}
+
+@font-face {
+  font-style: normal;
+  font-weight: normal;
+  font-family: "NokiaPureHeadlineLight";
+  src: url("NokiaPureHeadline_Lt.ttf");
+}
+
+* {
+  font-family: "NokiaPureHeadline", Helvetica;
+}
+
+.has-font-nokia {
+  font-family: "NokiaPureHeadline", Helvetica;
+}
+
+.has-font-nokia-light {
+  font-family: "NokiaPureHeadlineLight", Helvetica;
+}
+
+#title {
+  color: rgb(18, 65, 145);
+  font-family: "NokiaPureHeadlineLight", Helvetica;
+}
+
+.has-text-nokia-blue-black {
+  color: rgb(0, 17, 53);
+}
+
+.has-header-img {
+  background: url(../images/connected.jpg)center center;
+  background-size: cover;
+}
+
+.has-background-transparent {
+  opacity: 0.5;
+}
+
+td, .highlight, mark, .tooltip {
+  font-family: "Fira Code", monospace;
+  letter-spacing: -0.5px;
+  font-size: 14px;
+}
+
+.highlight, mark { 
+  background-color: yellow;
+}
+
+.majorVersion, .minorVersion {
+  width: 75px;
+}
+
+a.disabled {
+  pointer-events: none;
+  color: #ccc;
+}
+
+.floating-header {
+  top: 0;
+  z-index: 20;
+  width: 100%;
+  padding: 15px;
+  position: fixed;
+}
+
+.floating-footer {
+  bottom: 0;
+  z-index: 20;
+  width: 100%;
+  padding: 15px;
+  position: fixed;
+}
