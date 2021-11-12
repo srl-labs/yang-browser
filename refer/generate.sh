@@ -20,7 +20,7 @@ response_handler() {
 docker pull ghcr.io/hellt/pyang:2.5.0
 
 # Keep appending new releases
-SRL_VER_LIST=("21.3.1-410" "21.3.2-129" "21.6.1-250" "21.6.2-67" "21.6.3")
+SRL_VER_LIST=("21.3.1" "21.3.2" "21.6.1" "21.6.2" "21.6.3")
 
 for SRL_VER in ${SRL_VER_LIST[@]}
 do
@@ -32,13 +32,8 @@ do
   # PULL SRL YANG MODEL
   DIR_NAME="$(pwd)/srl-$SRL_VER-yang-models"
 
-  if [[ $SRL_VER == *"21.3"* ]]; then
-    docker pull registry.srlinux.dev/pub/srlinux:$SRL_VER
-    id=$(docker create registry.srlinux.dev/pub/srlinux:$SRL_VER foo)
-  else
-    docker pull ghcr.io/nokia/srlinux:$SRL_VER
-    id=$(docker create ghcr.io/nokia/srlinux:$SRL_VER foo)
-  fi
+  docker pull ghcr.io/nokia/srlinux:$SRL_VER
+  id=$(docker create ghcr.io/nokia/srlinux:$SRL_VER foo)
 
   mkdir -p $DIR_NAME
   mkdir -p $SRL_VER_CYCLE
