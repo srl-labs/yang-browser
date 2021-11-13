@@ -91,9 +91,15 @@
         </p>
         <div id="yangModel" style="display: none;">
           <input class="input customSearch has-font-nokia" type="text" placeholder="Search by Path or Type...">
+          <div class="control mt-3">
+            <label class="radio"><input type="radio" name="pathType" onclick="toggleFilter(this)" value="na" checked> All</label>
+            <label class="radio"><input type="radio" name="pathType" onclick="toggleFilter(this)" value="true"> State</label>
+            <label class="radio"><input type="radio" name="pathType" onclick="toggleFilter(this)" value="false"> Config</label>
+          </div>
           <table class="table is-striped is-fullwidth" id="myTable">
             <thead>
               <tr>
+                <th>State</th>
                 <th>Path</th>
                 <th>Type</th>
               </tr>

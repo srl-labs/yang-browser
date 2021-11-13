@@ -1,17 +1,17 @@
 // DEFAULTS
 var myTable;
-var order = [[0, "asc"]];
+var order = [[1, "asc"]];
 var pagingType = "simple";
 var dom = "<'pt-3'><'level is-mobile'<'level-left'><'level-right'<'level-item'i><'level-item'p>>><'pt-3'>t";
 var columnDefs = [
   { 
-    "width": "80%", "targets": 0, 
+    "width": "70%", "targets": 1, 
     "render": function (data, type, full, meta) {
       return type === 'display'? '<div class="tooltip" title="' + full.description + '">' + data : data;
     } 
   },
-  { "width": "20%", "targets": 1 },
-  { "searchable": false, "targets": 2, "visible": false }
+  { "width": "20%", "targets": 2 },
+  { "searchable": false, "targets": 3, "visible": false }
 ]
 var languageDataTable = { 
   "search": "", 
@@ -46,6 +46,19 @@ $(".customSearch").on("keyup", function() {
   myTable.search(key).draw();
   updatePageInfo("myTable");
 });
+
+// TOGGLE FILTER
+function toggleFilter(element) {
+  var keyFilter = element.value;
+  if(keyFilter != "na") {
+    myTable.column(0).search(keyFilter).draw();
+    //$("mark").contents().unwrap();
+  }
+  else {
+    myTable.column(0).search('').draw();
+  }
+  updatePageInfo("myTable");
+}
 
 // UPDATE PAGE INFO
 function updatePageInfo(tableName) {
@@ -108,6 +121,7 @@ function loadHandler(response) {
     "language": languageDataTable,
     "data": response,
     "columns": [
+      {"data": "is-state", "defaultContent": "false"}, 
       {"data": "path"}, 
       {"data": "type"}, 
       {"data": "description", "defaultContent": ""}
