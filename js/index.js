@@ -2,7 +2,7 @@
 var myTable;
 var order = [[0, "asc"]];
 var pagingType = "simple";
-var dom = "<'pt-3'><'level'<'level-left'><'level-right'<'level-item'i><'level-item'p>>><'pt-3'>t";
+var dom = "<'pt-3'><'level is-mobile'<'level-left'><'level-right'<'level-item'i><'level-item'p>>><'pt-3'>t";
 var columnDefs = [
   { 
     "width": "80%", "targets": 0, 

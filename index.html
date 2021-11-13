@@ -1,99 +1,104 @@
 <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="icon" href="images/srlinux.svg">
+    <meta name="author" content="Siva Sivakumar">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nokia SR Linux YANG Models</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <link rel="icon" href="images/srlinux.svg">
-  <meta name="author" content="Siva Sivakumar">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nokia SR Linux YANG Models</title>
-  <link rel="stylesheet" href="css/index.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-  <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
-</head>
-
-<body>
-  <div class="hero is-fullheight has-header-img">
-    <div class="hero-head">
-      <div class="has-text-right mt-3 mr-3">
-        <a class="button is-link is-outlined is-rounded is-small has-text-weight-semibold"
-          href="https://learn.srlinux.dev/yang/browser/" target="_blank">
-          <span class="icon"><i class="fab fa-leanpub"></i></span>
-          <span>Learn SR Linux</span>
-        </a>
-        <a class="button is-link is-outlined is-rounded is-small has-text-weight-semibold ml-1"
-          href="https://github.com/nokia/srlinux-yang-models" target="_blank">
-          <span class="icon"><i class="fab fa-github"></i></span>
-          <span>Yang models</span>
-        </a>
-        <a class="button is-link is-outlined is-rounded is-small has-text-weight-semibold ml-1"
-          href="https://containerlab.srlinux.dev" target="_blank">
-          <span class="icon"><i class="fas fa-flask"></i></span>
-          <span>Containerlab</span>
-        </a>
-      </div>
-    </div>
-    <div class="hero-body">
-      <div class="container">
-        <div class="columns">
-          <div class="column">
-            <p class="title"><img src="images/nblue.png" width="100" /></p>
-            <h3 class="title is-3 has-text-weight-light" id="title">SR Linux YANG Models</h3>
-            <div class="columns">
-              <div class="column is-narrow majorVersion">
-                <p class="is-size-4">v21</p>
-              </div>
-              <div class="column">
-                <div class="buttons">
-                  <a class="button is-dark is-outlined minorVersion" href="./v21.3.1/">21.3.1</a>
-                  <a class="button is-dark is-outlined minorVersion" href="./v21.3.2/">21.3.2</a>
-                  <a class="button is-dark is-outlined minorVersion" href="./v21.6.1/">21.6.1</a>
-                  <a class="button is-dark is-outlined minorVersion" href="./v21.6.2/">21.6.2</a>
-                  <a class="button is-dark is-outlined minorVersion" href="./v21.6.3/">21.6.3</a>
+  <body>
+    <div class="hero is-fullheight has-header-img">
+      <div class="hero-head">
+        <div class="container">
+          <nav class="level is-mobile pt-3">
+            <div class="level-left"></div>
+            <div class="level-right">
+              <div class="level-item">
+                <div class="buttons is-right">
+                  <a class="button is-link is-outlined is-rounded is-small has-text-weight-semibold" href="https://learn.srlinux.dev/yang/browser/" target="_blank">
+                    <span class="icon"><i class="fab fa-leanpub"></i></span>
+                    <span>Learn SR Linux</span>
+                  </a>
+                  <a class="button is-link is-outlined is-rounded is-small has-text-weight-semibold ml-1" href="https://github.com/nokia/srlinux-yang-models" target="_blank">
+                    <span class="icon"><i class="fab fa-github"></i></span>
+                    <span>Yang models</span>
+                  </a>
+                  <a class="button is-link is-outlined is-rounded is-small has-text-weight-semibold ml-1" href="https://containerlab.srlinux.dev" target="_blank">
+                    <span class="icon"><i class="fas fa-flask"></i></span>
+                    <span>Containerlab</span>
+                  </a>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="column">
-            <div class="box content">
-              <p><a class="has-text-link" href="https://www.nokia.com/networks/products/service-router-linux-NOS"
-                  target="_blank">Nokia SR Linux</a> makes extensive use of structured data models. Each application
-                regardless if it's being provided by Nokia or written by a user against the NDK has a <a
-                  class="has-text-link" href="https://datatracker.ietf.org/doc/html/rfc6020" target="_blank">YANG</a>
-                model that defines its configuration and state.</p>
-              <p>With this design, the YANG data model is defined first, then the CLI, APIs, and show output formats are
-                derived from it.</p>
-              <p>A central role that is given to YANG in SR Linux Network OS demands a convenient interface to browse,
-                search through and process these data models.</p>
-              <p>To answer these demands this portal provides:</p>
-              <ul>
-                <li>Fast <a class="has-text-link" href="https://learn.srlinux.dev/yang/browser/#path-browser"
-                    target="_blank">Path Browser</a> to
-                  effectively search through thousands of available YANG paths</li>
-                <li>Beautiful <a class="has-text-link" href="https://learn.srlinux.dev/yang/browser/#tree-browser"
-                    target="_blank">Tree browser</a>
-                  to traverse the tree representation of the entire YANG data model of SR Linux</li>
-                <li>Source
-                  <code>.yang</code> files neatly stored in a <a class="has-text-link"
-                    href="https://github.com/nokia/srlinux-yang-models" target="_blank">nokia/srlinux-yang-models</a>
-                  repository for programmatic access and code generation
-                </li>
-              </ul>
+          </nav>
+        </div>
+      </div>
+      <div class="hero-body">
+        <div class="container">
+          <div class="columns is-vcentered">
+            <div class="column">
+              <p class="title"><img src="images/nblue.png" width="100" /></p>
+              <h3 class="title is-3 has-text-weight-light" id="title">SR Linux YANG Models</h3>
+              <div class="columns is-vcentered">
+                <div class="column is-narrow majorVersion">
+                  <p class="is-size-4">v21</p>
+                </div>
+                <div class="column">
+                  <div class="buttons">
+                    <a class="button is-dark is-outlined minorVersion" href="./v21.3.1/">21.3.1</a>
+                    <a class="button is-dark is-outlined minorVersion" href="./v21.3.2/">21.3.2</a>
+                    <a class="button is-dark is-outlined minorVersion" href="./v21.6.1/">21.6.1</a>
+                    <a class="button is-dark is-outlined minorVersion" href="./v21.6.2/">21.6.2</a>
+                    <a class="button is-dark is-outlined minorVersion" href="./v21.6.3/">21.6.3</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="box content">
+                <p><a class="has-text-link" href="https://www.nokia.com/networks/products/service-router-linux-NOS"
+                    target="_blank">Nokia SR Linux</a> makes extensive use of structured data models. Each application
+                  regardless if it's being provided by Nokia or written by a user against the NDK has a <a
+                    class="has-text-link" href="https://datatracker.ietf.org/doc/html/rfc6020" target="_blank">YANG</a>
+                  model that defines its configuration and state.</p>
+                <p>With this design, the YANG data model is defined first, then the CLI, APIs, and show output formats are
+                  derived from it.</p>
+                <p>A central role that is given to YANG in SR Linux Network OS demands a convenient interface to browse,
+                  search through and process these data models.</p>
+                <p>To answer these demands this portal provides:</p>
+                <ul>
+                  <li>Fast <a class="has-text-link" href="https://learn.srlinux.dev/yang/browser/#path-browser"
+                      target="_blank">Path Browser</a> to
+                    effectively search through thousands of available YANG paths</li>
+                  <li>Beautiful <a class="has-text-link" href="https://learn.srlinux.dev/yang/browser/#tree-browser"
+                      target="_blank">Tree browser</a>
+                    to traverse the tree representation of the entire YANG data model of SR Linux</li>
+                  <li>Source
+                    <code>.yang</code> files neatly stored in a <a class="has-text-link"
+                      href="https://github.com/nokia/srlinux-yang-models" target="_blank">nokia/srlinux-yang-models</a>
+                    repository for programmatic access and code generation
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="hero-foot">
-      <div class="container has-text-centered mb-3">
-        <p>Created by
-          <a class="has-text-link" href="https://www.linkedin.com/in/siva19susi" target="_blank">Siva Sivakumar</a> /
-          <a class="has-text-link" href="https://www.linkedin.com/in/rdodin" target="_blank">Roman Dodin</a> /
-          <a class="has-text-link" href="https://github.com/srl-labs" target="_blank"><i class="fab fa-github"></i>
-            srl-labs</a>
-        </p>
+      <div class="hero-foot">
+        <div class="container has-text-centered pb-3">
+          <p>Created by
+            <a class="has-text-link" href="https://www.linkedin.com/in/siva19susi" target="_blank">Siva Sivakumar</a> /
+            <a class="has-text-link" href="https://www.linkedin.com/in/rdodin" target="_blank">Roman Dodin</a> /
+            <a class="has-text-link" href="https://github.com/srl-labs" target="_blank"><i class="fab fa-github"></i>
+              srl-labs</a>
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 
 </html>
