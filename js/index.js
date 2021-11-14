@@ -2,21 +2,24 @@
 var myTable;
 var order = [[1, "asc"]];
 var pagingType = "simple";
-var dom = "<'pt-3'><'level is-mobile'<'level-left'><'level-right'<'level-item'i><'level-item'p>>><'pt-3'>t";
+var dom = "<'pt-3'><'level is-mobile'<'level-left'><'level-right'<'level-item'i><'level-item'p>>><'table-container't>";
 var columnDefs = [
+  { "targets": 0, "width": "10%" },
   { 
-    "width": "70%", "targets": 1, 
+    "targets": 1, "width": "70%",
     "render": function (data, type, full, meta) {
       return type === 'display'? '<div class="tooltip" title="' + full.description + '">' + data : data;
     } 
   },
-  { "width": "20%", "targets": 2 },
-  { "searchable": false, "targets": 3, "visible": false }
+  { "targets": 2, "width": "20%" },
+  { "targets": 3, "visible": false, "searchable": false },
+  { "targets": 4, "visible": false }
 ]
 var languageDataTable = { 
   "search": "", 
-  "searchPlaceholder": "Search by Path or Type...",
+  "searchPlaceholder": "",
   "info": "_START_ - _END_ of _TOTAL_",
+  "thousands": "",
   "infoFiltered": "",
   "infoEmpty": "",
   "paginate": {
@@ -42,8 +45,7 @@ function tableDrawCall(tableName) {
 
 // TABLE SEARCH
 $(".customSearch").on("keyup", function() {
-  var key = this.value;
-  myTable.search(key).draw();
+  myTable.search(this.value).draw();
   updatePageInfo("myTable");
 });
 
@@ -51,11 +53,10 @@ $(".customSearch").on("keyup", function() {
 function toggleFilter(element) {
   var keyFilter = element.value;
   if(keyFilter != "na") {
-    myTable.column(0).search(keyFilter).draw();
-    //$("mark").contents().unwrap();
+    myTable.column(4).search(keyFilter).draw();
   }
   else {
-    myTable.column(0).search('').draw();
+    myTable.column(4).search('').draw();
   }
   updatePageInfo("myTable");
 }
@@ -66,12 +67,13 @@ function updatePageInfo(tableName) {
   var p = "#" + tableName + "_previous";
   var f = "#" + tableName + "_filter";
   var info = myTable.page.info();
+  console.log(info)
   if(info.page == 0) {
     $(p).addClass("disabled");
   } else {
     $(p).removeClass("disabled");
   }
-  if(info.page == (info.pages - 1) || info.pages == 1) {
+  if(info.pages == 0 || info.pages == 1 || info.page == (info.pages - 1)) {
     $(n).addClass("disabled");
   } else {
     $(n).removeClass("disabled");
@@ -121,10 +123,11 @@ function loadHandler(response) {
     "language": languageDataTable,
     "data": response,
     "columns": [
-      {"data": "is-state", "defaultContent": "false"}, 
+      {"data": "is-state", "defaultContent": "false"},
       {"data": "path"}, 
       {"data": "type"}, 
-      {"data": "description", "defaultContent": ""}
+      {"data": "description", "defaultContent": ""},
+      {"data": "is-state", "defaultContent": "false"}
     ],
     "drawCallback": function() {
       tableDrawCall("myTable");
