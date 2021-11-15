@@ -1,10 +1,17 @@
 #!/usr/bin/bash
 
 # VERSION 5
-# Script requires docker, gnmic (v0.20.0), jstree-to-bulma.html
+# Script requires docker, gnmic (>v0.20.0), jstree-to-bulma.html
 
 # In case of bad interpreter error
-# sed -i -e 's/\r$//' get-v5.sh
+# sed -i -e 's/\r$//' generate.sh
+
+# execute from repo root as `bash refer/generate.sh`
+
+# change into the script directory
+SCRIPT_DIR="$(dirname "$0")"
+cd $SCRIPT_DIR
+SCRIPT_DIR=$(pwd)
 
 # PYANG RESPONSE HANDLER
 response_handler() {
@@ -19,28 +26,28 @@ response_handler() {
 # DOCKER PULL PYANG IMAGE
 docker pull ghcr.io/hellt/pyang:2.5.0
 
-# Keep appending new releases
+# Keep appending new releases or change array to have the required releases
 SRL_VER_LIST=("21.3.1" "21.3.2" "21.6.1" "21.6.2" "21.6.3")
 
 for SRL_VER in ${SRL_VER_LIST[@]}
 do
   echo
   # Extract end user release cycle
-  SRL_VER_CYCLE=$(echo $SRL_VER | cut -d'-' -f1)
-  SRL_VER_CYCLE="v$SRL_VER_CYCLE"
+  SRL_VER_CYCLE=v$(echo $SRL_VER | cut -d'-' -f1)
+  OUT_DIR=$(realpath ../$SRL_VER_CYCLE)
 
   # PULL SRL YANG MODEL
-  DIR_NAME="$(pwd)/srl-$SRL_VER-yang-models"
+  YANG_DIR_NAME="$(pwd)/srl-$SRL_VER-yang-models"
 
   docker pull ghcr.io/nokia/srlinux:$SRL_VER
   id=$(docker create ghcr.io/nokia/srlinux:$SRL_VER foo)
 
-  mkdir -p $DIR_NAME
-  mkdir -p $SRL_VER_CYCLE
-  docker cp $id:/opt/srlinux/models/. $DIR_NAME
+  mkdir -p $YANG_DIR_NAME
+  mkdir -p $OUT_DIR
+  docker cp $id:/opt/srlinux/models/. $YANG_DIR_NAME
   docker rm $id
 
-  cd $DIR_NAME
+  cd $YANG_DIR_NAME
   
   # Add (-i.bkp) to sed commands to backup the orginal file
   # Formatting namespaces
@@ -53,10 +60,6 @@ do
   sed -i 's|not(../breakout-mode|not(../srl_nokia-if:breakout-mode|g' srl_nokia/models/qos/srl_nokia-qos.yang
   sed -i 's|../../../router-id|../../../srl_nokia-netinst:router-id|g' srl_nokia/models/network-instance/srl_nokia-ospf.yang
 
-  # PATHS AS TEXT + JSON
-  gnmic generate path --file srl_nokia/models --dir ietf/ --types > ../$SRL_VER_CYCLE/paths.txt
-  gnmic generate path --file srl_nokia/models --dir ietf/ --json > ../$SRL_VER_CYCLE/paths.json
-
   echo
   # PYANG TREE + JSTREE
   #---------------------
@@ -65,11 +68,11 @@ do
   find ./srl_nokia -name "*.yang" | xargs -I % cp % combined
 
   # PYANG TREE
-  RESPONSE=$(docker run --rm  -v $(pwd):/yang ghcr.io/hellt/pyang pyang -p ietf:iana:srl_nokia/models -f tree combined/*.yang -o tree.txt 2>&1 >/dev/null)
+  RESPONSE=$(docker run --rm -v $(pwd):/yang ghcr.io/hellt/pyang pyang -p ietf:iana:srl_nokia/models -f tree combined/*.yang -o tree.txt 2>&1 >/dev/null)
   response_handler "$RESPONSE" "$SRL_VER-tree"
 
   # PYANG JSTREE
-  RESPONSE=$(docker run --rm  -v $(pwd):/yang ghcr.io/hellt/pyang pyang -p ietf:iana:srl_nokia/models --plugindir /opt/pyang-oc-plugin -f oc-jstree --oc-jstree-strip combined/*.yang -o tree.html 2>&1 >/dev/null)
+  RESPONSE=$(docker run --rm -v $(pwd):/yang ghcr.io/hellt/pyang pyang -p ietf:iana:srl_nokia/models --plugindir /opt/pyang-oc-plugin -f oc-jstree --oc-jstree-strip combined/*.yang -o tree.html 2>&1 >/dev/null)
   response_handler "$RESPONSE" "$SRL_VER-jstree"
 
   # Delete combined folder
@@ -78,8 +81,8 @@ do
   # JSTREE PRETTY
   #-------------------
   # Navigate into release folder
-  mv tree.txt tree.html ../$SRL_VER_CYCLE
-  cd ../$SRL_VER_CYCLE
+  mv tree.txt tree.html $OUT_DIR
+  cd $OUT_DIR
 
   # Add custom Bulma CSS break point (REMOVE)
   sed -i '0,/^<tr id="/s/^<tr id="/REMOVE\n<tr id="/' tree.html
@@ -88,7 +91,7 @@ do
   sed -i '0,/^REMOVE$/d' tree.html
 
   # Append Bulma CSS
-  cat ../jstree-to-bulma.html tree.html > tmp.html
+  cat $SCRIPT_DIR/jstree-to-bulma.html tree.html > tmp.html
   mv tmp.html tree.html
 
   # Clearing unnecessary variables
@@ -103,6 +106,17 @@ do
   MODULE_HTML="<p class='title is-6'><font color=blue>Nokia SR Linux $SRL_VER_CYCLE YANG Browser</font></p>\n"
   sed -i "s|MODULES|$MODULE_HTML|g" tree.html
 
-  cd ..
+
+  cd $YANG_DIR_NAME
+  # remove tools modules as they clash with regular leaves and are not relevant for the path search
+  find ./ -name "*tools*.yang" -exec rm -f {} \;
+
+  # GENERATE PATHS. TEXT + JSON
+  gnmic generate path --file srl_nokia/models --dir ietf/ --types > $OUT_DIR/paths.txt
+  gnmic generate path --file srl_nokia/models --dir ietf/ --json > $OUT_DIR/paths.json
+
+  cd $SCRIPT_DIR
+  # copy per-release index page to output dir
+  cp index.html.tmpl $OUT_DIR/index.html
   echo
 done
