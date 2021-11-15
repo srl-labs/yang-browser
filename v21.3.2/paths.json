@@ -222,11 +222,6 @@
     "is-state": true
   },
   {
-    "path": "/acl/cpm-filter/ipv4-filter/clear",
-    "type": "empty",
-    "description": "Reset all statistics of all entries of the filter to zero"
-  },
-  {
     "path": "/acl/cpm-filter/ipv4-filter/entry[sequence-id=*]/action/accept/log",
     "type": "boolean",
     "description": "When this is true, a log is created for each packet matching the entry\n\nThe log entry contains the following information:\n- timestamp\n- filter name\n- filter entry sequence-id\n- incoming linecard\n- action: accept\n- IP protocol\n- packet-length\n- source-IP\n- source-port (TCP/UDP packets)\n- dest-IP\n- dest-port (TCP/UDP packets)\n- icmp-type (ICMP packets)\n- icmp-code (ICMP packets)",
@@ -359,16 +354,6 @@
     "description": "A number to indicate the relative evaluation order of the different entries; lower numbered entries are evaluated before higher numbered entries"
   },
   {
-    "path": "/acl/cpm-filter/ipv4-filter/entry[sequence-id=*]/sequence-id",
-    "type": "uint32",
-    "description": "A number to indicate the relative evaluation order of the different entries; lower numbered entries are evaluated before higher numbered entries"
-  },
-  {
-    "path": "/acl/cpm-filter/ipv4-filter/entry[sequence-id=*]/statistics/clear",
-    "type": "empty",
-    "description": "Reset all statistics associated with this particular entry to zero"
-  },
-  {
     "path": "/acl/cpm-filter/ipv4-filter/entry[sequence-id=*]/statistics/distributed-policer/conforming-octets",
     "type": "zero-based-counter64",
     "description": "The number of bytes that were considered conforming by the policer. The byte count includes 18 bytes of Ethernet overhead for every IP packet.",
@@ -459,11 +444,6 @@
     "path": "/acl/cpm-filter/ipv4-filter/statistics-per-entry",
     "type": "boolean",
     "description": "Collect the following statistics per entry: the number of packets matching each entry, and the elapsed time since a packet last matched each entry"
-  },
-  {
-    "path": "/acl/cpm-filter/ipv6-filter/clear",
-    "type": "empty",
-    "description": "Reset all statistics of all entries of the filter to zero"
   },
   {
     "path": "/acl/cpm-filter/ipv6-filter/entry[sequence-id=*]/action/accept/log",
@@ -586,16 +566,6 @@
     "path": "/acl/cpm-filter/ipv6-filter/entry[sequence-id=*]/sequence-id",
     "type": "uint32",
     "description": "A number to indicate the relative evaluation order of the different entries; lower numbered entries are evaluated before higher numbered entries"
-  },
-  {
-    "path": "/acl/cpm-filter/ipv6-filter/entry[sequence-id=*]/sequence-id",
-    "type": "uint32",
-    "description": "A number to indicate the relative evaluation order of the different entries; lower numbered entries are evaluated before higher numbered entries"
-  },
-  {
-    "path": "/acl/cpm-filter/ipv6-filter/entry[sequence-id=*]/statistics/clear",
-    "type": "empty",
-    "description": "Reset all statistics associated with this particular entry to zero"
   },
   {
     "path": "/acl/cpm-filter/ipv6-filter/entry[sequence-id=*]/statistics/distributed-policer/conforming-octets",
@@ -817,11 +787,6 @@
     "description": "A number to indicate the relative evaluation order of the different entries; lower numbered entries are evaluated before higher numbered entries"
   },
   {
-    "path": "/acl/ipv4-filter[name=*]/entry[sequence-id=*]/sequence-id",
-    "type": "uint32",
-    "description": "A number to indicate the relative evaluation order of the different entries; lower numbered entries are evaluated before higher numbered entries"
-  },
-  {
     "path": "/acl/ipv4-filter[name=*]/entry[sequence-id=*]/statistics/aggregate/in-last-match",
     "type": "date-and-time-delta",
     "description": "The elapsed time since an ingress packet last matched the entry, considering the mgmt0 subinterface and all subinterfaces of all linecard ports that use the ACL as an input ACL",
@@ -848,20 +813,10 @@
     "is-state": true
   },
   {
-    "path": "/acl/ipv4-filter[name=*]/entry[sequence-id=*]/statistics/clear",
-    "type": "empty",
-    "description": "Reset all aggregate and per-interface statistics associated with this particular entry to zero"
-  },
-  {
     "path": "/acl/ipv4-filter[name=*]/entry[sequence-id=*]/statistics/last-clear",
     "type": "date-and-time-delta",
     "description": "Time of the last clear command performed by the user at this level or a higher level",
     "is-state": true
-  },
-  {
-    "path": "/acl/ipv4-filter[name=*]/entry[sequence-id=*]/statistics/per-interface/subinterface[name=*]/clear",
-    "type": "empty",
-    "description": "Reset the per-interface statistics associated with this particular entry and this particular subinterface to zero"
   },
   {
     "path": "/acl/ipv4-filter[name=*]/entry[sequence-id=*]/statistics/per-interface/subinterface[name=*]/in-last-match",
@@ -887,10 +842,6 @@
     "type": "string",
     "description": "Reference to a subinterface.",
     "is-state": true
-  },
-  {
-    "path": "/acl/ipv4-filter[name=*]/entry[sequence-id=*]/statistics/per-interface/subinterface[name=*]/name",
-    "type": "subinterface-all"
   },
   {
     "path": "/acl/ipv4-filter[name=*]/entry[sequence-id=*]/statistics/per-interface/subinterface[name=*]/out-last-match",
@@ -941,19 +892,9 @@
     "description": "Name of the IPv4 filter policy."
   },
   {
-    "path": "/acl/ipv4-filter[name=*]/name",
-    "type": "name",
-    "description": "Name of the IPv4 filter policy."
-  },
-  {
     "path": "/acl/ipv4-filter[name=*]/statistics-per-entry",
     "type": "boolean",
     "description": "Collect statistics for each entry of the ACL\n\nThe exact set of statistics depend on the subinterface-specific mode"
-  },
-  {
-    "path": "/acl/ipv4-filter[name=*]/statistics/clear",
-    "type": "empty",
-    "description": "Reset all statistics of all entries of the filter to zero"
   },
   {
     "path": "/acl/ipv4-filter[name=*]/subinterface-specific",
@@ -1076,11 +1017,6 @@
   {
     "path": "/acl/ipv6-filter[name=*]/entry[sequence-id=*]/sequence-id",
     "type": "uint32",
-    "description": "A number to indicate the relative evaluation order of the different entries; lower numbered entries are evaluated before higher numbered entries"
-  },
-  {
-    "path": "/acl/ipv6-filter[name=*]/entry[sequence-id=*]/sequence-id",
-    "type": "uint32",
     "description": "A number to indicate the relative evaluation order of the different entries; lower numbered entries are evaluated before higher numbered entries."
   },
   {
@@ -1110,20 +1046,10 @@
     "is-state": true
   },
   {
-    "path": "/acl/ipv6-filter[name=*]/entry[sequence-id=*]/statistics/clear",
-    "type": "empty",
-    "description": "Reset all aggregate and per-interface statistics associated with this particular entry to zero"
-  },
-  {
     "path": "/acl/ipv6-filter[name=*]/entry[sequence-id=*]/statistics/last-clear",
     "type": "date-and-time-delta",
     "description": "Time of the last clear command performed by the user at this level or a higher level",
     "is-state": true
-  },
-  {
-    "path": "/acl/ipv6-filter[name=*]/entry[sequence-id=*]/statistics/per-interface/subinterface[name=*]/clear",
-    "type": "empty",
-    "description": "Reset the per-interface statistics associated with this particular entry and this particular subinterface to zero"
   },
   {
     "path": "/acl/ipv6-filter[name=*]/entry[sequence-id=*]/statistics/per-interface/subinterface[name=*]/in-last-match",
@@ -1149,10 +1075,6 @@
     "type": "string",
     "description": "Reference to a subinterface.",
     "is-state": true
-  },
-  {
-    "path": "/acl/ipv6-filter[name=*]/entry[sequence-id=*]/statistics/per-interface/subinterface[name=*]/name",
-    "type": "subinterface-all"
   },
   {
     "path": "/acl/ipv6-filter[name=*]/entry[sequence-id=*]/statistics/per-interface/subinterface[name=*]/out-last-match",
@@ -1203,25 +1125,9 @@
     "description": "Name of the IPv6 filter policy."
   },
   {
-    "path": "/acl/ipv6-filter[name=*]/name",
-    "type": "name",
-    "description": "Name of the IPv6 filter policy."
-  },
-  {
     "path": "/acl/ipv6-filter[name=*]/statistics-per-entry",
     "type": "boolean",
     "description": "Collect statistics for each entry of the ACL\n\nThe exact set of statistics depend on the subinterface-specific mode"
-  },
-  {
-    "path": "/acl/ipv6-filter[name=*]/statistics/clear",
-    "type": "empty",
-    "description": "Reset all statistics of all entries of the filter to zero"
-  },
-  {
-    "path": "/acl/ipv6-filter[name=*]/subinterface-specific",
-    "type": "enumeration",
-    "description": "Controls the instantiation of the filter when it is applied as an input or output ACL\n\ndisabled: all subinterfaces on a single linecard that reference the ACL as an input ACL use a shared filter instance, and all subinterfaces on a single linecard that reference the ACL as an output ACL use a shared filter instance\n\ninput-only: all subinterfaces on a single linecard that reference the ACL as an output ACL use a shared filter instance, but each subinterface that references the ACL as an input ACL uses its own separate instance of the filter\n\noutput-only: all subinterfaces on a single linecard that reference the ACL as an input ACL use a shared filter instance, but each subinterface that references the ACL as an output ACL uses its own separate instance of the filter\n\ninput-and-output: each subinterface that references the ACL as either an input ACL or an output ACL uses its own separate instance of the filter",
-    "default": "disabled"
   },
   {
     "path": "/acl/policers/policer[name=*]/entry-specific",
@@ -1237,22 +1143,12 @@
   {
     "path": "/acl/policers/policer[name=*]/name",
     "type": "name",
-    "description": "Name of the hardware policer"
-  },
-  {
-    "path": "/acl/policers/policer[name=*]/name",
-    "type": "name",
     "description": "User-defined name of the policer"
   },
   {
     "path": "/acl/policers/policer[name=*]/peak-rate",
     "type": "uint32",
     "description": "The PIR rate in kbps (bucket empty/fill rate)."
-  },
-  {
-    "path": "/acl/policers/policer[name=*]/statistics/clear",
-    "type": "empty",
-    "description": "Reset all statistics associated with this particular policer to zero"
   },
   {
     "path": "/acl/policers/policer[name=*]/statistics/conforming-octets",
@@ -1306,19 +1202,9 @@
     "description": "User-defined name of the policer"
   },
   {
-    "path": "/acl/policers/system-cpu-policer[name=*]/name",
-    "type": "name",
-    "description": "Name of the system cpu policer"
-  },
-  {
     "path": "/acl/policers/system-cpu-policer[name=*]/peak-packet-rate",
     "type": "uint32",
     "description": "The maximum number of packets per second (bucket empty/fill rate)"
-  },
-  {
-    "path": "/acl/policers/system-cpu-policer[name=*]/statistics/clear",
-    "type": "empty",
-    "description": "Reset all statistics associated with this particular policer to zero"
   },
   {
     "path": "/acl/policers/system-cpu-policer[name=*]/statistics/conforming-octets",
@@ -1353,11 +1239,6 @@
     "type": "date-and-time-delta",
     "description": "Time of the last clear command that applied to these statistics",
     "is-state": true
-  },
-  {
-    "path": "/acl/system-filter/ipv4-filter/clear",
-    "type": "empty",
-    "description": "Reset all statistics of all entries of the filter to zero"
   },
   {
     "path": "/acl/system-filter/ipv4-filter/entry[sequence-id=*]/action/drop/log",
@@ -1476,16 +1357,6 @@
     "description": "A number to indicate the relative evaluation order of the different entries; lower numbered entries are evaluated before higher numbered entries"
   },
   {
-    "path": "/acl/system-filter/ipv4-filter/entry[sequence-id=*]/sequence-id",
-    "type": "uint32",
-    "description": "A number to indicate the relative evaluation order of the different entries; lower numbered entries are evaluated before higher numbered entries"
-  },
-  {
-    "path": "/acl/system-filter/ipv4-filter/entry[sequence-id=*]/statistics/clear",
-    "type": "empty",
-    "description": "Reset all statistics associated with this particular entry to zero"
-  },
-  {
     "path": "/acl/system-filter/ipv4-filter/entry[sequence-id=*]/statistics/last-clear",
     "type": "date-and-time-delta",
     "description": "Time of the last clear command performed by the user at this level",
@@ -1515,11 +1386,6 @@
     "type": "date-and-time-delta",
     "description": "Time of the last clear command performed by the user at this level",
     "is-state": true
-  },
-  {
-    "path": "/acl/system-filter/ipv6-filter/clear",
-    "type": "empty",
-    "description": "Reset all statistics of all entries of the filter to zero"
   },
   {
     "path": "/acl/system-filter/ipv6-filter/entry[sequence-id=*]/action/drop/log",
@@ -1626,16 +1492,6 @@
     "path": "/acl/system-filter/ipv6-filter/entry[sequence-id=*]/sequence-id",
     "type": "uint32",
     "description": "A number to indicate the relative evaluation order of the different entries; lower numbered entries are evaluated before higher numbered entries"
-  },
-  {
-    "path": "/acl/system-filter/ipv6-filter/entry[sequence-id=*]/sequence-id",
-    "type": "uint32",
-    "description": "A number to indicate the relative evaluation order of the different entries; lower numbered entries are evaluated before higher numbered entries"
-  },
-  {
-    "path": "/acl/system-filter/ipv6-filter/entry[sequence-id=*]/statistics/clear",
-    "type": "empty",
-    "description": "Reset all statistics associated with this particular entry to zero"
   },
   {
     "path": "/acl/system-filter/ipv6-filter/entry[sequence-id=*]/statistics/last-clear",
@@ -1755,11 +1611,6 @@
     "is-state": true
   },
   {
-    "path": "/bfd/micro-bfd-sessions/lag-interface[name=*]/member-interface[name=*]/clear",
-    "type": "empty",
-    "description": "Clear the associated micro-BFD sessions\n\nClearing a micro-BFD sessions causes the associated  sessions to transition to a Down state"
-  },
-  {
     "path": "/bfd/micro-bfd-sessions/lag-interface[name=*]/member-interface[name=*]/failure-transitions",
     "type": "uint64",
     "description": "The number of times that the BFD session has transitioned out of the up state",
@@ -1788,11 +1639,6 @@
     "type": "uint32",
     "description": "BFD session local discriminator",
     "is-state": true
-  },
-  {
-    "path": "/bfd/micro-bfd-sessions/lag-interface[name=*]/member-interface[name=*]/name",
-    "type": "interface-all",
-    "description": "Reference ID for associated ethernet interface\nExample: ethernet-2/1 (Reference Interface ethernet-2/1)."
   },
   {
     "path": "/bfd/micro-bfd-sessions/lag-interface[name=*]/member-interface[name=*]/name",
@@ -1848,11 +1694,6 @@
     "description": "Reference ID for associated lag interface\nExample: lag1 (Reference Interface lag1)."
   },
   {
-    "path": "/bfd/micro-bfd-sessions/lag-interface[name=*]/name",
-    "type": "interface-all",
-    "description": "Reference ID for associated lag interface\nExample: lag1 (Reference Interface lag1)."
-  },
-  {
     "path": "/bfd/micro-bfd-sessions/lag-interface[name=*]/remote-address",
     "type": "ip-address",
     "description": "The remote IP address for the far-end of the BFD session\n\nThis must be the same IP version as the local-address."
@@ -1862,21 +1703,6 @@
     "type": "uint32",
     "description": "The minimum interval between received BFD control packets that this system should support\n\nThis value is advertised to the remote peer to indicate the maximum frequency (i.e., minimum\ninter-packet interval) between BFD control packets that is acceptable to the local system.\nThis value is specified as an integer number of microseconds.",
     "default": "1000000"
-  },
-  {
-    "path": "/bfd/micro-bfd-sessions/statistics/lag-interface[name=*]/member-interface[name=*]/clear",
-    "type": "empty",
-    "description": "Clear the BFD statistics associated with the micro-BFD sessions"
-  },
-  {
-    "path": "/bfd/micro-bfd-sessions/statistics/lag-interface[name=*]/member-interface[name=*]/name",
-    "type": "interface-all",
-    "description": "Reference ID for associated ethernet interface\nExample: ethernet-2/1 (Reference Interface ethernet-2/1)."
-  },
-  {
-    "path": "/bfd/micro-bfd-sessions/statistics/lag-interface[name=*]/name",
-    "type": "interface-all",
-    "description": "Reference ID for associated lag interface\nExample: lag1 (Reference Interface lag1)."
   },
   {
     "path": "/bfd/network-instance[name=*]/name",
@@ -2045,26 +1871,6 @@
     "is-state": true
   },
   {
-    "path": "/bfd/peer[local-discriminator=*]/clear",
-    "type": "empty",
-    "description": "Clear the associated BFD sessions\n\nClearing a BFD sessions causes the associated BFD sessions ot transition to a Down state"
-  },
-  {
-    "path": "/bfd/peer[local-discriminator=*]/local-discriminator",
-    "type": "uint32",
-    "description": "BFD session local discriminator"
-  },
-  {
-    "path": "/bfd/statistics/peer[local-discriminator=*]/clear",
-    "type": "empty",
-    "description": "Clear the BFD statistics associated with the BFD sessions"
-  },
-  {
-    "path": "/bfd/statistics/peer[local-discriminator=*]/local-discriminator",
-    "type": "uint32",
-    "description": "BFD session local discriminator"
-  },
-  {
     "path": "/bfd/subinterface[id=*]/admin-state",
     "type": "admin-state",
     "description": "Administratively enable or disable BFD for this subinterface",
@@ -2170,11 +1976,6 @@
     "path": "/interface[name=*]/ethernet/port-speed",
     "type": "enumeration",
     "description": "The speed of the port or channel\n\nThe default speed of a port (when there is no configured value and auto-negotiation is disabled or unsupported) depends on the platform and port/connector number as follows:\n\nmgmt0 and mgmt0-standby ports: 1G\nJ2 IMM ports 1-32:  100G\nJ2 IMM ports 33-36: 100G\n7220-D1 ports 1-48: 1G\n7220-D1 ports 49-52: 10G\n7220-D2 ports 1-48: 25G\n7220-D2 ports 49-56: 100G\n7220-D3 ports 1-2: 10G\n7220-D3 ports 3-34: 100G\n7220-H2 ports 1-128: 100G\n7220-H3 ports 1-2: 10G\n7220-H3 ports 3-34: 400G\n\nSupported speeds:\nmgmt0 and mgmt0-standby ports: 1G\nJ2 IMM ports 1-32: 40G, 100G [note1]\nJ2 IMM ports 33-36: 40G, 100G, 400G\n7220-D1 ports 1-48: 10M, 100M, 1G\n7220-D1 ports 49-52: 10G\n7220-D2 ports 1-48: 1G, 10G, 25G [note2]\n7220-D2 ports 49-56: 40G, 100G\n7220-D3 ports 1-2: 10G\n7220-D3 ports 3-34: 40G, 100G\n7220-H2 ports 1-128: 100G\n7220-H3 ports 1-2: 10G\n7220-H3 ports 3-34: 40G, 100G, 400G\n\n[note1] Ports 9-12 cannot operate at different port speeds (some at 40G and others at 100G). The required speed of ports 9-12 is based on the port-speed of the lowest-numbered configured port in this block; if any higher-numbered port in the block is configured with a different port speed that port will not come up.\n\n[note2] If one port in each consecutive group of 4 ports (1-4, 5-8, .. , 45-48) is 25G the other 3 ports must also be 25G. If one port in each consecutive group of 4 ports (1-4, 5-8, .. , 45-48) is 1G or 10G the other 3 ports must also be 1G or 10G.\n\n7250 IXR details:\nIf the interface corresponds to a connector that has no installed transceiver then the value is accepted without any checking or restriction, and info from state will display the configured value.  Otherwise if the configured port-speed is NOT supported by the installed transceiver the port is forced operationally down."
-  },
-  {
-    "path": "/interface[name=*]/ethernet/statistics/clear/include-members",
-    "type": "empty",
-    "description": "Causes the member link ethernet statistics to also be cleared"
   },
   {
     "path": "/interface[name=*]/ethernet/statistics/in-1024b-to-1518b-frames",
@@ -2552,11 +2353,6 @@
     "path": "/interface[name=*]/mtu",
     "type": "uint16",
     "description": "Port MTU in bytes including ethernet overhead but excluding 4-bytes FCS\n\nIf a transmitted packet exceeds this size it is dropped.\n\nThe default value for ethernet-x interfaces is taken from /system/mtu/default-port-mtu. For the mgmt0 and mgmt0-standby interfaces the default is 1514 bytes, but the value can be changed for each interface individually. Port MTU is not configurable for loopback interfaces.\n\nThe 7220 IXR-D1, 7220 IXR-D2, 7220 IXR-D3, 7220 IXR-H2, and 7220 IXR-H3 systems support a maximum port MTU of 9412 bytes.\n\nEach 7250 IXR IMM supports a maximum of 8 different port MTU values. 7220 IXR systems do not have any limit on the maximum number of different port MTU values."
-  },
-  {
-    "path": "/interface[name=*]/name",
-    "type": "string",
-    "description": "References the configured name of the interface"
   },
   {
     "path": "/interface[name=*]/name",
@@ -2941,11 +2737,6 @@
     "is-state": true
   },
   {
-    "path": "/interface[name=*]/resource/retry",
-    "type": "empty",
-    "description": "Causes the specified lag to be reevaluate for missing system resources"
-  },
-  {
     "path": "/interface[name=*]/sflow/admin-state",
     "type": "admin-state",
     "description": "Administratively enable or disable sFlow on this interface"
@@ -2956,11 +2747,6 @@
     "description": "Number of times the interface state has transitioned from down to up since the time the device restarted or the last clear.",
     "default": "0",
     "is-state": true
-  },
-  {
-    "path": "/interface[name=*]/statistics/clear/include-members",
-    "type": "empty",
-    "description": "Causes the member link statistics to also be cleared"
   },
   {
     "path": "/interface[name=*]/statistics/in-broadcast-packets",
@@ -3046,28 +2832,6 @@
     "is-state": true
   },
   {
-    "path": "/interface[name=*]/statistics/queue-statistics/clear",
-    "type": "empty"
-  },
-  {
-    "path": "/interface[name=*]/statistics/queue-statistics/multicast-queue[queue-id=*]/clear",
-    "type": "empty"
-  },
-  {
-    "path": "/interface[name=*]/statistics/queue-statistics/multicast-queue[queue-id=*]/queue-id",
-    "type": "queue-index",
-    "description": "Queue number: 0-7"
-  },
-  {
-    "path": "/interface[name=*]/statistics/queue-statistics/unicast-queue[queue-id=*]/clear",
-    "type": "empty"
-  },
-  {
-    "path": "/interface[name=*]/statistics/queue-statistics/unicast-queue[queue-id=*]/queue-id",
-    "type": "queue-index",
-    "description": "Queue number: 0-7"
-  },
-  {
     "path": "/interface[name=*]/subinterface[index=*]/acl/input/ipv4-filter",
     "type": "leafref",
     "description": "IPv4 ACL filter to be applied on this interface"
@@ -3123,23 +2887,9 @@
     "default": "use-net-instance-action"
   },
   {
-    "path": "/interface[name=*]/subinterface[index=*]/bridge-table/mac-duplication/delete-all-macs",
-    "type": "empty",
-    "description": "Delete all learnt mac entries."
-  },
-  {
-    "path": "/interface[name=*]/subinterface[index=*]/bridge-table/mac-duplication/duplicate-entries/mac[address=*]/address",
-    "type": "mac-address"
-  },
-  {
     "path": "/interface[name=*]/subinterface[index=*]/bridge-table/mac-duplication/duplicate-entries/mac[address=*]/address",
     "type": "mac-address",
     "is-state": true
-  },
-  {
-    "path": "/interface[name=*]/subinterface[index=*]/bridge-table/mac-duplication/duplicate-entries/mac[address=*]/delete-mac",
-    "type": "empty",
-    "description": "delete the duplicate mac address."
   },
   {
     "path": "/interface[name=*]/subinterface[index=*]/bridge-table/mac-duplication/duplicate-entries/mac[address=*]/dup-detect-time",
@@ -3166,15 +2916,6 @@
     "default": "enable"
   },
   {
-    "path": "/interface[name=*]/subinterface[index=*]/bridge-table/mac-learning/delete-all-macs",
-    "type": "empty",
-    "description": "Delete all learnt mac entries."
-  },
-  {
-    "path": "/interface[name=*]/subinterface[index=*]/bridge-table/mac-learning/learnt-entries/mac[address=*]/address",
-    "type": "mac-address"
-  },
-  {
     "path": "/interface[name=*]/subinterface[index=*]/bridge-table/mac-learning/learnt-entries/mac[address=*]/address",
     "type": "mac-address",
     "is-state": true
@@ -3184,11 +2925,6 @@
     "type": "union",
     "description": "remaining age time for learnt macs",
     "is-state": true
-  },
-  {
-    "path": "/interface[name=*]/subinterface[index=*]/bridge-table/mac-learning/learnt-entries/mac[address=*]/delete-mac",
-    "type": "empty",
-    "description": "delete the learnt mac address."
   },
   {
     "path": "/interface[name=*]/subinterface[index=*]/bridge-table/mac-learning/learnt-entries/mac[address=*]/last-update",
@@ -3321,11 +3057,6 @@
     "description": "The index of the subinterface, or logical interface number"
   },
   {
-    "path": "/interface[name=*]/subinterface[index=*]/index",
-    "type": "uint32",
-    "description": "The index of the subinterface, or logical interface number"
-  },
-  {
     "path": "/interface[name=*]/subinterface[index=*]/ip-mtu",
     "type": "uint16",
     "description": "IP MTU of the subinterface in bytes, including the IP header but excluding Ethernet encapsulation\n\nIP MTU specifies the maximum sized IPv4 or IPv6 packet that can be transmitted on the subinterface. If an IPv4 or IPv6 packet exceeds this size it is dropped and this may result in the generation of an ICMP error message back to the source.\n\nThe default IP MTU for a subinterface is taken from /system/mtu/default-ip-mtu.  For the mgmt0 and mgmt0-standby subinterfaces the default is the associated interface MTU minus the Ethernet encapsulation overhead.\n\nThe IP MTU is not configurable for subinterfaces of loopback interfaces.\n\nThe 7220 IXR-D1, 7220 IXR-D2, 7220 IXR-D3, 7220 IXR-H2, and 7220 IXR-H3 systems support a maximum IP MTU of 9398 bytes.\n\nEach 7250 IXR IMM supports a maximum of 4 different IP MTU values. 7220 IXR systems do not have any limit on the maximum number of different IP MTU values."
@@ -3369,11 +3100,6 @@
     "description": "List of events to debug"
   },
   {
-    "path": "/interface[name=*]/subinterface[index=*]/ipv4/arp/delete-dynamic",
-    "type": "empty",
-    "description": "Delete all dynamic ARP entries"
-  },
-  {
     "path": "/interface[name=*]/subinterface[index=*]/ipv4/arp/duplicate-address-detection",
     "type": "boolean",
     "description": "If set to true IPv4 Address Conflict Detection per RFC 5227 is performed on the IPv4 address assigned to the subinterface",
@@ -3407,11 +3133,6 @@
     "default": "false"
   },
   {
-    "path": "/interface[name=*]/subinterface[index=*]/ipv4/arp/neighbor[ipv4-address=*]/delete-dynamic",
-    "type": "empty",
-    "description": "Delete one specific dynamic ARP entry"
-  },
-  {
     "path": "/interface[name=*]/subinterface[index=*]/ipv4/arp/neighbor[ipv4-address=*]/expiration-time",
     "type": "date-and-time-delta",
     "description": "The date and time when the dynamic ARP entry is set to expire",
@@ -3421,11 +3142,6 @@
     "path": "/interface[name=*]/subinterface[index=*]/ipv4/arp/neighbor[ipv4-address=*]/ipv4-address",
     "type": "ipv4-address",
     "description": "IPv4 address resolved by the ARP entry\n\nTo configure a static neighbor entry a value must be written into this leaf and the link-layer-address leaf."
-  },
-  {
-    "path": "/interface[name=*]/subinterface[index=*]/ipv4/arp/neighbor[ipv4-address=*]/ipv4-address",
-    "type": "ipv4-address",
-    "description": "IPv4 address resolved by the ARP entry"
   },
   {
     "path": "/interface[name=*]/subinterface[index=*]/ipv4/arp/neighbor[ipv4-address=*]/link-layer-address",
@@ -3483,10 +3199,6 @@
     "description": "List of the DHCPv4 servers that the DHCPv4 relay function will relay DHCPv4 packets to/from"
   },
   {
-    "path": "/interface[name=*]/subinterface[index=*]/ipv4/dhcp-relay/statistics/clear",
-    "type": "empty"
-  },
-  {
     "path": "/interface[name=*]/subinterface[index=*]/ipv4/dhcp-relay/statistics/client-packets-discarded",
     "type": "zero-based-counter64",
     "description": "Total discarded dhcp packets from dhcp client(s) towards DHCP server(s)",
@@ -3538,15 +3250,6 @@
     "type": "boolean",
     "description": "When this is set, the configured giaddress will be used as source ip address.",
     "default": "false"
-  },
-  {
-    "path": "/interface[name=*]/subinterface[index=*]/ipv4/vrrp-group[virtual-router-id=*]/statistics/clear",
-    "type": "empty"
-  },
-  {
-    "path": "/interface[name=*]/subinterface[index=*]/ipv4/vrrp-group[virtual-router-id=*]/virtual-router-id",
-    "type": "uint8",
-    "description": "VRRP Group Index"
   },
   {
     "path": "/interface[name=*]/subinterface[index=*]/ipv4/vrrp/vrrp-group[virtual-router-id=*]/accept-mode",
@@ -3833,10 +3536,6 @@
     "description": "Source IPv6 address of the relayed packets towards DHCPv6 servers\n this address must be a local IPv6 address configured on sub-interface where DHCPv6 relay is enabled"
   },
   {
-    "path": "/interface[name=*]/subinterface[index=*]/ipv6/dhcp-relay/statistics/clear",
-    "type": "empty"
-  },
-  {
     "path": "/interface[name=*]/subinterface[index=*]/ipv6/dhcp-relay/statistics/client-packets-discarded",
     "type": "zero-based-counter64",
     "description": "Total discarded dhcp packets from dhcp client(s) towards DHCP server(s)",
@@ -3889,11 +3588,6 @@
     "description": "List of events to debug"
   },
   {
-    "path": "/interface[name=*]/subinterface[index=*]/ipv6/neighbor-discovery/delete-dynamic",
-    "type": "empty",
-    "description": "Delete all dynamic neighbor cache entries"
-  },
-  {
     "path": "/interface[name=*]/subinterface[index=*]/ipv6/neighbor-discovery/duplicate-address-detection",
     "type": "boolean",
     "description": "Enables Duplicate Addres Detection on all tentative addresses\n\nThis applies to link-local and global unicast addresses. Only one transmission is done; there are no retransmissions.\n\nMust be true on an IPv6 subinterface that has dhcp-client enabled.",
@@ -3931,16 +3625,6 @@
     "type": "enumeration",
     "description": "The Neighbor Unreachability Detection state",
     "is-state": true
-  },
-  {
-    "path": "/interface[name=*]/subinterface[index=*]/ipv6/neighbor-discovery/neighbor[ipv6-address=*]/delete-dynamic",
-    "type": "empty",
-    "description": "Delete one specific dynamic neighbor cache entry"
-  },
-  {
-    "path": "/interface[name=*]/subinterface[index=*]/ipv6/neighbor-discovery/neighbor[ipv6-address=*]/ipv6-address",
-    "type": "ipv6-address",
-    "description": "IPv6 address resolved by the ND cache entry"
   },
   {
     "path": "/interface[name=*]/subinterface[index=*]/ipv6/neighbor-discovery/neighbor[ipv6-address=*]/ipv6-address",
@@ -4073,15 +3757,6 @@
     "type": "uint16",
     "description": "The lifetime in seconds that is advertised as the router lifetime in RA messages. This indicates the time period for which the advertising router can be used as a default router/gateway. A value of 0 means the router should not be used as a default gateway.",
     "default": "1800"
-  },
-  {
-    "path": "/interface[name=*]/subinterface[index=*]/ipv6/vrrp-group[virtual-router-id=*]/statistics/clear",
-    "type": "empty"
-  },
-  {
-    "path": "/interface[name=*]/subinterface[index=*]/ipv6/vrrp-group[virtual-router-id=*]/virtual-router-id",
-    "type": "uint8",
-    "description": "VRRP Group Index"
   },
   {
     "path": "/interface[name=*]/subinterface[index=*]/ipv6/vrrp/vrrp-group[virtual-router-id=*]/accept-mode",
@@ -4402,10 +4077,6 @@
     "path": "/interface[name=*]/subinterface[index=*]/qos/output/rewrite-rules/mpls-traffic-class",
     "type": "leafref",
     "description": "Reference to the name of an MPLS traffic-class rewrite-rule policy"
-  },
-  {
-    "path": "/interface[name=*]/subinterface[index=*]/statistics/clear",
-    "type": "empty"
   },
   {
     "path": "/interface[name=*]/subinterface[index=*]/statistics/in-discarded-packets",
@@ -6719,23 +6390,9 @@
     "default": "enable"
   },
   {
-    "path": "/network-instance[name=*]/bridge-table/mac-duplication/delete-macs-type",
-    "type": "enumeration",
-    "description": "Type of duplicate mac entries to delete."
-  },
-  {
     "path": "/network-instance[name=*]/bridge-table/mac-duplication/duplicate-entries/mac[address=*]/address",
     "type": "mac-address",
     "is-state": true
-  },
-  {
-    "path": "/network-instance[name=*]/bridge-table/mac-duplication/duplicate-entries/mac[address=*]/address",
-    "type": "mac-address"
-  },
-  {
-    "path": "/network-instance[name=*]/bridge-table/mac-duplication/duplicate-entries/mac[address=*]/delete-mac",
-    "type": "empty",
-    "description": "delete the duplicate mac address."
   },
   {
     "path": "/network-instance[name=*]/bridge-table/mac-duplication/duplicate-entries/mac[address=*]/destination",
@@ -6804,15 +6461,6 @@
     "default": "300"
   },
   {
-    "path": "/network-instance[name=*]/bridge-table/mac-learning/delete-all-macs",
-    "type": "empty",
-    "description": "Delete all learnt mac entries."
-  },
-  {
-    "path": "/network-instance[name=*]/bridge-table/mac-learning/learnt-entries/mac[address=*]/address",
-    "type": "mac-address"
-  },
-  {
     "path": "/network-instance[name=*]/bridge-table/mac-learning/learnt-entries/mac[address=*]/address",
     "type": "mac-address",
     "is-state": true
@@ -6822,11 +6470,6 @@
     "type": "union",
     "description": "remaining age time for learnt macs",
     "is-state": true
-  },
-  {
-    "path": "/network-instance[name=*]/bridge-table/mac-learning/learnt-entries/mac[address=*]/delete-mac",
-    "type": "empty",
-    "description": "delete the learnt mac address."
   },
   {
     "path": "/network-instance[name=*]/bridge-table/mac-learning/learnt-entries/mac[address=*]/destination",
@@ -6992,11 +6635,6 @@
     "description": "A user-entered description of this network instance."
   },
   {
-    "path": "/network-instance[name=*]/icmp/statistics/clear",
-    "type": "empty",
-    "description": "Resets all the YANG state counters under network-instance/icmp/statistics to zero"
-  },
-  {
     "path": "/network-instance[name=*]/icmp/statistics/last-clear",
     "type": "date-and-time-delta",
     "description": "Timestamp of the last time the interface counters were cleared.",
@@ -7048,11 +6686,6 @@
     "description": "The total number of ICMPv4 messages of this type that the network instance attempted to send.",
     "default": "0",
     "is-state": true
-  },
-  {
-    "path": "/network-instance[name=*]/icmp6/statistics/clear",
-    "type": "empty",
-    "description": "Resets all the YANG state counters under network-instance/icmp6/statistics to zero"
   },
   {
     "path": "/network-instance[name=*]/icmp6/statistics/last-clear",
@@ -7238,11 +6871,6 @@
     "path": "/network-instance[name=*]/mtu/path-mtu-discovery",
     "type": "boolean",
     "description": "Enables or disables path MTU discovery in this network-instance\n\nThis is controlled via the kernel ip_no_pmtu_disc option. Path MTU discovery (PMTUD) is a standardized technique in networking for determining the MTU size on the network path between two hosts, sually with the goal of avoiding IP fragmentation.\n\nFor IPv4 packets, Path MTU discovery works by setting the Don't Fragment (DF) flag bit in the IP headers of outgoing packets. Then, any device along the path whose MTU is smaller than the packet will drop it, and send back an Internet Control Message Protocol (ICMP) Fragmentation Needed (Type 3, Code 4) message containing its MTU, allowing the source host to reduce its Path MTU appropriately.\nThe process is repeated until the MTU is small enough to traverse the entire path without fragmentation."
-  },
-  {
-    "path": "/network-instance[name=*]/name",
-    "type": "string",
-    "description": "A unique name identifying the network instance"
   },
   {
     "path": "/network-instance[name=*]/name",
@@ -7694,11 +7322,6 @@
     "description": "The configured name of the peer group"
   },
   {
-    "path": "/network-instance[name=*]/protocols/bgp/group[group-name=*]/group-name",
-    "type": "name",
-    "description": "The configured name of the peer group"
-  },
-  {
     "path": "/network-instance[name=*]/protocols/bgp/group[group-name=*]/import-policy",
     "type": "leafref",
     "description": "Apply an import policy to received BGP routes"
@@ -7787,11 +7410,6 @@
     "description": "The autonomous system number expected from each peer in the group\n\nA configured session with a peer does not come up if this value does not match the AS value reported by the peer in its OPEN message."
   },
   {
-    "path": "/network-instance[name=*]/protocols/bgp/group[group-name=*]/reset-peer/peer-as",
-    "type": "autonomous-system-number",
-    "description": "Hard reset only BGP peers in the peer-group that have the specified peer-AS number, whether they are configured peers or dynamic peers"
-  },
-  {
     "path": "/network-instance[name=*]/protocols/bgp/group[group-name=*]/route-reflector/client",
     "type": "boolean",
     "description": "When this is set to true all configured and dynamic BGP sessions that belong to the peer-group are considered RR clients."
@@ -7827,16 +7445,6 @@
     "type": "boolean",
     "description": "Enables the sending of a synthetically generated default IPv6 route [::/0] to each peer in the group",
     "default": "false"
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/bgp/group[group-name=*]/soft-clear/peer-as",
-    "type": "autonomous-system-number",
-    "description": "Soft reset only BGP peers in the peer-group that have the specified peer-AS number, whether they are configured peers or dynamic peers"
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/bgp/group[group-name=*]/soft-clear/route-refresh",
-    "type": "enumeration",
-    "description": "The address family to refresh\n\nThis is encoded in the ROUTE_REFRESH message. By default all families are refreshed."
   },
   {
     "path": "/network-instance[name=*]/protocols/bgp/group[group-name=*]/statistics/disabled-peers",
@@ -8517,11 +8125,6 @@
     "description": "The transport address of the BGP peer\n\nThe peer-address must be a valid IPv4 unicast address or a valid IPv6 global unicast address. Sessions to a link-local IPv6 address are not supported."
   },
   {
-    "path": "/network-instance[name=*]/protocols/bgp/neighbor[peer-address=*]/peer-address",
-    "type": "ip-address-with-zone",
-    "description": "The transport address of the BGP peer\n\nThe peer-address must be a valid IPv4 unicast address or a valid IPv6 global unicast address. Sessions to a link-local IPv6 address are not supported."
-  },
-  {
     "path": "/network-instance[name=*]/protocols/bgp/neighbor[peer-address=*]/peer-as",
     "type": "autonomous-system-number",
     "description": "The autonomous system number expected from the peer\n\nA configured session with a peer does not come up if this value does not match the AS value reported by the peer in its OPEN message."
@@ -8594,11 +8197,6 @@
     "description": "Number of BGP UPDATE messages received from the peer over the lifetime of its configuration or since the last clear.",
     "default": "0",
     "is-state": true
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/bgp/neighbor[peer-address=*]/reset-peer",
-    "type": "empty",
-    "description": "Hard reset the peer"
   },
   {
     "path": "/network-instance[name=*]/protocols/bgp/neighbor[peer-address=*]/route-reflector/client",
@@ -8685,11 +8283,6 @@
     "type": "enumeration",
     "description": "Set to 'yes' if, after the last BGP restart, the session was in a lesser state than established when the min-wait-to-advertise timer expired\n\nSet to unknown if the min-wait-to-advertise time has not yet elapsed.",
     "is-state": true
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/bgp/neighbor[peer-address=*]/soft-clear/route-refresh",
-    "type": "enumeration",
-    "description": "The address family to refresh\n\nThis is encoded in the ROUTE_REFRESH message. By default all families are refreshed."
   },
   {
     "path": "/network-instance[name=*]/protocols/bgp/neighbor[peer-address=*]/timers/connect-retry",
@@ -8788,11 +8381,6 @@
     "default": "170"
   },
   {
-    "path": "/network-instance[name=*]/protocols/bgp/reset-peer/peer-as",
-    "type": "autonomous-system-number",
-    "description": "Hard reset only BGP peers that have the specified peer-AS number, whether they are configured peers or dynamic peers"
-  },
-  {
     "path": "/network-instance[name=*]/protocols/bgp/route-advertisement/rapid-withdrawal",
     "type": "boolean",
     "description": "The true setting enables rapid-withdraw towards BGP peers\n\nIf there is only one BGP route for an NLRI in BGP RIB, and this route is withdrawn or becomes invalid, rapid-withdraw causes BGP to immediately send a withdrawal of the BGP route even if the min-route-advertisement timer has not expired.",
@@ -8831,16 +8419,6 @@
     "type": "boolean",
     "description": "The false setting causes BGP to strip all standard (4 byte) communities from all outbound routes advertised to peers",
     "default": "true"
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/bgp/soft-clear/peer-as",
-    "type": "autonomous-system-number",
-    "description": "Soft reset only BGP peers that have the specified peer-AS number, whether they are configured peers or dynamic peers"
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/bgp/soft-clear/route-refresh",
-    "type": "enumeration",
-    "description": "The address family to refresh\n\nThis is encoded in the ROUTE_REFRESH message. By default all families are refreshed."
   },
   {
     "path": "/network-instance[name=*]/protocols/bgp/statistics/disabled-peers",
@@ -9006,11 +8584,6 @@
     "description": "Specifies route tag value to assign to the summary route"
   },
   {
-    "path": "/network-instance[name=*]/protocols/isis/instance[name=*]/interface[interface-name=*]/adjacencies/clear",
-    "type": "empty",
-    "description": "Reset all of the adjacencies on this interface"
-  },
-  {
     "path": "/network-instance[name=*]/protocols/isis/instance[name=*]/interface[interface-name=*]/adjacency[neighbor-system-id=*][adjacency-level=*]/adjacency-level",
     "type": "isis-adj-level",
     "description": "The level of the adjacency that is formed.",
@@ -9145,11 +8718,6 @@
     "type": "isis-hello-padding-type",
     "description": "Specifies the use of IS-IS Hello PDU padding on the interface",
     "default": "disable"
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/isis/instance[name=*]/interface[interface-name=*]/interface-name",
-    "type": "subinterface-all",
-    "description": "Reference to a specific subinterface of the form \u003cinterface-name\u003e.\u003csubinterface-index\u003e"
   },
   {
     "path": "/network-instance[name=*]/protocols/isis/instance[name=*]/interface[interface-name=*]/interface-name",
@@ -9786,20 +9354,10 @@
     "description": "List of tracing options"
   },
   {
-    "path": "/network-instance[name=*]/protocols/isis/instance[name=*]/link-state-database/clear",
-    "type": "empty",
-    "description": "Clear the contents of the LSDB."
-  },
-  {
     "path": "/network-instance[name=*]/protocols/isis/instance[name=*]/max-ecmp-paths",
     "type": "isis-ecmp",
     "description": "The maximum number of ECMP next-hops to program into the FIB for every IP prefix",
     "default": "1"
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/isis/instance[name=*]/name",
-    "type": "name",
-    "description": "The name of the IS-IS instance"
   },
   {
     "path": "/network-instance[name=*]/protocols/isis/instance[name=*]/name",
@@ -9891,11 +9449,6 @@
     "type": "isis-system-id",
     "description": "The neighbor router's system ID.",
     "is-state": true
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/isis/instance[name=*]/statistics/clear",
-    "type": "empty",
-    "description": "Reset all of the IS-IS instance statistics to zero."
   },
   {
     "path": "/network-instance[name=*]/protocols/isis/instance[name=*]/statistics/last-partial-spf",
@@ -10862,10 +10415,6 @@
     "description": "the area identifier as a dotted-quad."
   },
   {
-    "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/area[area-id=*]/area-id",
-    "type": "ospf-area-identifier"
-  },
-  {
     "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/area[area-id=*]/area-range[ip-prefix-mask=*]/advertise",
     "type": "boolean",
     "description": "Advertise summarized range of addresses to other areas",
@@ -11052,11 +10601,6 @@
     "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/area[area-id=*]/interface[interface-name=*]/interface-name",
     "type": "leafref",
     "description": "Router logical interface name."
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/area[area-id=*]/interface[interface-name=*]/interface-name",
-    "type": "subinterface-all",
-    "description": "Reference to a specific subinterface of the form \u003cinterface-name\u003e.\u003csubinterface-index\u003e"
   },
   {
     "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/area[area-id=*]/interface[interface-name=*]/interface-type",
@@ -11667,11 +11211,6 @@
     "type": "int32",
     "description": "the value of up-time indicates the uninterrupted time, in hundredths of seconds, the adjacency to this neighbour has been up.",
     "is-state": true
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/area[area-id=*]/interface[interface-name=*]/neighbors/clear",
-    "type": "empty",
-    "description": "Reset all of the adjacencies on this interface"
   },
   {
     "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/area[area-id=*]/interface[interface-name=*]/oper-state",
@@ -12794,11 +12333,6 @@
     "is-state": true
   },
   {
-    "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/link-state-database/clear",
-    "type": "empty",
-    "description": "Clear the contents of the LSDB."
-  },
-  {
     "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/lsa-totals/as-external-lsa",
     "type": "gauge32",
     "description": "The number of AS External LSAs in this instance's AS database.",
@@ -13257,11 +12791,6 @@
     "is-state": true
   },
   {
-    "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/manual-spf/run",
-    "type": "empty",
-    "description": "Run a SPF calculation."
-  },
-  {
     "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/max-ecmp-paths",
     "type": "ospf-ecmp",
     "description": "The maximum number of ECMP next-hops to program into the FIB\nfor every IP prefix",
@@ -13271,26 +12800,6 @@
     "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/name",
     "type": "name",
     "description": "The name of the OSPF instance"
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/name",
-    "type": "name",
-    "description": "The name of the OSPF instance"
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/neighbors/clear",
-    "type": "empty",
-    "description": "Clear all OSPF neighbors"
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/neighbors/neighbor[neighbor-id=*]/clear",
-    "type": "empty",
-    "description": "Reset this neighbor in the OSPF instance"
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/neighbors/neighbor[neighbor-id=*]/neighbor-id",
-    "type": "dotted-quad",
-    "description": "The neighbor's ip-address in case of OSPFv2, the router-id otherwise"
   },
   {
     "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/new-lsas-originated",
@@ -13499,11 +13008,6 @@
     "type": "counter32",
     "description": "The number of times an attempt to run SPF has failed because SPF runs have been stopped as a result of insufficient memory resources.",
     "is-state": true
-  },
-  {
-    "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/statistics/clear",
-    "type": "empty",
-    "description": "Reset all of the OSPF instance statistics to zero."
   },
   {
     "path": "/network-instance[name=*]/protocols/ospf/instance[name=*]/te-database-install/bgp-ls/bgp-ls-identifier",
@@ -14794,11 +14298,6 @@
     "is-state": true
   },
   {
-    "path": "/platform/chassis/reboot/force",
-    "type": "empty",
-    "description": "Force a reboot of the chassis, overriding any synchronizations or other activities in progress\n\nThis option can be dangerous, and may result in a standby module booting on an older image if used after an image change"
-  },
-  {
     "path": "/platform/chassis/removable",
     "type": "boolean",
     "description": "Details if this component can be removed from the system",
@@ -15280,16 +14779,6 @@
     "is-state": true
   },
   {
-    "path": "/platform/control[slot=*]/locator/disable",
-    "type": "empty",
-    "description": "Deactivates the locator LED for this component"
-  },
-  {
-    "path": "/platform/control[slot=*]/locator/enable/duration",
-    "type": "uint16",
-    "description": "Sets the duration to activate the locator LED, after which it will disable automatically"
-  },
-  {
     "path": "/platform/control[slot=*]/manufactured-date",
     "type": "string",
     "description": "The date this component was manufactured",
@@ -15386,11 +14875,6 @@
     "is-state": true
   },
   {
-    "path": "/platform/control[slot=*]/reboot/force",
-    "type": "empty",
-    "description": "Force a reboot of the control module, overriding any synchronizations or other activies in progress\n\nThis option can be dangerous, and may result in a standby module booting on an older image if used after an image change"
-  },
-  {
     "path": "/platform/control[slot=*]/removable",
     "type": "boolean",
     "description": "Details if this component can be removed from the system",
@@ -15407,11 +14891,6 @@
     "type": "string",
     "description": "The serial number for this component",
     "is-state": true
-  },
-  {
-    "path": "/platform/control[slot=*]/slot",
-    "type": "string",
-    "description": "Slot identifier for the control module"
   },
   {
     "path": "/platform/control[slot=*]/slot",
@@ -15487,16 +14966,6 @@
     "is-state": true
   },
   {
-    "path": "/platform/fabric[slot=*]/locator/disable",
-    "type": "empty",
-    "description": "Deactivates the locator LED for this component"
-  },
-  {
-    "path": "/platform/fabric[slot=*]/locator/enable/duration",
-    "type": "uint16",
-    "description": "Sets the duration to activate the locator LED, after which it will disable automatically"
-  },
-  {
     "path": "/platform/fabric[slot=*]/manufactured-date",
     "type": "string",
     "description": "The date this component was manufactured",
@@ -15527,11 +14996,6 @@
     "is-state": true
   },
   {
-    "path": "/platform/fabric[slot=*]/reboot",
-    "type": "empty",
-    "description": "Reboot this component"
-  },
-  {
     "path": "/platform/fabric[slot=*]/removable",
     "type": "boolean",
     "description": "Details if this component can be removed from the system",
@@ -15542,11 +15006,6 @@
     "type": "string",
     "description": "The serial number for this component",
     "is-state": true
-  },
-  {
-    "path": "/platform/fabric[slot=*]/slot",
-    "type": "uint8",
-    "description": "Numeric identifier for the fabric module"
   },
   {
     "path": "/platform/fabric[slot=*]/slot",
@@ -15592,11 +15051,6 @@
   {
     "path": "/platform/fan-tray[id=*]/id",
     "type": "uint8",
-    "description": "Numeric identifier for the fan module"
-  },
-  {
-    "path": "/platform/fan-tray[id=*]/id",
-    "type": "uint8",
     "description": "Numeric identifier for the fan tray",
     "is-state": true
   },
@@ -15618,16 +15072,6 @@
     "description": "Details if the locator LED is active on this component",
     "default": "inactive",
     "is-state": true
-  },
-  {
-    "path": "/platform/fan-tray[id=*]/locator/disable",
-    "type": "empty",
-    "description": "Deactivates the locator LED for this component"
-  },
-  {
-    "path": "/platform/fan-tray[id=*]/locator/enable/duration",
-    "type": "uint16",
-    "description": "Sets the duration to activate the locator LED, after which it will disable automatically"
   },
   {
     "path": "/platform/fan-tray[id=*]/manufactured-date",
@@ -15935,16 +15379,6 @@
     "is-state": true
   },
   {
-    "path": "/platform/linecard[slot=*]/locator/disable",
-    "type": "empty",
-    "description": "Deactivates the locator LED for this component"
-  },
-  {
-    "path": "/platform/linecard[slot=*]/locator/enable/duration",
-    "type": "uint16",
-    "description": "Sets the duration to activate the locator LED, after which it will disable automatically"
-  },
-  {
     "path": "/platform/linecard[slot=*]/manufactured-date",
     "type": "string",
     "description": "The date this component was manufactured",
@@ -15975,11 +15409,6 @@
     "is-state": true
   },
   {
-    "path": "/platform/linecard[slot=*]/reboot",
-    "type": "empty",
-    "description": "Reboot this component"
-  },
-  {
     "path": "/platform/linecard[slot=*]/removable",
     "type": "boolean",
     "description": "Details if this component can be removed from the system",
@@ -15990,11 +15419,6 @@
     "type": "string",
     "description": "The serial number for this component",
     "is-state": true
-  },
-  {
-    "path": "/platform/linecard[slot=*]/slot",
-    "type": "uint8",
-    "description": "Numeric identifier for the line card"
   },
   {
     "path": "/platform/linecard[slot=*]/slot",
@@ -16182,16 +15606,6 @@
     "is-state": true
   },
   {
-    "path": "/platform/redundancy/synchronize/overlay",
-    "type": "empty",
-    "description": "Force a synchronization of the overlay filesystem between the active control module and the standby\n\nThis synchronizes all non-excluded directories in the overlay filesystem"
-  },
-  {
-    "path": "/platform/redundancy/synchronize/system",
-    "type": "empty",
-    "description": "Force a synchronization of the system-required data between the active control module and the standby\n\nThis synchronizes images, configuration, checkpoints, and other system-required data"
-  },
-  {
     "path": "/platform/resource-management/unified-forwarding-resources/allocated-extra-ip-host-entries",
     "type": "uint32",
     "description": "The extra number of host entries that have been allocated from UFT shared banks.",
@@ -16326,11 +15740,6 @@
     "type": "percentage",
     "description": "Sets the threshold that triggers the generation of a WARNING log whenever the utilization of the TCAM resource in any linecard/complex/core reaches this value in a rising direction",
     "default": "90"
-  },
-  {
-    "path": "/platform/show-fabric-bandwidth",
-    "type": "empty",
-    "description": "Show fabric bandwidth"
   },
   {
     "path": "/qos/classifiers/dscp-policy[name=*]/dscp[value=*]/drop-probability",
@@ -16926,11 +16335,6 @@
     "is-state": true
   },
   {
-    "path": "/system/app-management/application[name=*]/kill",
-    "type": "empty",
-    "description": "Terminate the application instance ungracefully"
-  },
-  {
     "path": "/system/app-management/application[name=*]/last-change",
     "type": "date-and-time-delta",
     "description": "Date and time the application instance last changed state",
@@ -16941,11 +16345,6 @@
     "type": "string",
     "description": "The command used to launch the application",
     "is-state": true
-  },
-  {
-    "path": "/system/app-management/application[name=*]/name",
-    "type": "string",
-    "description": "Unique name of this application instance"
   },
   {
     "path": "/system/app-management/application[name=*]/name",
@@ -16972,21 +16371,6 @@
     "is-state": true
   },
   {
-    "path": "/system/app-management/application[name=*]/quit",
-    "type": "empty",
-    "description": "Terminate the application instance, requesting it to core dump"
-  },
-  {
-    "path": "/system/app-management/application[name=*]/reload",
-    "type": "empty",
-    "description": "Reload the configuration of the application instance"
-  },
-  {
-    "path": "/system/app-management/application[name=*]/restart",
-    "type": "empty",
-    "description": "Restart the application instance"
-  },
-  {
     "path": "/system/app-management/application[name=*]/restricted-operations",
     "type": "restricted-operation-type",
     "description": "The operations that may not be manually performed on this application",
@@ -16999,20 +16383,10 @@
     "is-state": true
   },
   {
-    "path": "/system/app-management/application[name=*]/start",
-    "type": "empty",
-    "description": "Start the application instance"
-  },
-  {
     "path": "/system/app-management/application[name=*]/state",
     "type": "application-state-type",
     "description": "Current state of this application instance",
     "is-state": true
-  },
-  {
-    "path": "/system/app-management/application[name=*]/statistics/clear",
-    "type": "empty",
-    "description": "Clear statistics for this application instance"
   },
   {
     "path": "/system/app-management/application[name=*]/statistics/restart-count",
@@ -17020,11 +16394,6 @@
     "description": "The number of times this application instance has restarted",
     "default": "0",
     "is-state": true
-  },
-  {
-    "path": "/system/app-management/application[name=*]/stop",
-    "type": "empty",
-    "description": "Terminate the application instance gracefully"
   },
   {
     "path": "/system/app-management/application[name=*]/version",
@@ -17205,16 +16574,6 @@
     "default": "false"
   },
   {
-    "path": "/system/configuration/candidate[name=*]/clear",
-    "type": "empty",
-    "description": "Clear the candidate from the system, discarding any changes\n\nThis results in any users currently in the candidate being dropped back to running mode."
-  },
-  {
-    "path": "/system/configuration/candidate[name=*]/name",
-    "type": "name",
-    "description": "The name of the candidate"
-  },
-  {
     "path": "/system/configuration/candidate[name=*]/name",
     "type": "name",
     "description": "Name of the configuration candidate",
@@ -17239,11 +16598,6 @@
     "is-state": true
   },
   {
-    "path": "/system/configuration/checkpoint[id=*]/clear",
-    "type": "empty",
-    "description": "Clear the checkpoint from the system"
-  },
-  {
     "path": "/system/configuration/checkpoint[id=*]/comment",
     "type": "string",
     "description": "User provided annotations associated with the checkpoint",
@@ -17257,30 +16611,15 @@
   },
   {
     "path": "/system/configuration/checkpoint[id=*]/id",
-    "type": "union",
-    "description": "System generated ID, or operator defined name for the checkpoint"
-  },
-  {
-    "path": "/system/configuration/checkpoint[id=*]/id",
     "type": "uint8",
     "description": "System generated ID for the checkpoint",
     "is-state": true
-  },
-  {
-    "path": "/system/configuration/checkpoint[id=*]/load",
-    "type": "empty",
-    "description": "Load candidate from saved checkpoint configuration"
   },
   {
     "path": "/system/configuration/checkpoint[id=*]/name",
     "type": "checkpoint-name",
     "description": "User provided name of the checkpoint",
     "is-state": true
-  },
-  {
-    "path": "/system/configuration/checkpoint[id=*]/revert",
-    "type": "empty",
-    "description": "Revert running system configuration to the saved checkpoint configuration\n\nThis functions as a load and commit action."
   },
   {
     "path": "/system/configuration/checkpoint[id=*]/size",
@@ -17349,26 +16688,6 @@
     "is-state": true
   },
   {
-    "path": "/system/configuration/confirmed-accept",
-    "type": "empty",
-    "description": "Accepts an in progress commit and stops the confirmation timer"
-  },
-  {
-    "path": "/system/configuration/confirmed-reject",
-    "type": "empty",
-    "description": "Rejects an in progress commit and stops the confirmation timer"
-  },
-  {
-    "path": "/system/configuration/generate-checkpoint/comment",
-    "type": "string",
-    "description": "User provided comment to associate with the checkpoint"
-  },
-  {
-    "path": "/system/configuration/generate-checkpoint/name",
-    "type": "checkpoint-name",
-    "description": "User provided name of the checkpoint"
-  },
-  {
     "path": "/system/configuration/idle-timeout",
     "type": "uint16",
     "description": "The idle timeout of configuration candidates\n\nAfter this period of no activity, the candidate is emptied and removed from the system.",
@@ -17393,16 +16712,6 @@
     "default": "10"
   },
   {
-    "path": "/system/configuration/rescue-clear",
-    "type": "empty",
-    "description": "Remove rescue configuration"
-  },
-  {
-    "path": "/system/configuration/rescue-save",
-    "type": "empty",
-    "description": "Save current running configuration as rescue configuration - rescue-config.json"
-  },
-  {
     "path": "/system/configuration/role[name=*]/name",
     "type": "leafref"
   },
@@ -17417,16 +16726,6 @@
     "description": "Reference to a valid YANG path, in CLI notation\n\nThis path may include keys, wildcards, ranges, and other management server supported constructs. Ranges will be expanded.\nThe root path can be specified with '/'.\n\nE.g.\n    /\n    \"/interface\"\n    \"/acl ipv4-filter foo* description\""
   },
   {
-    "path": "/system/configuration/save",
-    "type": "empty",
-    "description": "Save current running configuration as initial (startup) configuration - config.json"
-  },
-  {
-    "path": "/system/configuration/session[id=*]/clear",
-    "type": "empty",
-    "description": "Clear the session from the system, discarding any changes"
-  },
-  {
     "path": "/system/configuration/session[id=*]/exclusive",
     "type": "boolean",
     "description": "Details if this session is running in exclusive mode",
@@ -17437,11 +16736,6 @@
     "type": "uint32",
     "description": "System generated ID for the configuration session",
     "is-state": true
-  },
-  {
-    "path": "/system/configuration/session[id=*]/id",
-    "type": "uint32",
-    "description": "System generated ID for the configuration session"
   },
   {
     "path": "/system/configuration/session[id=*]/name",
@@ -19114,16 +18408,6 @@
     "is-state": true
   },
   {
-    "path": "/system/packet-trace-base64/interface",
-    "type": "string",
-    "description": "References the configured name of the interface in which to inject the probe packet"
-  },
-  {
-    "path": "/system/packet-trace-base64/packet",
-    "type": "binary",
-    "description": "Packet content encoded in base64 string format"
-  },
-  {
     "path": "/system/sflow/admin-state",
     "type": "admin-state",
     "description": "Administratively enable or disable sFlow for the system",
@@ -19257,84 +18541,6 @@
     "type": "uint16",
     "description": "Set the idle timeout in seconds on SSH connections",
     "default": "0"
-  },
-  {
-    "path": "/system/tls/generate-csr/common-name",
-    "type": "domain-name",
-    "description": "The common name to use for the certificate signing request\n\nBy default the common name is set to the system host name and domain name combination."
-  },
-  {
-    "path": "/system/tls/generate-csr/country",
-    "type": "string",
-    "description": "The country name to use for the certificate signing request\n\nThe expected format is two characters long, e.g. 'US'.",
-    "default": "US"
-  },
-  {
-    "path": "/system/tls/generate-csr/email",
-    "type": "name",
-    "description": "The email address to use for the certificate signing request"
-  },
-  {
-    "path": "/system/tls/generate-csr/locality",
-    "type": "name",
-    "description": "The city or locality to use for the certificate signing request"
-  },
-  {
-    "path": "/system/tls/generate-csr/organization",
-    "type": "name",
-    "description": "The organization to use for the certificate signing request"
-  },
-  {
-    "path": "/system/tls/generate-csr/organization-unit",
-    "type": "name",
-    "description": "The organization unit to use for the certificate signing request"
-  },
-  {
-    "path": "/system/tls/generate-csr/state",
-    "type": "name",
-    "description": "The state or province to use for the certificate signing request"
-  },
-  {
-    "path": "/system/tls/generate-self-signed/common-name",
-    "type": "domain-name",
-    "description": "The common name to use for the certificate signing request\n\nBy default the common name is set to the system host name and domain name combination."
-  },
-  {
-    "path": "/system/tls/generate-self-signed/country",
-    "type": "string",
-    "description": "The country name to use for the certificate signing request\n\nThe expected format is two characters long, e.g. 'US'.",
-    "default": "US"
-  },
-  {
-    "path": "/system/tls/generate-self-signed/duration",
-    "type": "uint16",
-    "description": "The time in which the certificate is valid",
-    "default": "365"
-  },
-  {
-    "path": "/system/tls/generate-self-signed/email",
-    "type": "name",
-    "description": "The email address to use for the certificate signing request"
-  },
-  {
-    "path": "/system/tls/generate-self-signed/locality",
-    "type": "name",
-    "description": "The city or locality to use for the certificate signing request"
-  },
-  {
-    "path": "/system/tls/generate-self-signed/organization",
-    "type": "name",
-    "description": "The organization to use for the certificate signing request"
-  },
-  {
-    "path": "/system/tls/generate-self-signed/organization-unit",
-    "type": "name",
-    "description": "The organization unit to use for the certificate signing request"
-  },
-  {
-    "path": "/system/tls/generate-self-signed/state",
-    "type": "name",
-    "description": "The state or province to use for the certificate signing request"
   },
   {
     "path": "/system/tls/server-profile[name=*]/authenticate-client",
@@ -19725,10 +18931,6 @@
     "description": "The value of this leaf indicates the context in which the\nvxlan-interface will be used in."
   },
   {
-    "path": "/tunnel/vxlan-tunnel/statistics/clear",
-    "type": "empty"
-  },
-  {
     "path": "/tunnel/vxlan-tunnel/statistics/in-discarded-packets",
     "type": "zero-based-counter64",
     "description": "The total number of discarded ingress VXLAN packets.\n\nIngress VXLAN packets can be discarded due to one of the following reasons:\n- The tunnel source IP address is not found on the list of discovered remote VTEPs.\n- The VNI is not a local one.",
@@ -19776,11 +18978,6 @@
     "is-state": true
   },
   {
-    "path": "/tunnel/vxlan-tunnel/vtep[address=*]/address",
-    "type": "ip-address",
-    "description": "The IP address that identifies the remote VXLAN Termination Endpoint (VTEP)."
-  },
-  {
     "path": "/tunnel/vxlan-tunnel/vtep[address=*]/index",
     "type": "uint64",
     "description": "the next-hop-group-id (system allocated) for resolving the VXLAN termination endpoint",
@@ -19791,10 +18988,6 @@
     "type": "date-and-time-delta",
     "description": "The date and time of the most recent change to the tunnel state",
     "is-state": true
-  },
-  {
-    "path": "/tunnel/vxlan-tunnel/vtep[address=*]/statistics/clear",
-    "type": "empty"
   },
   {
     "path": "/tunnel/vxlan-tunnel/vtep[address=*]/statistics/in-discarded-packets",
@@ -19843,5 +19036,11 @@
     "description": "The number of packets encapsulated in egress VXLAN packets.\n\nA packet in this context is an inner frame.",
     "default": "0",
     "is-state": true
+  },
+  {
+    "path": "/acl/ipv6-filter[name=*]/subinterface-specific",
+    "type": "enumeration",
+    "description": "Controls the instantiation of the filter when it is applied as an input or output ACL\n\ndisabled: all subinterfaces on a single linecard that reference the ACL as an input ACL use a shared filter instance, and all subinterfaces on a single linecard that reference the ACL as an output ACL use a shared filter instance\n\ninput-only: all subinterfaces on a single linecard that reference the ACL as an output ACL use a shared filter instance, but each subinterface that references the ACL as an input ACL uses its own separate instance of the filter\n\noutput-only: all subinterfaces on a single linecard that reference the ACL as an input ACL use a shared filter instance, but each subinterface that references the ACL as an output ACL uses its own separate instance of the filter\n\ninput-and-output: each subinterface that references the ACL as either an input ACL or an output ACL uses its own separate instance of the filter",
+    "default": "disabled"
   }
 ]
