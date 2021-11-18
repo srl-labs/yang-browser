@@ -400,6 +400,7 @@
 /interface[name=*]/lag/lacp/system-id-mac	(type=mac-address)
 /interface[name=*]/lag/lacp/system-priority	(type=uint16)
 /interface[name=*]/lag/lag-speed	(type=uint32)
+/interface[name=*]/lag/lag-type	(type=lag-type)
 /interface[name=*]/lag/member-speed	(type=member-speed-type)
 /interface[name=*]/lag/members[name=*]/activity	(type=lacp-activity-type)
 /interface[name=*]/lag/members[name=*]/aggregatable	(type=boolean)

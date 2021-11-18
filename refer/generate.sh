@@ -27,7 +27,7 @@ response_handler() {
 docker pull ghcr.io/hellt/pyang:2.5.0
 
 # Keep appending new releases or change array to have the required releases
-SRL_VER_LIST=("21.3.1" "21.3.2" "21.6.1" "21.6.2" "21.6.3")
+SRL_VER_LIST=("21.6.4")
 
 for SRL_VER in ${SRL_VER_LIST[@]}
 do
@@ -112,8 +112,8 @@ do
   find ./ -name "*tools*.yang" -exec rm -f {} \;
 
   # GENERATE PATHS. TEXT + JSON
-  gnmic generate path --file srl_nokia/models --dir ietf/ --types > $OUT_DIR/paths.txt
-  gnmic generate path --file srl_nokia/models --dir ietf/ --json > $OUT_DIR/paths.json
+  docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.20.4 generate path --file srl_nokia/models --dir ietf/ --types > $OUT_DIR/paths.txt
+  docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.20.4 generate path --file srl_nokia/models --dir ietf/ --json > $OUT_DIR/paths.json
 
   cd $SCRIPT_DIR
   # copy per-release index page to output dir
