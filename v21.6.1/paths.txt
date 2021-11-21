@@ -2690,6 +2690,7 @@
 /platform/chassis/mac-address	(type=mac-address)
 /platform/chassis/manufactured-date	(type=string)
 /platform/chassis/oper-state	(type=oper-state)
+/platform/chassis/part-number	(type=string)
 /platform/chassis/power/control/allocated	(type=watts)
 /platform/chassis/power/control/peak	(type=watts)
 /platform/chassis/power/control/used	(type=watts)
@@ -3606,4 +3607,3 @@
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-discarded-packets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-octets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-packets	(type=zero-based-counter64)
-/platform/chassis/part-number	(type=string)

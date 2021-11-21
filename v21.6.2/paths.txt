@@ -3015,6 +3015,7 @@
 /routing-policy/policy[name=*]/statement[sequence-id=*]/match/ospf/route-type	(type=identityref)
 /routing-policy/policy[name=*]/statement[sequence-id=*]/match/prefix-set	(type=leafref)
 /routing-policy/policy[name=*]/statement[sequence-id=*]/match/protocol	(type=identityref)
+/routing-policy/policy[name=*]/statement[sequence-id=*]/sequence-id	(type=uint32)
 /routing-policy/prefix-set[name=*]/name	(type=name)
 /routing-policy/prefix-set[name=*]/prefix[ip-prefix=*][mask-length-range=*]/ip-prefix	(type=ip-prefix)
 /routing-policy/prefix-set[name=*]/prefix[ip-prefix=*][mask-length-range=*]/mask-length-range	(type=string)
@@ -3605,4 +3606,3 @@
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-discarded-packets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-octets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-packets	(type=zero-based-counter64)
-/routing-policy/policy[name=*]/statement[sequence-id=*]/sequence-id	(type=uint32)

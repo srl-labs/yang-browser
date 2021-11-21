@@ -11,9 +11,15 @@ var columnDefs = [
       return type === 'display'? '<div class="tooltip" title="' + full.description + '">' + data : data;
     } 
   },
-  { "targets": 2, "width": "20%" },
-  { "targets": 3, "visible": false, "searchable": false },
-  { "targets": 4, "visible": false }
+  { 
+    "targets": 2, "width": "70%", "visible": false,
+    "render": function (data, type, full, meta) {
+      return type === 'display'? '<div class="tooltip" title="' + full.description + '">' + data : data;
+    } 
+  },
+  { "targets": 3, "width": "20%" },
+  { "targets": 4, "visible": false, "searchable": false },
+  { "targets": 5, "visible": false }
 ]
 var languageDataTable = { 
   "search": "", 
@@ -53,12 +59,20 @@ $(".customSearch").on("keyup", function() {
 function toggleFilter(element) {
   var keyFilter = element.value;
   if(keyFilter != "na") {
-    myTable.column(4).search(keyFilter).draw();
+    myTable.column(5).search(keyFilter).draw();
   }
   else {
-    myTable.column(4).search('').draw();
+    myTable.column(5).search('').draw();
   }
   updatePageInfo("myTable");
+}
+
+// SHOW PREFIX
+function showPrefix() {
+  var col1 = myTable.column(1);
+  var col2 = myTable.column(2);
+  col1.visible(!col1.visible());
+  col2.visible(!col2.visible());
 }
 
 // UPDATE PAGE INFO
@@ -67,7 +81,6 @@ function updatePageInfo(tableName) {
   var p = "#" + tableName + "_previous";
   var f = "#" + tableName + "_filter";
   var info = myTable.page.info();
-  console.log(info)
   if(info.page == 0) {
     $(p).addClass("disabled");
   } else {
@@ -125,6 +138,7 @@ function loadHandler(response) {
     "columns": [
       {"data": "is-state", "defaultContent": "false"},
       {"data": "path"}, 
+      {"data": "path-prefix"}, 
       {"data": "type"}, 
       {"data": "description", "defaultContent": ""},
       {"data": "is-state", "defaultContent": "false"}

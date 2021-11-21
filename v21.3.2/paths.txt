@@ -2714,6 +2714,7 @@
 /routing-policy/policy[name=*]/default-action/accept/bgp/communities/remove	(type=leafref)
 /routing-policy/policy[name=*]/default-action/accept/bgp/communities/replace	(type=leafref)
 /routing-policy/policy[name=*]/default-action/accept/bgp/local-preference/set	(type=uint32)
+/routing-policy/policy[name=*]/default-action/accept/bgp/origin/set	(type=enumeration)
 /routing-policy/policy[name=*]/name	(type=name)
 /routing-policy/policy[name=*]/statement[sequence-id=*]/action/accept/bgp/as-path/prepend/as-number	(type=union)
 /routing-policy/policy[name=*]/statement[sequence-id=*]/action/accept/bgp/as-path/prepend/repeat-n	(type=uint8)
@@ -3249,4 +3250,3 @@
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-discarded-packets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-octets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-packets	(type=zero-based-counter64)
-/routing-policy/policy[name=*]/default-action/accept/bgp/origin/set	(type=enumeration)
