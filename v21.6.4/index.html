@@ -14,6 +14,7 @@
   <script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.js"></script>
+  <script src="https://cdn.datatables.net/colreorder/1.5.5/js/dataTables.colReorder.min.js"></script>
   <script src="../js/datatables.mark.js"></script>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-NB34K69ZRD"></script>
@@ -108,10 +109,14 @@
             <label class="radio"><input type="radio" name="pathType" onclick="toggleFilter(this)" value="false">
               Config</label>
           </div>
+          <div class="mt-3">
+            <label class="checkbox"><input type="checkbox" onclick="showPrefix()"> with Prefix</label>
+          </div>
           <table class="table is-striped is-fullwidth" id="myTable">
             <thead>
               <tr>
                 <th>State</th>
+                <th>Path</th>
                 <th>Path</th>
                 <th>Type</th>
               </tr>
