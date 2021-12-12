@@ -3530,7 +3530,6 @@
 /system/tls/server-profile[name=*]/cipher-list	(type=identityref)
 /system/tls/server-profile[name=*]/key	(type=string)
 /system/tls/server-profile[name=*]/name	(type=name)
-/system/tls/server-profile[name=*]/trust-anchor	(type=string)
 /system/trace-options	(type=enumeration)
 /system/warm-reboot/bgp-max-wait	(type=uint16)
 /tunnel-interface[name=*]/name	(type=tunnel-interface-all)
@@ -3607,3 +3606,4 @@
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-discarded-packets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-octets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-packets	(type=zero-based-counter64)
+/system/tls/server-profile[name=*]/trust-anchor	(type=string)

@@ -9,7 +9,7 @@ var columnDefs = [
     "targets": 1, "width": "70%",
     "render": function (data, type, full, meta) {
       return type === 'display'? '<div class="tooltip" title="' + full.description + '">' + data : data;
-    } 
+    }  
   },
   { 
     "targets": 2, "width": "70%", "visible": false,
@@ -137,8 +137,8 @@ function loadHandler(response) {
     "data": response,
     "columns": [
       {"data": "is-state", "defaultContent": "false"},
+      {"data": "path-with-prefix"}, 
       {"data": "path"}, 
-      {"data": "path-prefix"}, 
       {"data": "type"}, 
       {"data": "description", "defaultContent": ""},
       {"data": "is-state", "defaultContent": "false"}

@@ -42,7 +42,7 @@
   opacity: 0.5;
 }
 
-td, .highlight, mark, .tooltip {
+td, .highlight, mark, .tooltip, .path-prefix {
   font-family: "Fira Code", monospace;
   letter-spacing: -0.5px;
   font-size: 14px;
@@ -50,10 +50,6 @@ td, .highlight, mark, .tooltip {
 
 .highlight, mark { 
   background-color: yellow;
-}
-
-.majorVersion, .minorVersion {
-  width: 75px;
 }
 
 a.disabled {

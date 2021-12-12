@@ -317,7 +317,6 @@
 /bfd/network-instance[name=*]/peer[local-discriminator=*]/async/received-errored-packets	(type=zero-based-counter64)
 /bfd/network-instance[name=*]/peer[local-discriminator=*]/async/received-packets	(type=zero-based-counter64)
 /bfd/network-instance[name=*]/peer[local-discriminator=*]/async/transmitted-packets	(type=zero-based-counter64)
-/bfd/network-instance[name=*]/peer[local-discriminator=*]/async/up-transitions	(type=zero-based-counter64)
 /bfd/network-instance[name=*]/peer[local-discriminator=*]/failure-transitions	(type=uint64)
 /bfd/network-instance[name=*]/peer[local-discriminator=*]/ipv6-link-local-interface	(type=string)
 /bfd/network-instance[name=*]/peer[local-discriminator=*]/last-failure-time	(type=date-and-time-delta)
@@ -3620,3 +3619,4 @@
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-discarded-packets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-octets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-packets	(type=zero-based-counter64)
+/bfd/network-instance[name=*]/peer[local-discriminator=*]/async/up-transitions	(type=zero-based-counter64)

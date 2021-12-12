@@ -163,7 +163,6 @@
 /acl/ipv4-filter[name=*]/last-clear	(type=date-and-time-delta)
 /acl/ipv4-filter[name=*]/name	(type=name)
 /acl/ipv4-filter[name=*]/statistics-per-entry	(type=boolean)
-/acl/ipv4-filter[name=*]/subinterface-specific	(type=enumeration)
 /acl/ipv6-filter[name=*]/description	(type=description)
 /acl/ipv6-filter[name=*]/entry[sequence-id=*]/action/accept/log	(type=boolean)
 /acl/ipv6-filter[name=*]/entry[sequence-id=*]/action/drop/log	(type=boolean)
@@ -3250,3 +3249,4 @@
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-discarded-packets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-octets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-packets	(type=zero-based-counter64)
+/acl/ipv4-filter[name=*]/subinterface-specific	(type=enumeration)
