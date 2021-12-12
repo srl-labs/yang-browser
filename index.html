@@ -20,6 +20,14 @@
   </script>
 </head>
 
+<style>
+  .split-button {
+    border-left: 0;
+    border-top-left-radius: 0; 
+    border-bottom-left-radius: 0;
+  }
+</style>
+
 <body>
   <div class="hero is-fullheight has-header-img">
     <div class="hero-head">
@@ -51,18 +59,52 @@
           <div class="column">
             <p class="title"><img src="images/nblue.png" width="100" /></p>
             <h3 class="title is-3 has-text-weight-light" id="title">SR Linux YANG Models</h3>
-            <div class="columns is-vcentered">
-              <div class="column is-narrow majorVersion">
-                <p class="is-size-4">v21</p>
+            <div class="field is-grouped">
+              <div class="control">
+                <p class="is-size-4 pr-5">v21</p>
               </div>
-              <div class="column">
-                <div class="buttons">
-                  <a class="button is-dark is-outlined minorVersion" href="./v21.3.1/">21.3.1</a>
-                  <a class="button is-dark is-outlined minorVersion" href="./v21.3.2/">21.3.2</a>
-                  <a class="button is-dark is-outlined minorVersion" href="./v21.6.1/">21.6.1</a>
-                  <a class="button is-dark is-outlined minorVersion" href="./v21.6.2/">21.6.2</a>
-                  <a class="button is-dark is-outlined minorVersion" href="./v21.6.3/">21.6.3</a>
-                  <a class="button is-dark is-outlined minorVersion" href="./v21.6.4/">21.6.4</a>
+              <div class="control">
+                <div class="field has-addons">
+                  <p class="control">
+                    <a class="button is-dark is-outlined" href="./v21.3.2/">21.3.2</a>
+                  </p>
+                  <p class="control">
+                    <div class="dropdown is-hoverable">
+                      <div class="dropdown-trigger">
+                        <button class="button is-dark is-outlined split-button">
+                          <span class="icon is-small"><i class="fas fa-angle-down" aria-hidden="true"></i></span>
+                        </button>
+                      </div>
+                      <div class="dropdown-menu">
+                        <div class="dropdown-content" style="width: 120px;">
+                          <div class="dropdown-item"><a class="has-text-weight-semibold" href="./v21.3.1/">21.3.1</a></div>
+                        </div>
+                      </div>
+                    </div>
+                  </p>
+                </div>
+              </div>
+              <div class="control">
+                <div class="field has-addons">
+                  <p class="control">
+                    <a class="button is-dark is-outlined" href="./v21.6.4/">21.6.4</a>
+                  </p>
+                  <p class="control">
+                    <div class="dropdown is-hoverable">
+                      <div class="dropdown-trigger">
+                        <button class="button is-dark is-outlined split-button">
+                          <span class="icon is-small"><i class="fas fa-angle-down" aria-hidden="true"></i></span>
+                        </button>
+                      </div>
+                      <div class="dropdown-menu">
+                        <div class="dropdown-content" style="width: 120px;">
+                          <div class="dropdown-item"><a class="has-text-weight-semibold" href="./v21.6.3/">21.6.3</a></div>
+                          <div class="dropdown-item"><a class="has-text-weight-semibold" href="./v21.6.2/">21.6.2</a></div>
+                          <div class="dropdown-item"><a class="has-text-weight-semibold" href="./v21.6.1/">21.6.1</a></div>
+                        </div>
+                      </div>
+                    </div>
+                  </p>
                 </div>
               </div>
             </div>

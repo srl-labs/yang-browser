@@ -3185,6 +3185,7 @@
 /system/dns/host-entry[name=*]/ipv6-address	(type=ipv6-address)
 /system/dns/host-entry[name=*]/name	(type=domain-name)
 /system/dns/network-instance	(type=leafref)
+/system/dns/oper-state	(type=oper-state)
 /system/dns/search-list	(type=domain-name)
 /system/dns/server-list	(type=ip-address)
 /system/features	(type=name)
@@ -3619,4 +3620,3 @@
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-discarded-packets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-octets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-packets	(type=zero-based-counter64)
-/system/dns/oper-state	(type=oper-state)

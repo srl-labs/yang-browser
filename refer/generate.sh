@@ -1,7 +1,6 @@
 #!/usr/bin/bash
 
-# VERSION 5
-# Script requires docker, gnmic (>v0.20.0), jstree-to-bulma.html
+# Script requires docker, gnmic (>v0.20.0), jstree-to-bulma.html, index.html.tmpl
 
 # In case of bad interpreter error
 # sed -i -e 's/\r$//' generate.sh
@@ -23,11 +22,8 @@ response_handler() {
   fi
 }
 
-# DOCKER PULL PYANG IMAGE
-docker pull ghcr.io/hellt/pyang:2.5.0
-
 # Keep appending new releases or change array to have the required releases
-SRL_VER_LIST=("21.6.4")
+SRL_VER_LIST=("21.3.1" "21.3.2" "21.6.1" "21.6.2" "21.6.3" "21.6.4")
 
 for SRL_VER in ${SRL_VER_LIST[@]}
 do
@@ -113,7 +109,23 @@ do
 
   # GENERATE PATHS. TEXT + JSON
   docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.20.4 generate path --file srl_nokia/models --dir ietf/ --types > $OUT_DIR/paths.txt
-  docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.20.4 generate path --file srl_nokia/models --dir ietf/ --json > $OUT_DIR/paths.json
+  docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.20.4 generate path --file srl_nokia/models --dir ietf/ --with-prefix --json > $OUT_DIR/paths.json
+
+  # grep lines having the key path
+  # Capture the line into var H and copy the same into a new var g
+  # Strip all prefixes from var g
+  # Replace the key path in var H from path to path-prefix
+  # Combine path and path-prefix with a new line (RS) and make it as the resulting line
+  # Add the resulting line in the orginal line
+  awk '/^\s+"path"/ {
+    H = $0
+    g = H
+    gsub("([(a-z_)-]+):", "", g)
+    sub("path", "path-prefix", H)
+    $0 = g RS H
+  }1' $OUT_DIR/paths.json > $OUT_DIR/tmp.json
+
+  mv $OUT_DIR/tmp.json $OUT_DIR/paths.json
 
   cd $SCRIPT_DIR
   # copy per-release index page to output dir
