@@ -1,11 +1,26 @@
 #!/usr/bin/bash
 
-# Script requires docker, gnmic (>v0.20.0), jstree-to-bulma.html, index.html.tmpl
+# Script requires docker, gnmic (>v0.21.0), jstree-to-bulma.html, index.html.tmpl
 
-# In case of bad interpreter error
+# In case of bad interpreter error perform:
 # sed -i -e 's/\r$//' generate.sh
 
-# execute from repo root as `bash refer/generate.sh`
+# execute from repo root as `bash refer/generate.sh <srl_nokia | openconfig>`
+
+# Keep appending new releases or change array to have the required releases
+SRL_VER_LIST=("21.11.1")
+
+# Verify if model type is provided
+if [ "$1" = "srl_nokia" ]; then
+  MODEL_PATH="srl_nokia/models"
+  GNMIC_ADDONS="--dir ietf/"
+elif [ "$1" = "openconfig" ]; then
+  MODEL_PATH="openconfig"
+  GNMIC_ADDONS="--dir ietf/ --dir iana/"
+else
+  echo "Error: Model must be specified (srl_nokia | openconfig)."
+  exit 1
+fi
 
 # change into the script directory
 SCRIPT_DIR="$(dirname "$0")"
@@ -22,15 +37,11 @@ response_handler() {
   fi
 }
 
-# Keep appending new releases or change array to have the required releases
-SRL_VER_LIST=("21.3.1" "21.3.2" "21.6.1" "21.6.2" "21.6.3" "21.6.4")
-
 for SRL_VER in ${SRL_VER_LIST[@]}
 do
   echo
   # Extract end user release cycle
   SRL_VER_CYCLE=v$(echo $SRL_VER | cut -d'-' -f1)
-  OUT_DIR=$(realpath ../$SRL_VER_CYCLE)
 
   # PULL SRL YANG MODEL
   YANG_DIR_NAME="$(pwd)/srl-$SRL_VER-yang-models"
@@ -39,96 +50,103 @@ do
   id=$(docker create ghcr.io/nokia/srlinux:$SRL_VER foo)
 
   mkdir -p $YANG_DIR_NAME
-  mkdir -p $OUT_DIR
   docker cp $id:/opt/srlinux/models/. $YANG_DIR_NAME
   docker rm $id
 
   cd $YANG_DIR_NAME
+  PROCEED=0
+  if [ "$1" = "srl_nokia" ]; then
+    mkdir -p ../../$SRL_VER_CYCLE
+    OUT_DIR=$(realpath ../../$SRL_VER_CYCLE)
+    PROCEED=1
+  elif [ "$1" = "openconfig" ]; then
+    if [ -d "./openconfig" ]; then
+      mkdir -p ../../$SRL_VER_CYCLE/openconfig
+      OUT_DIR=$(realpath ../../$SRL_VER_CYCLE/openconfig)
+      PROCEED=1
+    else
+      echo
+      echo "Warning: $SRL_VER does not have any openconfig yang model."
+    fi
+  fi
   
-  # Add (-i.bkp) to sed commands to backup the orginal file
-  # Formatting namespaces
-  sed -i 's/prefix srl_nokia-if;/prefix srl_nokia-tools-if;/g' srl_nokia/models/interfaces/srl_nokia-tools-interfaces.yang
-  sed -i 's|default "::";|//default "::";|g' srl_nokia/models/system/srl_nokia-gnmi-server.yang
-  sed -i 's|default "::";|//default "::";|g' srl_nokia/models/system/srl_nokia-json-rpc.yang
-  sed -i 's|default "::";|//default "::";|g' srl_nokia/models/system/srl_nokia-snmp.yang
+  if [ $PROCEED -eq 1 ];then
+    if [ "$1" = "srl_nokia" ]; then
+      # Add (-i.bkp) to sed commands to backup the orginal file
+      # Formatting namespaces
+      sed -i 's|modifier invert-match;|//modifier invert-match;|g' $MODEL_PATH/common/srl_nokia-common.yang
+      sed -i 's|default "::";|//default "::";|g' $MODEL_PATH/system/srl_nokia-gnmi-server.yang
+      sed -i 's|default "::";|//default "::";|g' $MODEL_PATH/system/srl_nokia-json-rpc.yang
+      sed -i 's|default "::";|//default "::";|g' $MODEL_PATH/system/srl_nokia-snmp.yang
 
-  sed -i 's|starts-with(../name|starts-with(../srl_nokia-if:name|g' srl_nokia/models/qos/srl_nokia-qos.yang
-  sed -i 's|not(../breakout-mode|not(../srl_nokia-if:breakout-mode|g' srl_nokia/models/qos/srl_nokia-qos.yang
-  sed -i 's|../../../router-id|../../../srl_nokia-netinst:router-id|g' srl_nokia/models/network-instance/srl_nokia-ospf.yang
+      # Below are not required starting 21.11
+      #sed -i 's|starts-with(../name|starts-with(../srl_nokia-if:name|g' $MODEL_PATH/qos/srl_nokia-qos.yang
+      #sed -i 's|not(../breakout-mode|not(../srl_nokia-if:breakout-mode|g' $MODEL_PATH/qos/srl_nokia-qos.yang
+      #sed -i 's/prefix srl_nokia-if;/prefix srl_nokia-tools-if;/g' $MODEL_PATH/interfaces/srl_nokia-tools-interfaces.yang
+      #sed -i 's|../../../router-id|../../../srl_nokia-netinst:router-id|g' $MODEL_PATH/network-instance/srl_nokia-ospf.yang
+    fi
 
-  echo
-  # PYANG TREE + JSTREE
-  #---------------------
-  # Create combined folder with all YANG files
-  mkdir -p combined
-  find ./srl_nokia -name "*.yang" | xargs -I % cp % combined
+    echo
+    # PYANG TREE + JSTREE
+    #---------------------
+    # Create combined folder with all YANG files
+    mkdir -p combined
+    find ./$MODEL_PATH -name "*.yang" | xargs -I % cp % combined
 
-  # PYANG TREE
-  RESPONSE=$(docker run --rm -v $(pwd):/yang ghcr.io/hellt/pyang pyang -p ietf:iana:srl_nokia/models -f tree combined/*.yang -o tree.txt 2>&1 >/dev/null)
-  response_handler "$RESPONSE" "$SRL_VER-tree"
+    # PYANG TREE
+    RESPONSE=$(docker run --rm -v $(pwd):/yang ghcr.io/hellt/pyang pyang -p ietf:iana:$MODEL_PATH -f tree combined/*.yang -o tree.txt 2>&1 >/dev/null)
+    response_handler "$RESPONSE" "$SRL_VER-tree"
 
-  # PYANG JSTREE
-  RESPONSE=$(docker run --rm -v $(pwd):/yang ghcr.io/hellt/pyang pyang -p ietf:iana:srl_nokia/models --plugindir /opt/pyang-oc-plugin -f oc-jstree --oc-jstree-strip combined/*.yang -o tree.html 2>&1 >/dev/null)
-  response_handler "$RESPONSE" "$SRL_VER-jstree"
+    # PYANG JSTREE
+    RESPONSE=$(docker run --rm -v $(pwd):/yang ghcr.io/hellt/pyang pyang -p ietf:iana:$MODEL_PATH --plugindir /opt/pyang-oc-plugin -f oc-jstree --oc-jstree-strip combined/*.yang -o tree.html 2>&1 >/dev/null)
+    response_handler "$RESPONSE" "$SRL_VER-jstree"
 
-  # Delete combined folder
-  rm -rf combined
-  
-  # JSTREE PRETTY
-  #-------------------
-  # Navigate into release folder
-  mv tree.txt tree.html $OUT_DIR
-  cd $OUT_DIR
+    # Delete combined folder
+    rm -rf combined
+    
+    # JSTREE PRETTY
+    #-------------------
+    # Navigate into release folder
+    mv tree.txt tree.html $OUT_DIR
+    cd $OUT_DIR
 
-  # Add custom Bulma CSS break point (REMOVE)
-  sed -i '0,/^<tr id="/s/^<tr id="/REMOVE\n<tr id="/' tree.html
+    # Add custom Bulma CSS break point (REMOVE)
+    sed -i '0,/^<tr id="/s/^<tr id="/REMOVE\n<tr id="/' tree.html
 
-  # Delete all lines from start of the file till the line REMOVE
-  sed -i '0,/^REMOVE$/d' tree.html
+    # Delete all lines from start of the file till the line REMOVE
+    sed -i '0,/^REMOVE$/d' tree.html
 
-  # Append Bulma CSS
-  cat $SCRIPT_DIR/jstree-to-bulma.html tree.html > tmp.html
-  mv tmp.html tree.html
+    # Append Bulma CSS
+    cat $SCRIPT_DIR/jstree-to-bulma.html tree.html > tmp.html
+    mv tmp.html tree.html
 
-  # Clearing unnecessary variables
-  sed -i "s| (MODEL)||g" tree.html
-  sed -i 's| class="a"||g' tree.html
+    # Clearing unnecessary variables
+    sed -i "s| (MODEL)||g" tree.html
+    sed -i 's| class="a"||g' tree.html
 
-  # Extend table divider to include last column
-  sed -i 's|^\s\{,\}</td></tr>|        </td><td></td></tr>|g' tree.html
+    # Extend table divider to include last column
+    sed -i 's|^\s\{,\}</td></tr>|        </td><td></td></tr>|g' tree.html
 
-  # Add SRL version to page title
-  sed -i "s|SRL_VER|$SRL_VER_CYCLE|g" tree.html
-  MODULE_HTML="<p class='title is-6'><font color=blue>Nokia SR Linux $SRL_VER_CYCLE YANG Browser</font></p>\n"
-  sed -i "s|MODULES|$MODULE_HTML|g" tree.html
+    # Add SRL version to page title
+    sed -i "s|SRL_VER|$SRL_VER_CYCLE|g" tree.html
+    MODULE_HTML="<p class='title is-6'><font color=blue>Nokia SR Linux $SRL_VER_CYCLE YANG Browser</font></p>\n"
+    sed -i "s|MODULES|$MODULE_HTML|g" tree.html
 
+    cd $YANG_DIR_NAME
+    # remove tools modules as they clash with regular leaves and are not relevant for the path search
+    find ./ -name "*tools*.yang" -exec rm -f {} \;
 
-  cd $YANG_DIR_NAME
-  # remove tools modules as they clash with regular leaves and are not relevant for the path search
-  find ./ -name "*tools*.yang" -exec rm -f {} \;
+    # GENERATE PATHS. TEXT + JSON
+    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/hellt/gnmic:0.21-beta generate path --file $MODEL_PATH $GNMIC_ADDONS --types > $OUT_DIR/paths.txt
+    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/hellt/gnmic:0.21-beta generate path --file $MODEL_PATH $GNMIC_ADDONS --with-prefix --json > $OUT_DIR/paths.json
 
-  # GENERATE PATHS. TEXT + JSON
-  docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.20.4 generate path --file srl_nokia/models --dir ietf/ --types > $OUT_DIR/paths.txt
-  docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.20.4 generate path --file srl_nokia/models --dir ietf/ --with-prefix --json > $OUT_DIR/paths.json
-
-  # grep lines having the key path
-  # Capture the line into var H and copy the same into a new var g
-  # Strip all prefixes from var g
-  # Replace the key path in var H from path to path-prefix
-  # Combine path and path-prefix with a new line (RS) and make it as the resulting line
-  # Add the resulting line in the orginal line
-  awk '/^\s+"path"/ {
-    H = $0
-    g = H
-    gsub("([(a-z_)-]+):", "", g)
-    sub("path", "path-prefix", H)
-    $0 = g RS H
-  }1' $OUT_DIR/paths.json > $OUT_DIR/tmp.json
-
-  mv $OUT_DIR/tmp.json $OUT_DIR/paths.json
-
-  cd $SCRIPT_DIR
-  # copy per-release index page to output dir
-  cp index.html.tmpl $OUT_DIR/index.html
-  echo
+    cd $SCRIPT_DIR
+    # copy per-release index page to output dir
+    if [ "$1" = "srl_nokia" ]; then
+      cp index.html.tmpl $OUT_DIR/index.html
+    elif [ "$1" = "openconfig" ]; then
+      cp oc-index.html.tmpl $OUT_DIR/index.html
+    fi
+    echo
+  fi
 done
