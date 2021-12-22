@@ -99,7 +99,7 @@ window.onload = function() {
   version = urlSplit[urlSplit.length - 2];
   if(version == "openconfig") {
     version = urlSplit[urlSplit.length - 3];
-    versionAddon = version + " openconfig";
+    versionAddon = version + " OpenConfig";
   }
   else {
     versionAddon = version;
