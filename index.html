@@ -26,6 +26,10 @@
     border-top-left-radius: 0; 
     border-bottom-left-radius: 0;
   }
+
+  .minor-version {
+    width: 80px;
+  }
 </style>
 
 <body>
@@ -59,59 +63,27 @@
           <div class="column">
             <p class="title"><img src="images/nblue.png" width="100" /></p>
             <h3 class="title is-3 has-text-weight-light" id="title">SR Linux YANG Models</h3>
-            <div class="field is-grouped">
-              <div class="control">
-                <p class="is-size-4 pr-5">v21</p>
+            <div class="columns is-mobile">
+              <div class="column is-narrow">
+                <p class="is-size-4">v21</p>
               </div>
-              <div class="control">
-                <div class="field has-addons">
-                  <p class="control">
-                    <a class="button is-dark is-outlined" href="./v21.3.2/">21.3.2</a>
-                  </p>
-                  <p class="control">
-                    <div class="dropdown is-hoverable">
-                      <div class="dropdown-trigger">
-                        <button class="button is-dark is-outlined split-button">
-                          <span class="icon is-small"><i class="fas fa-angle-down" aria-hidden="true"></i></span>
-                        </button>
-                      </div>
-                      <div class="dropdown-menu">
-                        <div class="dropdown-content" style="width: 120px;">
-                          <div class="dropdown-item"><a class="has-text-weight-semibold" href="./v21.3.1/">21.3.1</a></div>
-                        </div>
+              <div class="column">
+                <div class="buttons">
+                  <a class="button is-dark is-outlined minor-version" href="./v21.11.1/">21.11.1</a>
+                  <a class="button is-dark is-outlined minor-version" href="./v21.6.4/">21.6.4</a>
+                  <a class="button is-dark is-outlined minor-version" href="./v21.3.2/">21.3.2</a>
+                  <div class="button is-dark is-outlined minor-version dropdown is-hoverable">
+                    <div class="dropdown-trigger">More...</div>
+                    <div class="dropdown-menu">
+                      <div class="dropdown-content has-text-left" style="width: 110px;">
+                        <div class="dropdown-item"><a href="./v21.6.3/">21.6.3</a></div>
+                        <div class="dropdown-item"><a href="./v21.6.2/">21.6.2</a></div>
+                        <div class="dropdown-item"><a href="./v21.6.1/">21.6.1</a></div>
+                        <hr class="dropdown-divider">
+                        <div class="dropdown-item"><a href="./v21.3.1/">21.3.1</a></div>
                       </div>
                     </div>
-                  </p>
-                </div>
-              </div>
-              <div class="control">
-                <div class="field has-addons">
-                  <p class="control">
-                    <a class="button is-dark is-outlined" href="./v21.6.4/">21.6.4</a>
-                  </p>
-                  <p class="control">
-                    <div class="dropdown is-hoverable">
-                      <div class="dropdown-trigger">
-                        <button class="button is-dark is-outlined split-button">
-                          <span class="icon is-small"><i class="fas fa-angle-down" aria-hidden="true"></i></span>
-                        </button>
-                      </div>
-                      <div class="dropdown-menu">
-                        <div class="dropdown-content" style="width: 120px;">
-                          <div class="dropdown-item"><a class="has-text-weight-semibold" href="./v21.6.3/">21.6.3</a></div>
-                          <div class="dropdown-item"><a class="has-text-weight-semibold" href="./v21.6.2/">21.6.2</a></div>
-                          <div class="dropdown-item"><a class="has-text-weight-semibold" href="./v21.6.1/">21.6.1</a></div>
-                        </div>
-                      </div>
-                    </div>
-                  </p>
-                </div>
-              </div>
-              <div class="control">
-                <div class="field has-addons">
-                  <p class="control">
-                    <a class="button is-dark is-outlined" href="./v21.11.1/">21.11.1</a>
-                  </p>
+                  </div>
                 </div>
               </div>
             </div>
