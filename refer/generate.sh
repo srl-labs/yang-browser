@@ -142,7 +142,11 @@ do
 
     cd $SCRIPT_DIR
     # copy per-release index page to output dir
-    cp index.html.tmpl $OUT_DIR/index.html
+    if [ "$1" = "srl_nokia" ]; then
+      cp index.html.tmpl $OUT_DIR/index.html
+    elif [ "$1" = "openconfig" ]; then
+      cp oc-index.html.tmpl $OUT_DIR/index.html
+    fi
     echo
   fi
 done

@@ -95,10 +95,17 @@ function updatePageInfo(tableName) {
 
 // PAGE ON-LOAD
 window.onload = function() {
-  var version = window.location.href.split("/");
-  version = version[version.length - 2];
-  document.title = "Nokia SR Linux " + version + " YANG Model";
-  $("#version").html(version);
+  var urlSplit = window.location.href.split("/");
+  version = urlSplit[urlSplit.length - 2];
+  if(version == "openconfig") {
+    version = urlSplit[urlSplit.length - 3];
+    versionAddon = version + " openconfig";
+  }
+  else {
+    versionAddon = version;
+  }
+  document.title = "Nokia SR Linux " + versionAddon + " YANG Model";
+  $("#version").html(versionAddon);
   $("#source").attr("href", "https://github.com/nokia/srlinux-yang-models/tree/" + version);
   var url = window.location.href + "/paths.json"
   let sentData = {
