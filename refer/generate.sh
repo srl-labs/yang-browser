@@ -137,8 +137,8 @@ do
     find ./ -name "*tools*.yang" -exec rm -f {} \;
 
     # GENERATE PATHS. TEXT + JSON
-    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/hellt/gnmic:0.21-beta generate path --file $MODEL_PATH $GNMIC_ADDONS --types > $OUT_DIR/paths.txt
-    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/hellt/gnmic:0.21-beta generate path --file $MODEL_PATH $GNMIC_ADDONS --with-prefix --json > $OUT_DIR/paths.json
+    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.21.0 generate path --file $MODEL_PATH $GNMIC_ADDONS --types > $OUT_DIR/paths.txt
+    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.21.0 generate path --file $MODEL_PATH $GNMIC_ADDONS --with-prefix --json > $OUT_DIR/paths.json
 
     cd $SCRIPT_DIR
     # copy per-release index page to output dir
