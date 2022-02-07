@@ -8,7 +8,7 @@
 # execute from repo root as `bash refer/generate.sh <srl_nokia | openconfig>`
 
 # Keep appending new releases or change array to have the required releases
-SRL_VER_LIST=("21.11.1")
+SRL_VER_LIST=("21.11.2")
 
 # Verify if model type is provided
 if [ "$1" = "srl_nokia" ]; then
