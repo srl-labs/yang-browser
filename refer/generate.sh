@@ -8,7 +8,7 @@
 # execute from repo root as `bash refer/generate.sh <srl_nokia | openconfig>`
 
 # Keep appending new releases or change array to have the required releases
-SRL_VER_LIST=("21.11.2")
+SRL_VER_LIST=("21.11.3")
 
 # Verify if model type is provided
 if [ "$1" = "srl_nokia" ]; then
@@ -73,17 +73,8 @@ do
   if [ $PROCEED -eq 1 ];then
     if [ "$1" = "srl_nokia" ]; then
       # Add (-i.bkp) to sed commands to backup the orginal file
-      # Formatting namespaces
-      sed -i 's|modifier invert-match;|//modifier invert-match;|g' $MODEL_PATH/common/srl_nokia-common.yang
-      sed -i 's|default "::";|//default "::";|g' $MODEL_PATH/system/srl_nokia-gnmi-server.yang
-      sed -i 's|default "::";|//default "::";|g' $MODEL_PATH/system/srl_nokia-json-rpc.yang
-      sed -i 's|default "::";|//default "::";|g' $MODEL_PATH/system/srl_nokia-snmp.yang
-
-      # Below are not required starting 21.11
-      #sed -i 's|starts-with(../name|starts-with(../srl_nokia-if:name|g' $MODEL_PATH/qos/srl_nokia-qos.yang
-      #sed -i 's|not(../breakout-mode|not(../srl_nokia-if:breakout-mode|g' $MODEL_PATH/qos/srl_nokia-qos.yang
-      #sed -i 's/prefix srl_nokia-if;/prefix srl_nokia-tools-if;/g' $MODEL_PATH/interfaces/srl_nokia-tools-interfaces.yang
-      #sed -i 's|../../../router-id|../../../srl_nokia-netinst:router-id|g' $MODEL_PATH/network-instance/srl_nokia-ospf.yang
+      # placeholder for models massaging if needed for a particual model/release
+      echo ""
     fi
 
     echo
@@ -137,8 +128,8 @@ do
     find ./ -name "*tools*.yang" -exec rm -f {} \;
 
     # GENERATE PATHS. TEXT + JSON
-    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.21.0 generate path --file $MODEL_PATH $GNMIC_ADDONS --types > $OUT_DIR/paths.txt
-    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.21.0 generate path --file $MODEL_PATH $GNMIC_ADDONS --with-prefix --json > $OUT_DIR/paths.json
+    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.24.4 generate path --file $MODEL_PATH $GNMIC_ADDONS --types > $OUT_DIR/paths.txt
+    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.24.4 generate path --file $MODEL_PATH $GNMIC_ADDONS --with-prefix --json > $OUT_DIR/paths.json
 
     cd $SCRIPT_DIR
     # copy per-release index page to output dir
