@@ -1,5 +1,7 @@
 // DEFAULTS
 var myTable;
+var urlPathType = "", urlHidePrefix = "", urlPath = "";
+
 var order = [[1, "asc"]];
 var pagingType = "simple";
 var dom = "<'pt-3'><'level is-mobile'<'level-left'><'level-right'<'level-item'i><'level-item'p>>><'table-container't>";
@@ -50,7 +52,7 @@ function tableDrawCall(tableName) {
 }
 
 // TABLE SEARCH
-$(".customSearch").on("keyup", function() {
+$("#customSearch").on("keyup", function() {
   myTable.search(this.value).draw();
   updatePageInfo("myTable");
 });
@@ -95,7 +97,18 @@ function updatePageInfo(tableName) {
 
 // PAGE ON-LOAD
 window.onload = function() {
-  var urlSplit = window.location.href.split("/");
+  pageUrl = window.location.href;
+  var urlParams = new URLSearchParams(pageUrl.split("?")[1]);
+  if(urlParams.has("pathType")) {
+    urlPathType = urlParams.get("pathType");
+  }
+  if(urlParams.has("hidePrefix")) {
+    urlHidePrefix = urlParams.get("hidePrefix");
+  }
+  if(urlParams.has("path")) {
+    urlPath = urlParams.get("path");
+  }
+  var urlSplit = pageUrl.split("/");
   version = urlSplit[urlSplit.length - 2];
   if(version == "openconfig") {
     version = urlSplit[urlSplit.length - 3];
@@ -107,7 +120,7 @@ window.onload = function() {
   document.title = "Nokia SR Linux " + versionAddon + " YANG Model";
   $("#version").html(versionAddon);
   $("#source").attr("href", "https://github.com/nokia/srlinux-yang-models/tree/" + version);
-  var url = window.location.href + "/paths.json"
+  var url = pageUrl.split("?")[0] + "/paths.json"
   let sentData = {
     mode: "cors",
     method: "GET",
@@ -154,4 +167,52 @@ function loadHandler(response) {
       tableDrawCall("myTable");
     }
   });
+  
+  if(urlPathType != "") {
+    if(urlPathType == "All") {
+      document.getElementsByName("pathType")[0].click();
+    } else if(urlPathType == "State") {
+      document.getElementsByName("pathType")[1].click();
+    } else if(urlPathType == "Config") {
+      document.getElementsByName("pathType")[2].click();
+    }
+  }
+  if(urlHidePrefix == "true") {
+    document.getElementById("hidePrefixCheck").click();
+  }
+  if(urlPath != "") {
+    $("#customSearch").val(urlPath);
+    $("#customSearch").keyup();
+  }
 }
+
+$("#myTable tbody").on("dblclick", "tr", function () {
+  var data = myTable.row(this).data();
+  if(data !== undefined) {
+    var hp = document.getElementById("hidePrefixCheck").checked;
+    var pt = document.querySelector('input[name="pathType"]:checked').value;
+    var params = {};
+    if(pt == "na") {
+      params["pathType"] = "All"
+    } else if(pt == "true") {
+      params["pathType"] = "State"
+    } else if(pt == "false") {
+      params["pathType"] = "Config"
+    }
+    params["hidePrefix"] = hp;
+    if(hp) {
+      params["path"] = data["path"];
+    } else {
+      params["path"] = data["path-with-prefix"];
+    }
+    var searchParams = new URLSearchParams(params);
+    var pageUrl = window.location.href;
+    pageUrl = pageUrl.substring(0, pageUrl.length - 1) + "?";
+    var encoded = pageUrl + searchParams;
+    navigator.clipboard.writeText(encoded);
+    $("#c2c").removeClass("is-hidden");
+    setTimeout(() => {
+      $("#c2c").addClass("is-hidden");
+    }, 1100);
+  }
+});
