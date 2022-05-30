@@ -56,3 +56,12 @@ a.disabled {
   pointer-events: none;
   color: #ccc;
 }
+
+#c2c {
+  right: 0;
+  margin: 10;
+  float: right;
+  z-index: 2000;
+  position: fixed;
+  font-size: 14px;
+}
