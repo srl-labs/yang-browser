@@ -61,6 +61,7 @@ $("#customSearch").on("keyup", function() {
       var newChild = '<a class="icon is-small is-right" id="ss"><i class="fas fa-share-alt"></i></a>';
       $(p).addClass("has-icons-right");
       $(p).append(newChild);
+      $("#ss").css("color", "#3273DC");
       $("#ss").css("pointerEvents", "initial");
       $("#ss").attr("onclick", 'copyPathToClipboard("search", "")');
     }
