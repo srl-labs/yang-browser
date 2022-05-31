@@ -55,6 +55,23 @@ function tableDrawCall(tableName) {
 $("#customSearch").on("keyup", function() {
   myTable.search(this.value).draw();
   updatePageInfo("myTable");
+  var p = $(this).parent().get(0);
+  if(this.value != "") {
+    if(!document.getElementById("ss")) {
+      var newChild = '<a class="icon is-small is-right" id="ss"><i class="fas fa-share-alt"></i></a>';
+      $(p).addClass("has-icons-right");
+      $(p).append(newChild);
+      $("#ss").css("color", "#3273DC");
+      $("#ss").css("pointerEvents", "initial");
+      $("#ss").attr("onclick", 'copyPathToClipboard("search", "")');
+    }
+  } else {
+    if(document.getElementById("ss")) {
+      $("#ss").html("");
+      $(p).children().last().remove();
+      $(p).removeClass("has-icons-right");
+    }
+  }
 });
 
 // TOGGLE FILTER
@@ -186,25 +203,28 @@ function loadHandler(response) {
   }
 }
 
-$("#myTable tbody").on("dblclick", "tr", function () {
-  var data = myTable.row(this).data();
-  if(data !== undefined) {
-    var hp = document.getElementById("hidePrefixCheck").checked;
-    var pt = document.querySelector('input[name="pathType"]:checked').value;
-    var params = {};
-    if(pt == "na") {
-      params["pathType"] = "All"
-    } else if(pt == "true") {
-      params["pathType"] = "State"
-    } else if(pt == "false") {
-      params["pathType"] = "Config"
-    }
-    params["hidePrefix"] = hp;
+function copyPathToClipboard(from, data) {
+  var hp = document.getElementById("hidePrefixCheck").checked;
+  var pt = document.querySelector('input[name="pathType"]:checked').value;
+  var params = {};
+  if(pt == "na") {
+    params["pathType"] = "All"
+  } else if(pt == "true") {
+    params["pathType"] = "State"
+  } else if(pt == "false") {
+    params["pathType"] = "Config"
+  }
+  params["hidePrefix"] = hp;
+  if(from == "row") {
     if(hp) {
       params["path"] = data["path"];
     } else {
       params["path"] = data["path-with-prefix"];
     }
+  } else {
+    params["path"] = document.getElementById("customSearch").value;
+  }
+  if(params["path"] != "") {
     var searchParams = new URLSearchParams(params);
     var pageUrl = window.location.href;
     pageUrl = pageUrl.substring(0, pageUrl.length - 1) + "?";
@@ -214,5 +234,12 @@ $("#myTable tbody").on("dblclick", "tr", function () {
     setTimeout(() => {
       $("#c2c").addClass("is-hidden");
     }, 1100);
+  }
+}
+
+$("#myTable tbody").on("dblclick", "tr", function () {
+  var data = myTable.row(this).data();
+  if(data !== undefined) {
+    copyPathToClipboard("row", data);
   }
 });
