@@ -46,6 +46,7 @@
 /acl/cpm-filter/ipv4-filter/entry[sequence-id=*]/action/accept/rate-limit/distributed-policer	(type=leafref)
 /acl/cpm-filter/ipv4-filter/entry[sequence-id=*]/action/accept/rate-limit/system-cpu-policer	(type=leafref)
 /acl/cpm-filter/ipv4-filter/entry[sequence-id=*]/action/drop/log	(type=boolean)
+/acl/cpm-filter/ipv4-filter/entry[sequence-id=*]/description	(type=description)
 /acl/cpm-filter/ipv4-filter/entry[sequence-id=*]/match/destination-ip/address	(type=ipv4-address)
 /acl/cpm-filter/ipv4-filter/entry[sequence-id=*]/match/destination-ip/mask	(type=ipv4-address)
 /acl/cpm-filter/ipv4-filter/entry[sequence-id=*]/match/destination-ip/prefix	(type=ipv4-prefix)
@@ -3249,4 +3250,3 @@
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-discarded-packets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-octets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-packets	(type=zero-based-counter64)
-/acl/cpm-filter/ipv4-filter/entry[sequence-id=*]/description	(type=description)

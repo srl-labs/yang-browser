@@ -3397,7 +3397,6 @@
 /system/logging/remote-server[host=*]/subsystem[subsystem-name=*]/priority/match-exact	(type=priority-type)
 /system/logging/remote-server[host=*]/subsystem[subsystem-name=*]/subsystem-name	(type=subsystem-name-type)
 /system/logging/remote-server[host=*]/transport	(type=transport-type)
-/system/logging/subsystem-facility	(type=facility-name-type)
 /system/maintenance/group[name=*]/maintenance-mode/admin-state	(type=admin-state)
 /system/maintenance/group[name=*]/maintenance-profile	(type=leafref)
 /system/maintenance/group[name=*]/members/bgp/network-instance[name=*]/name	(type=leafref)
@@ -3620,3 +3619,4 @@
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-discarded-packets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-octets	(type=zero-based-counter64)
 /tunnel/vxlan-tunnel/vtep[address=*]/statistics/out-packets	(type=zero-based-counter64)
+/system/logging/subsystem-facility	(type=facility-name-type)
