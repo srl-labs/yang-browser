@@ -5,16 +5,18 @@
 # In case of bad interpreter error perform:
 # sed -i -e 's/\r$//' generate.sh
 
-# execute from repo root as `bash refer/generate.sh <srl_nokia | openconfig>`
+# execute from repo root as `bash refer/generate.sh <srl_nokia | openconfig> [<srl_release1> <srl_release2> ...]`
 
-# Keep appending new releases or change array to have the required releases
-SRL_VER_LIST=("22.3.2")
+MODEL_TYPE="$1"
+
+# SR Linux release version are passed as a space separated list of release version
+SRL_VER_LIST="${@:2}"
 
 # Verify if model type is provided
-if [ "$1" = "srl_nokia" ]; then
+if [ "$MODEL_TYPE" = "srl_nokia" ]; then
   MODEL_PATH="srl_nokia/models"
   GNMIC_ADDONS="--dir ietf/"
-elif [ "$1" = "openconfig" ]; then
+elif [ "$MODEL_TYPE" = "openconfig" ]; then
   MODEL_PATH="openconfig"
   GNMIC_ADDONS="--dir ietf/ --dir iana/"
 else
@@ -55,11 +57,11 @@ do
 
   cd $YANG_DIR_NAME
   PROCEED=0
-  if [ "$1" = "srl_nokia" ]; then
+  if [ "$MODEL_TYPE" = "srl_nokia" ]; then
     mkdir -p ../../$SRL_VER_CYCLE
     OUT_DIR=$(realpath ../../$SRL_VER_CYCLE)
     PROCEED=1
-  elif [ "$1" = "openconfig" ]; then
+  elif [ "$MODEL_TYPE" = "openconfig" ]; then
     if [ -d "./openconfig" ]; then
       mkdir -p ../../$SRL_VER_CYCLE/openconfig
       OUT_DIR=$(realpath ../../$SRL_VER_CYCLE/openconfig)
@@ -72,7 +74,6 @@ do
   
   if [ $PROCEED -eq 1 ];then
     if [ "$1" = "srl_nokia" ]; then
-      # Add (-i.bkp) to sed commands to backup the orginal file
       # placeholder for models massaging if needed for a particual model/release
       echo ""
     fi
@@ -133,9 +134,9 @@ do
 
     cd $SCRIPT_DIR
     # copy per-release index page to output dir
-    if [ "$1" = "srl_nokia" ]; then
+    if [ "$MODEL_TYPE" = "srl_nokia" ]; then
       cp index.html.tmpl $OUT_DIR/index.html
-    elif [ "$1" = "openconfig" ]; then
+    elif [ "$MODEL_TYPE" = "openconfig" ]; then
       cp oc-index.html.tmpl $OUT_DIR/index.html
     fi
     echo
