@@ -6851,6 +6851,652 @@ module: srl_nokia-system
                  |  +--ro srl_nokia-system-bgp-vpn:import-route-target-origin?   enumeration
                  +--ro srl_nokia-system-bgp-vpn:oper-down-reason?      enumeration
 
+module: srl_nokia-tools-acl
+  +--rw acl
+     +--rw ipv4-filter* [name]
+     |  +--rw name          srl_nokia-comm:name
+     |  +--rw statistics
+     |  |  +--rw clear?   empty
+     |  +--rw entry* [sequence-id]
+     |     +--rw sequence-id    uint32
+     |     +--rw statistics
+     |        +--rw clear?           empty
+     |        +--rw per-interface
+     |           +--rw subinterface* [name]
+     |              +--rw name     srl_nokia-comm:subinterface-all
+     |              +--rw clear?   empty
+     +--rw ipv6-filter* [name]
+     |  +--rw name          srl_nokia-comm:name
+     |  +--rw statistics
+     |  |  +--rw clear?   empty
+     |  +--rw entry* [sequence-id]
+     |     +--rw sequence-id    uint32
+     |     +--rw statistics
+     |        +--rw clear?           empty
+     |        +--rw per-interface
+     |           +--rw subinterface* [name]
+     |              +--rw name     srl_nokia-comm:subinterface-all
+     |              +--rw clear?   empty
+     +--rw mac-filter* [name]
+     |  +--rw name          srl_nokia-comm:name
+     |  +--rw statistics
+     |  |  +--rw clear?   empty
+     |  +--rw entry* [sequence-id]
+     |     +--rw sequence-id    uint32
+     |     +--rw statistics
+     |        +--rw clear?           empty
+     |        +--rw per-interface
+     |           +--rw subinterface* [name]
+     |              +--rw name     srl_nokia-comm:subinterface-all
+     |              +--rw clear?   empty
+     +--rw cpm-filter
+     |  +--rw ipv4-filter
+     |  |  +--rw clear?   empty
+     |  |  +--rw entry* [sequence-id]
+     |  |     +--rw sequence-id    uint32
+     |  |     +--rw statistics
+     |  |        +--rw clear?   empty
+     |  +--rw ipv6-filter
+     |  |  +--rw clear?   empty
+     |  |  +--rw entry* [sequence-id]
+     |  |     +--rw sequence-id    uint32
+     |  |     +--rw statistics
+     |  |        +--rw clear?   empty
+     |  +--rw mac-filter
+     |     +--rw clear?   empty
+     |     +--rw entry* [sequence-id]
+     |        +--rw sequence-id    uint32
+     |        +--rw statistics
+     |           +--rw clear?   empty
+     +--rw system-filter
+     |  +--rw ipv4-filter
+     |  |  +--rw clear?   empty
+     |  |  +--rw entry* [sequence-id]
+     |  |     +--rw sequence-id    uint32
+     |  |     +--rw statistics
+     |  |        +--rw clear?   empty
+     |  +--rw ipv6-filter
+     |     +--rw clear?   empty
+     |     +--rw entry* [sequence-id]
+     |        +--rw sequence-id    uint32
+     |        +--rw statistics
+     |           +--rw clear?   empty
+     +--rw policers
+        +--rw system-cpu-policer* [name]
+        |  +--rw name          srl_nokia-comm:name
+        |  +--rw statistics
+        |     +--rw clear?   empty
+        +--rw policer* [name]
+           +--rw name          srl_nokia-comm:name
+           +--rw statistics
+              +--rw clear?   empty
+
+module: srl_nokia-tools-bfd
+  +--rw bfd
+     +--rw peer* [local-discriminator]
+     |  +--rw local-discriminator    uint32
+     |  +--rw clear?                 empty
+     +--rw statistics
+     |  +--rw peer* [local-discriminator]
+     |     +--rw local-discriminator    uint32
+     |     +--rw clear?                 empty
+     +--rw micro-bfd-sessions {srl_nokia-feat:lag}?
+        +--rw lag-interface* [name]
+        |  +--rw name                srl_nokia-comm:interface-all
+        |  +--rw member-interface* [name]
+        |     +--rw name     srl_nokia-comm:interface-all
+        |     +--rw clear?   empty
+        +--rw statistics
+           +--rw lag-interface* [name]
+              +--rw name                srl_nokia-comm:interface-all
+              +--rw member-interface* [name]
+                 +--rw name     srl_nokia-comm:interface-all
+                 +--rw clear?   empty
+
+module: srl_nokia-tools-interfaces
+  +--rw interface* [name]
+     +--rw name            string
+     +--rw statistics
+     |  +--rw clear!
+     |  |  +--rw include-members?   empty {srl_nokia-feat:lag}?
+     |  +--rw srl-qos:queue-statistics {srl-feat:jericho2 or srl-feat:jericho2cp or srl-feat:platform-7220-d2 or srl-feat:platform-7220-d3 or srl-feat:tomahawk3 or srl-feat:platform-vsrl or srl-feat:platform-7220-bcmsvk or srl-feat:platform-7220-d5 or srl-feat:platform-7210-sas24g or srl-feat:platform-7210-sas24}?
+     |     +--rw srl-qos:clear?             empty
+     |     +--rw srl-qos:unicast-queue* [queue-id]
+     |     |  +--rw srl-qos:queue-id    srl_nokia-comm:queue-index
+     |     |  +--rw srl-qos:clear?      empty
+     |     +--rw srl-qos:multicast-queue* [queue-id]
+     |        +--rw srl-qos:queue-id    srl_nokia-comm:queue-index
+     |        +--rw srl-qos:clear?      empty
+     +--rw ethernet
+     |  +--rw statistics
+     |     +--rw clear!
+     |        +--rw include-members?   empty {srl_nokia-feat:lag}?
+     +--rw resource! {srl_nokia-feat:lag}?
+     |  +--rw retry?   empty
+     +--rw subinterface* [index]
+        +--rw index           uint32
+        +--rw statistics
+        |  +--rw clear?   empty
+        +--rw ipv4
+        |  +--rw srl_nokia-tools-interfaces-ip-dhcp-relay:dhcp-relay!
+        |  |  +--rw srl_nokia-tools-interfaces-ip-dhcp-relay:statistics
+        |  |     +--rw srl_nokia-tools-interfaces-ip-dhcp-relay:clear?   empty
+        |  +--rw srl_nokia-tools-interfaces-ip-vrrp:vrrp-group* [virtual-router-id] {srl_nokia-feat:vrrp}?
+        |  |  +--rw srl_nokia-tools-interfaces-ip-vrrp:virtual-router-id    uint8
+        |  |  +--rw srl_nokia-tools-interfaces-ip-vrrp:statistics
+        |  |     +--rw srl_nokia-tools-interfaces-ip-vrrp:clear?   empty
+        |  +--rw srl_nokia-tools-if-nbr:arp!
+        |     +--rw srl_nokia-tools-if-nbr:neighbor* [ipv4-address]
+        |     |  +--rw srl_nokia-tools-if-nbr:ipv4-address      srl_nokia-comm:ipv4-address
+        |     |  +--rw srl_nokia-tools-if-nbr:delete-dynamic?   empty
+        |     +--rw srl_nokia-tools-if-nbr:delete-dynamic?                                empty
+        |     +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:virtual-ipv4-discovery {srl_nokia-feat:virtual-ip-discovery}?
+        |        +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:statistics
+        |        |  +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:clear?   empty
+        |        +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:address* [ipv4-address]
+        |           +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:ipv4-address    srl_nokia-comm:ipv4-address
+        |           +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:statistics
+        |              +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:clear?   empty
+        +--rw ipv6
+        |  +--rw srl_nokia-tools-interfaces-ip-dhcp-relay:dhcp-relay!
+        |  |  +--rw srl_nokia-tools-interfaces-ip-dhcp-relay:statistics
+        |  |     +--rw srl_nokia-tools-interfaces-ip-dhcp-relay:clear?   empty
+        |  +--rw srl_nokia-tools-interfaces-ip-vrrp:vrrp-group* [virtual-router-id] {srl_nokia-feat:vrrp}?
+        |  |  +--rw srl_nokia-tools-interfaces-ip-vrrp:virtual-router-id    uint8
+        |  |  +--rw srl_nokia-tools-interfaces-ip-vrrp:statistics
+        |  |     +--rw srl_nokia-tools-interfaces-ip-vrrp:clear?   empty
+        |  +--rw srl_nokia-tools-if-nbr:neighbor-discovery!
+        |     +--rw srl_nokia-tools-if-nbr:neighbor* [ipv6-address]
+        |     |  +--rw srl_nokia-tools-if-nbr:ipv6-address      srl_nokia-comm:ipv6-address
+        |     |  +--rw srl_nokia-tools-if-nbr:delete-dynamic?   empty
+        |     +--rw srl_nokia-tools-if-nbr:delete-dynamic?                                empty
+        |     +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:virtual-ipv6-discovery {srl_nokia-feat:virtual-ip-discovery}?
+        |        +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:statistics
+        |        |  +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:clear?   empty
+        |        +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:address* [ipv6-address]
+        |           +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:ipv6-address    srl_nokia-comm:ipv6-address
+        |           +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:statistics
+        |              +--rw srl_nokia-tools-if-nbr-virtual-ip-discovery:clear?   empty
+        +--rw bridge-table
+        |  +--rw srl_nokia-tools-interfaces-bridge-table-mac-duplication:mac-duplication!
+        |  |  +--rw srl_nokia-tools-interfaces-bridge-table-mac-duplication:delete-all-macs?     empty
+        |  |  +--rw srl_nokia-tools-interfaces-bridge-table-mac-duplication:duplicate-entries
+        |  |     +--rw srl_nokia-tools-interfaces-bridge-table-mac-duplication:mac* [address]
+        |  |        +--rw srl_nokia-tools-interfaces-bridge-table-mac-duplication:address       srl_nokia-comm:mac-address
+        |  |        +--rw srl_nokia-tools-interfaces-bridge-table-mac-duplication:delete-mac?   empty
+        |  +--rw srl_nokia-tools-interfaces-bridge-table-mac-learning:mac-learning!
+        |     +--rw srl_nokia-tools-interfaces-bridge-table-mac-learning:delete-all-macs?   empty
+        |     +--rw srl_nokia-tools-interfaces-bridge-table-mac-learning:learnt-entries
+        |        +--rw srl_nokia-tools-interfaces-bridge-table-mac-learning:mac* [address]
+        |           +--rw srl_nokia-tools-interfaces-bridge-table-mac-learning:address       srl_nokia-comm:mac-address
+        |           +--rw srl_nokia-tools-interfaces-bridge-table-mac-learning:delete-mac?   empty
+        +--rw srl-qos:qos
+           +--rw srl-qos:input
+              +--rw srl_nokia-tools-qos-policers:policers
+                 +--rw srl_nokia-tools-qos-policers:clear?     empty
+                 +--rw srl_nokia-tools-qos-policers:policer* [index]
+                    +--rw srl_nokia-tools-qos-policers:index    uint8
+                    +--rw srl_nokia-tools-qos-policers:clear?   empty
+
+module: srl_nokia-tools-network-instance
+  +--rw network-instance* [name]
+     +--rw name                          string
+     +--rw protocols
+     |  +--rw srl_nokia-tools-bgp:bgp!
+     |  |  +--rw srl_nokia-tools-bgp:reset-peer!
+     |  |  |  +--rw srl_nokia-tools-bgp:peer-as?   autonomous-system-number
+     |  |  +--rw srl_nokia-tools-bgp:soft-clear!
+     |  |  |  +--rw srl_nokia-tools-bgp:route-refresh?   enumeration
+     |  |  |  +--rw srl_nokia-tools-bgp:peer-as?         autonomous-system-number
+     |  |  +--rw srl_nokia-tools-bgp:group* [group-name]
+     |  |  |  +--rw srl_nokia-tools-bgp:group-name    srl_nokia-comm:name
+     |  |  |  +--rw srl_nokia-tools-bgp:reset-peer!
+     |  |  |  |  +--rw srl_nokia-tools-bgp:peer-as?   autonomous-system-number
+     |  |  |  +--rw srl_nokia-tools-bgp:soft-clear!
+     |  |  |     +--rw srl_nokia-tools-bgp:route-refresh?   enumeration
+     |  |  |     +--rw srl_nokia-tools-bgp:peer-as?         autonomous-system-number
+     |  |  +--rw srl_nokia-tools-bgp:neighbor* [peer-address]
+     |  |     +--rw srl_nokia-tools-bgp:peer-address    srl_nokia-comm:ip-address-with-zone
+     |  |     +--rw srl_nokia-tools-bgp:reset-peer?     empty
+     |  |     +--rw srl_nokia-tools-bgp:soft-clear!
+     |  |        +--rw srl_nokia-tools-bgp:route-refresh?   enumeration
+     |  +--rw srl_nokia-tools-igmp:igmp! {srl_nokia-feat:igmp}?
+     |  |  +--rw srl_nokia-tools-igmp:version
+     |  |  |  +--rw srl_nokia-tools-igmp:clear?   empty
+     |  |  +--rw srl_nokia-tools-igmp:counters
+     |  |  |  +--rw srl_nokia-tools-igmp:clear?   empty
+     |  |  +--rw srl_nokia-tools-igmp:membership
+     |  |  |  +--rw srl_nokia-tools-igmp:clear?   empty
+     |  |  |  +--rw srl_nokia-tools-igmp:group* [group]
+     |  |  |     +--rw srl_nokia-tools-igmp:group     srl_nokia-comm:ipv4-address
+     |  |  |     +--rw srl_nokia-tools-igmp:clear?    empty
+     |  |  |     +--rw srl_nokia-tools-igmp:source* [source]
+     |  |  |        +--rw srl_nokia-tools-igmp:source    srl_nokia-comm:ipv4-address
+     |  |  |        +--rw srl_nokia-tools-igmp:clear?    empty
+     |  |  +--rw srl_nokia-tools-igmp:interface* [interface-name]
+     |  |     +--rw srl_nokia-tools-igmp:interface-name    srl_nokia-comm:subinterface-all
+     |  |     +--rw srl_nokia-tools-igmp:version
+     |  |     |  +--rw srl_nokia-tools-igmp:clear?   empty
+     |  |     +--rw srl_nokia-tools-igmp:counters
+     |  |     |  +--rw srl_nokia-tools-igmp:clear?   empty
+     |  |     +--rw srl_nokia-tools-igmp:membership
+     |  |        +--rw srl_nokia-tools-igmp:clear?   empty
+     |  |        +--rw srl_nokia-tools-igmp:group* [group]
+     |  |           +--rw srl_nokia-tools-igmp:group     srl_nokia-comm:ipv4-address
+     |  |           +--rw srl_nokia-tools-igmp:clear?    empty
+     |  |           +--rw srl_nokia-tools-igmp:source* [source]
+     |  |              +--rw srl_nokia-tools-igmp:source    srl_nokia-comm:ipv4-address
+     |  |              +--rw srl_nokia-tools-igmp:clear?    empty
+     |  +--rw srl_nokia-tools-isis:isis!
+     |  |  +--rw srl_nokia-tools-isis:instance* [name]
+     |  |     +--rw srl_nokia-tools-isis:name                   srl_nokia-comm:name
+     |  |     +--rw srl_nokia-tools-isis:ldp-synchronization
+     |  |     |  +--rw srl_nokia-tools-isis:exit?   empty
+     |  |     +--rw srl_nokia-tools-isis:link-state-database
+     |  |     |  +--rw srl_nokia-tools-isis:clear?   empty
+     |  |     +--rw srl_nokia-tools-isis:interface* [interface-name]
+     |  |     |  +--rw srl_nokia-tools-isis:interface-name    srl_nokia-comm:subinterface-all
+     |  |     |  +--rw srl_nokia-tools-isis:adjacencies
+     |  |     |     +--rw srl_nokia-tools-isis:clear?   empty
+     |  |     +--rw srl_nokia-tools-isis:statistics
+     |  |        +--rw srl_nokia-tools-isis:clear?   empty
+     |  +--rw srl_nokia-tools-ldp:ldp! {srl_nokia-feat:ldp}?
+     |  |  +--rw srl_nokia-tools-ldp:discovery
+     |  |  |  +--rw srl_nokia-tools-ldp:interfaces
+     |  |  |     +--rw srl_nokia-tools-ldp:interface* [name]
+     |  |  |        +--rw srl_nokia-tools-ldp:name    srl_nokia-comm:subinterface-eth-lag
+     |  |  |        +--rw srl_nokia-tools-ldp:ipv4
+     |  |  |           +--rw srl_nokia-tools-ldp:statistics
+     |  |  |              +--rw srl_nokia-tools-ldp:clear?   empty
+     |  |  +--rw srl_nokia-tools-ldp:peers
+     |  |  |  +--rw srl_nokia-tools-ldp:peer* [lsr-id label-space-id]
+     |  |  |     +--rw srl_nokia-tools-ldp:lsr-id            srl_nokia-comm:dotted-quad
+     |  |  |     +--rw srl_nokia-tools-ldp:label-space-id    uint16
+     |  |  |     +--rw srl_nokia-tools-ldp:reset?            empty
+     |  |  |     +--rw srl_nokia-tools-ldp:statistics
+     |  |  |        +--rw srl_nokia-tools-ldp:clear?   empty
+     |  |  +--rw srl_nokia-tools-ldp:reset-overload!
+     |  |  +--rw srl_nokia-tools-ldp:statistics
+     |  |     +--rw srl_nokia-tools-ldp:clear?   empty
+     |  +--rw srl_nokia-tools-mld:mld! {srl_nokia-feat:mld}?
+     |  |  +--rw srl_nokia-tools-mld:version
+     |  |  |  +--rw srl_nokia-tools-mld:clear?   empty
+     |  |  +--rw srl_nokia-tools-mld:counters
+     |  |  |  +--rw srl_nokia-tools-mld:clear?   empty
+     |  |  +--rw srl_nokia-tools-mld:membership
+     |  |  |  +--rw srl_nokia-tools-mld:clear?   empty
+     |  |  |  +--rw srl_nokia-tools-mld:group* [group]
+     |  |  |     +--rw srl_nokia-tools-mld:group     srl_nokia-comm:ipv6-address
+     |  |  |     +--rw srl_nokia-tools-mld:clear?    empty
+     |  |  |     +--rw srl_nokia-tools-mld:source* [source]
+     |  |  |        +--rw srl_nokia-tools-mld:source    srl_nokia-comm:ipv6-address
+     |  |  |        +--rw srl_nokia-tools-mld:clear?    empty
+     |  |  +--rw srl_nokia-tools-mld:interface* [interface-name]
+     |  |     +--rw srl_nokia-tools-mld:interface-name    srl_nokia-comm:subinterface-all
+     |  |     +--rw srl_nokia-tools-mld:version
+     |  |     |  +--rw srl_nokia-tools-mld:clear?   empty
+     |  |     +--rw srl_nokia-tools-mld:counters
+     |  |     |  +--rw srl_nokia-tools-mld:clear?   empty
+     |  |     +--rw srl_nokia-tools-mld:membership
+     |  |        +--rw srl_nokia-tools-mld:clear?   empty
+     |  |        +--rw srl_nokia-tools-mld:group* [group]
+     |  |           +--rw srl_nokia-tools-mld:group     srl_nokia-comm:ipv6-address
+     |  |           +--rw srl_nokia-tools-mld:clear?    empty
+     |  |           +--rw srl_nokia-tools-mld:source* [source]
+     |  |              +--rw srl_nokia-tools-mld:source    srl_nokia-comm:ipv6-address
+     |  |              +--rw srl_nokia-tools-mld:clear?    empty
+     |  +--rw srl_nokia-tools-ospf:ospf!
+     |  |  +--rw srl_nokia-tools-ospf:instance* [name]
+     |  |     +--rw srl_nokia-tools-ospf:name                   srl_nokia-comm:name
+     |  |     +--rw srl_nokia-tools-ospf:ldp-synchronization
+     |  |     |  +--rw srl_nokia-tools-ospf:exit?   empty
+     |  |     +--rw srl_nokia-tools-ospf:link-state-database
+     |  |     |  +--rw srl_nokia-tools-ospf:clear?   empty
+     |  |     +--rw srl_nokia-tools-ospf:neighbors
+     |  |     |  +--rw srl_nokia-tools-ospf:clear?      empty
+     |  |     |  +--rw srl_nokia-tools-ospf:neighbor* [neighbor-id]
+     |  |     |     +--rw srl_nokia-tools-ospf:neighbor-id    yang:dotted-quad
+     |  |     |     +--rw srl_nokia-tools-ospf:clear?         empty
+     |  |     +--rw srl_nokia-tools-ospf:area* [area-id]
+     |  |     |  +--rw srl_nokia-tools-ospf:area-id      srl_nokia-ospf-types:ospf-area-identifier
+     |  |     |  +--rw srl_nokia-tools-ospf:interface* [interface-name]
+     |  |     |     +--rw srl_nokia-tools-ospf:interface-name    srl_nokia-comm:subinterface-all
+     |  |     |     +--rw srl_nokia-tools-ospf:neighbors
+     |  |     |        +--rw srl_nokia-tools-ospf:clear?   empty
+     |  |     +--rw srl_nokia-tools-ospf:statistics
+     |  |     |  +--rw srl_nokia-tools-ospf:clear?   empty
+     |  |     +--rw srl_nokia-tools-ospf:overload
+     |  |     |  +--rw srl_nokia-tools-ospf:clear?   empty
+     |  |     +--rw srl_nokia-tools-ospf:manual-spf
+     |  |        +--rw srl_nokia-tools-ospf:run?   empty
+     |  +--rw srl_nokia-tools-pim:pim! {srl_nokia-feat:pim}?
+     |     +--rw srl_nokia-tools-pim:counters
+     |     |  +--rw srl_nokia-tools-pim:ipv4
+     |     |  |  +--rw srl_nokia-tools-pim:clear?   empty
+     |     |  +--rw srl_nokia-tools-pim:ipv6
+     |     |  |  +--rw srl_nokia-tools-pim:clear?   empty
+     |     |  +--rw srl_nokia-tools-pim:group* [group]
+     |     |     +--rw srl_nokia-tools-pim:group     srl_nokia-comm:ip-address
+     |     |     +--rw srl_nokia-tools-pim:clear?    empty
+     |     |     +--rw srl_nokia-tools-pim:source* [source]
+     |     |        +--rw srl_nokia-tools-pim:source    srl_nokia-comm:ip-address
+     |     |        +--rw srl_nokia-tools-pim:clear?    empty
+     |     +--rw srl_nokia-tools-pim:database
+     |     |  +--rw srl_nokia-tools-pim:ipv4
+     |     |  |  +--rw srl_nokia-tools-pim:clear?   empty
+     |     |  +--rw srl_nokia-tools-pim:ipv6
+     |     |  |  +--rw srl_nokia-tools-pim:clear?   empty
+     |     |  +--rw srl_nokia-tools-pim:group* [group]
+     |     |     +--rw srl_nokia-tools-pim:group     srl_nokia-comm:ip-address
+     |     |     +--rw srl_nokia-tools-pim:clear?    empty
+     |     |     +--rw srl_nokia-tools-pim:source* [source]
+     |     |        +--rw srl_nokia-tools-pim:source    srl_nokia-comm:ip-address
+     |     |        +--rw srl_nokia-tools-pim:clear?    empty
+     |     +--rw srl_nokia-tools-pim:interface* [interface-name]
+     |     |  +--rw srl_nokia-tools-pim:interface-name    srl_nokia-comm:subinterface-all
+     |     |  +--rw srl_nokia-tools-pim:counters
+     |     |  |  +--rw srl_nokia-tools-pim:ipv4
+     |     |  |  |  +--rw srl_nokia-tools-pim:clear?   empty
+     |     |  |  +--rw srl_nokia-tools-pim:ipv6
+     |     |  |     +--rw srl_nokia-tools-pim:clear?   empty
+     |     |  +--rw srl_nokia-tools-pim:database
+     |     |     +--rw srl_nokia-tools-pim:ipv4
+     |     |     |  +--rw srl_nokia-tools-pim:clear?   empty
+     |     |     +--rw srl_nokia-tools-pim:ipv6
+     |     |     |  +--rw srl_nokia-tools-pim:clear?   empty
+     |     |     +--rw srl_nokia-tools-pim:group* [group]
+     |     |        +--rw srl_nokia-tools-pim:group     srl_nokia-comm:ip-address
+     |     |        +--rw srl_nokia-tools-pim:clear?    empty
+     |     |        +--rw srl_nokia-tools-pim:source* [source]
+     |     |           +--rw srl_nokia-tools-pim:source    srl_nokia-comm:ip-address
+     |     |           +--rw srl_nokia-tools-pim:clear?    empty
+     |     +--rw srl_nokia-tools-pim:neighbor
+     |        +--rw srl_nokia-tools-pim:ipv4
+     |        |  +--rw srl_nokia-tools-pim:clear?   empty
+     |        +--rw srl_nokia-tools-pim:ipv6
+     |        |  +--rw srl_nokia-tools-pim:clear?   empty
+     |        +--rw srl_nokia-tools-pim:interface* [interface-name]
+     |           +--rw srl_nokia-tools-pim:interface-name    srl_nokia-comm:subinterface-all
+     |           +--rw srl_nokia-tools-pim:ipv4
+     |           |  +--rw srl_nokia-tools-pim:clear?   empty
+     |           +--rw srl_nokia-tools-pim:ipv6
+     |              +--rw srl_nokia-tools-pim:clear?   empty
+     +--rw bridge-table
+     |  +--rw srl_nokia-tools-bridge-table-mac-duplication:mac-duplication!
+     |  |  +--rw srl_nokia-tools-bridge-table-mac-duplication:delete-macs-type?    enumeration
+     |  |  +--rw srl_nokia-tools-bridge-table-mac-duplication:duplicate-entries
+     |  |     +--rw srl_nokia-tools-bridge-table-mac-duplication:mac* [address]
+     |  |        +--rw srl_nokia-tools-bridge-table-mac-duplication:address       srl_nokia-comm:mac-address
+     |  |        +--rw srl_nokia-tools-bridge-table-mac-duplication:delete-mac?   empty
+     |  +--rw srl_nokia-tools-bridge-table-mac-learning:mac-learning!
+     |  |  +--rw srl_nokia-tools-bridge-table-mac-learning:delete-all-macs?   empty
+     |  |  +--rw srl_nokia-tools-bridge-table-mac-learning:learnt-entries
+     |  |     +--rw srl_nokia-tools-bridge-table-mac-learning:mac* [address]
+     |  |        +--rw srl_nokia-tools-bridge-table-mac-learning:address       srl_nokia-comm:mac-address
+     |  |        +--rw srl_nokia-tools-bridge-table-mac-learning:delete-mac?   empty
+     |  +--rw srl_nokia-tools-bridge-table-proxy-arp-nd:proxy-arp! {srl-feat:l2-proxy-arp}?
+     |     +--rw srl_nokia-tools-bridge-table-proxy-arp-nd:duplicate!
+     |     |  +--rw srl_nokia-tools-bridge-table-proxy-arp-nd:delete-all?   empty
+     |     |  +--rw srl_nokia-tools-bridge-table-proxy-arp-nd:entry* [address]
+     |     |     +--rw srl_nokia-tools-bridge-table-proxy-arp-nd:address      srl_nokia-comm:ipv4-address
+     |     |     +--rw srl_nokia-tools-bridge-table-proxy-arp-nd:delete-ip?   empty
+     |     +--rw srl_nokia-tools-bridge-table-proxy-arp-nd:dynamic!
+     |        +--rw srl_nokia-tools-bridge-table-proxy-arp-nd:delete-all?   empty
+     |        +--rw srl_nokia-tools-bridge-table-proxy-arp-nd:entry* [address]
+     |           +--rw srl_nokia-tools-bridge-table-proxy-arp-nd:address      srl_nokia-comm:ipv4-address
+     |           +--rw srl_nokia-tools-bridge-table-proxy-arp-nd:delete-ip?   empty
+     +--rw srl_nokia-tools-icmp:icmp
+     |  +--rw srl_nokia-tools-icmp:statistics
+     |     +--rw srl_nokia-tools-icmp:clear?   empty
+     +--rw srl_nokia-tools-icmp:icmp6
+        +--rw srl_nokia-tools-icmp:statistics
+           +--rw srl_nokia-tools-icmp:clear?   empty
+
+module: srl_nokia-tools-oam
+  +--rw oam!
+     +--rw srl_nokia-tools-ethcfm:ethcfm {srl_nokia-feat:ethcfm}?
+        +--rw srl_nokia-tools-ethcfm:domain* [id]
+           +--rw srl_nokia-tools-ethcfm:id             string
+           +--rw srl_nokia-tools-ethcfm:association* [id]
+              +--rw srl_nokia-tools-ethcfm:id     string
+              +--rw srl_nokia-tools-ethcfm:mep* [mep-id]
+                 +--rw srl_nokia-tools-ethcfm:mep-id       uint16
+                 +--rw srl_nokia-tools-ethcfm:on-demand
+                 |  +--rw (srl_nokia-tools-ethcfm:type)?
+                 |     +--:(srl_nokia-tools-ethcfm:loopback)
+                 |     |  +--rw srl_nokia-tools-ethcfm:loopback
+                 |     |     +--rw srl_nokia-tools-ethcfm:target        union
+                 |     |     +--rw srl_nokia-tools-ethcfm:send-count?   uint32
+                 |     |     +--rw srl_nokia-tools-ethcfm:size?         uint32
+                 |     |     +--rw srl_nokia-tools-ethcfm:priority?     srl_nokia-ethcfm-types:priority-type
+                 |     +--:(srl_nokia-tools-ethcfm:linktrace)
+                 |     |  +--rw srl_nokia-tools-ethcfm:linktrace
+                 |     |     +--rw srl_nokia-tools-ethcfm:target    yang:mac-address
+                 |     |     +--rw srl_nokia-tools-ethcfm:ttl?      uint32
+                 |     +--:(srl_nokia-tools-ethcfm:one-way-dm)
+                 |     |  +--rw srl_nokia-tools-ethcfm:one-way-dm
+                 |     |     +--rw srl_nokia-tools-ethcfm:target      yang:mac-address
+                 |     |     +--rw srl_nokia-tools-ethcfm:size?       uint32
+                 |     |     +--rw srl_nokia-tools-ethcfm:priority?   srl_nokia-ethcfm-types:priority-type
+                 |     +--:(srl_nokia-tools-ethcfm:two-way-dm)
+                 |     |  +--rw srl_nokia-tools-ethcfm:two-way-dm
+                 |     |     +--rw srl_nokia-tools-ethcfm:target      yang:mac-address
+                 |     |     +--rw srl_nokia-tools-ethcfm:size?       uint32
+                 |     |     +--rw srl_nokia-tools-ethcfm:priority?   srl_nokia-ethcfm-types:priority-type
+                 |     +--:(srl_nokia-tools-ethcfm:two-way-slm)
+                 |        +--rw srl_nokia-tools-ethcfm:two-way-slm
+                 |           +--rw srl_nokia-tools-ethcfm:target        yang:mac-address
+                 |           +--rw srl_nokia-tools-ethcfm:priority?     srl_nokia-ethcfm-types:priority-type
+                 |           +--rw srl_nokia-tools-ethcfm:send-count?   uint32
+                 |           +--rw srl_nokia-tools-ethcfm:size?         uint32
+                 |           +--rw srl_nokia-tools-ethcfm:interval?     srl_nokia-ethcfm-types:interval-type
+                 +--rw srl_nokia-tools-ethcfm:pmon
+                    +--rw (srl_nokia-tools-ethcfm:type)?
+                       +--:(srl_nokia-tools-ethcfm:one-way-dm)
+                       |  +--rw srl_nokia-tools-ethcfm:one-way-dm
+                       |     +--rw srl_nokia-tools-ethcfm:session* [session-id]
+                       |        +--rw srl_nokia-tools-ethcfm:session-id            string
+                       |        +--rw srl_nokia-tools-ethcfm:measurement-result* [mi-type]
+                       |        |  +--rw srl_nokia-tools-ethcfm:mi-type     string
+                       |        |  +--rw srl_nokia-tools-ethcfm:interval* [interval-id]
+                       |        |  |  +--rw srl_nokia-tools-ethcfm:interval-id    uint8
+                       |        |  |  +--rw srl_nokia-tools-ethcfm:clear?         empty
+                       |        |  +--rw srl_nokia-tools-ethcfm:clear?      empty
+                       |        +--rw srl_nokia-tools-ethcfm:clear?                empty
+                       +--:(srl_nokia-tools-ethcfm:two-way-dm)
+                       |  +--rw srl_nokia-tools-ethcfm:two-way-dm
+                       |     +--rw srl_nokia-tools-ethcfm:session* [session-id]
+                       |        +--rw srl_nokia-tools-ethcfm:session-id            string
+                       |        +--rw srl_nokia-tools-ethcfm:measurement-result* [mi-type]
+                       |        |  +--rw srl_nokia-tools-ethcfm:mi-type     string
+                       |        |  +--rw srl_nokia-tools-ethcfm:interval* [interval-id]
+                       |        |  |  +--rw srl_nokia-tools-ethcfm:interval-id    uint8
+                       |        |  |  +--rw srl_nokia-tools-ethcfm:clear?         empty
+                       |        |  +--rw srl_nokia-tools-ethcfm:clear?      empty
+                       |        +--rw srl_nokia-tools-ethcfm:clear?                empty
+                       +--:(srl_nokia-tools-ethcfm:two-way-slm)
+                          +--rw srl_nokia-tools-ethcfm:two-way-slm
+                             +--rw srl_nokia-tools-ethcfm:session* [session-id]
+                                +--rw srl_nokia-tools-ethcfm:session-id            string
+                                +--rw srl_nokia-tools-ethcfm:measurement-result* [mi-type]
+                                |  +--rw srl_nokia-tools-ethcfm:mi-type     string
+                                |  +--rw srl_nokia-tools-ethcfm:interval* [interval-id]
+                                |  |  +--rw srl_nokia-tools-ethcfm:interval-id    uint8
+                                |  |  +--rw srl_nokia-tools-ethcfm:clear?         empty
+                                |  +--rw srl_nokia-tools-ethcfm:clear?      empty
+                                +--rw srl_nokia-tools-ethcfm:clear?                empty
+
+module: srl_nokia-tools-platform
+  +--rw platform
+     +--rw chassis
+     |  +--rw reboot!
+     |     +--rw force?   empty
+     |     +--rw warm! {srl-feat:warm-reboot}?
+     |        +--rw force!
+     |        +--rw validate!
+     +--rw linecard* [slot] {srl-feat:chassis}?
+     |  +--rw slot       uint8
+     |  +--rw reboot?    empty
+     |  +--rw locator
+     |     +--rw enable!
+     |     |  +--rw duration?   uint16
+     |     +--rw disable?   empty
+     +--rw show-fabric-bandwidth?                            empty {srl-feat:chassis}?
+     +--rw fabric* [slot] {srl-feat:chassis}?
+     |  +--rw slot       uint8
+     |  +--rw reboot?    empty
+     |  +--rw locator
+     |     +--rw enable!
+     |     |  +--rw duration?   uint16
+     |     +--rw disable?   empty
+     +--rw control* [slot]
+     |  +--rw slot       string
+     |  +--rw reboot! {srl-feat:chassis}?
+     |  |  +--rw force?   empty
+     |  +--rw locator
+     |     +--rw enable!
+     |     |  +--rw duration?   uint16
+     |     +--rw disable?   empty
+     +--rw fan-tray* [id]
+     |  +--rw id         uint8
+     |  +--rw locator
+     |     +--rw enable!
+     |     |  +--rw duration?   uint16
+     |     +--rw disable?   empty
+     +--rw srl_nokia-tools-platform-redundancy:redundancy {srl-feat:chassis}?
+        +--rw srl_nokia-tools-platform-redundancy:switchover!
+        +--rw srl_nokia-tools-platform-redundancy:synchronize
+           +--rw srl_nokia-tools-platform-redundancy:system?    empty
+           +--rw srl_nokia-tools-platform-redundancy:overlay?   empty
+
+module: srl_nokia-tools-system
+  +--rw system!
+     +--rw srl-tools-aaa:aaa!
+     |  +--rw srl-tools-aaa:authentication
+     |     +--rw srl-tools-aaa:session* [id]
+     |     |  +--rw srl-tools-aaa:id            int32
+     |     |  +--rw srl-tools-aaa:disconnect?   empty
+     |     +--rw srl-tools-aaa:user* [username] {srl-feat:password-complexity-and-lockout}?
+     |        +--rw srl-tools-aaa:username    string
+     |        +--rw srl-tools-aaa:unlock?     empty
+     +--rw srl_nokia-tools-app-mgmt:app-management!
+     |  +--rw srl_nokia-tools-app-mgmt:application* [name]
+     |     +--rw srl_nokia-tools-app-mgmt:name          string
+     |     +--rw srl_nokia-tools-app-mgmt:stop?         empty
+     |     +--rw srl_nokia-tools-app-mgmt:start?        empty
+     |     +--rw srl_nokia-tools-app-mgmt:restart!
+     |     |  +--rw srl_nokia-tools-app-mgmt:warm?   empty
+     |     |  +--rw srl_nokia-tools-app-mgmt:cold?   empty
+     |     +--rw srl_nokia-tools-app-mgmt:reload?       empty
+     |     +--rw srl_nokia-tools-app-mgmt:quit?         empty
+     |     +--rw srl_nokia-tools-app-mgmt:kill?         empty
+     |     +--rw srl_nokia-tools-app-mgmt:statistics
+     |        +--rw srl_nokia-tools-app-mgmt:clear?   empty
+     +--rw srl-tools-boot:boot!
+     +--rw srl-tools-cgroup:cgroup!
+     +--rw srl-tools-config:configuration!
+     |  +--rw srl-tools-config:save?                  empty
+     |  +--rw srl-tools-config:rescue-save?           empty
+     |  +--rw srl-tools-config:rescue-clear?          empty
+     |  +--rw srl-tools-config:checkpoint* [id]
+     |  |  +--rw srl-tools-config:id        union
+     |  |  +--rw srl-tools-config:clear?    empty
+     |  |  +--rw srl-tools-config:load?     empty
+     |  |  +--rw srl-tools-config:revert?   empty
+     |  +--rw srl-tools-config:generate-checkpoint!
+     |  |  +--rw srl-tools-config:name?      srl-comm:checkpoint-name
+     |  |  +--rw srl-tools-config:comment?   string
+     |  +--rw srl-tools-config:confirmed-accept?      empty
+     |  +--rw srl-tools-config:confirmed-reject?      empty
+     |  +--rw srl-tools-config:session* [id]
+     |  |  +--rw srl-tools-config:id       uint32
+     |  |  +--rw srl-tools-config:clear?   empty
+     |  +--rw srl-tools-config:candidate* [name]
+     |  |  +--rw srl-tools-config:name     srl-comm:name
+     |  |  +--rw srl-tools-config:clear?   empty
+     |  +--rw srl-tools-config:upgrade!
+     |     +--rw srl-tools-config:checkpoint* [id]
+     |     |  +--rw srl-tools-config:id    union
+     |     +--rw srl-tools-config:file?         string
+     |     +--rw srl-tools-config:startup?      empty
+     |     +--rw srl-tools-config:rescue?       empty
+     +--rw srl_nokia-tools-dhcp-server:dhcp-server!
+     |  +--rw srl_nokia-tools-dhcp-server:network-instance* [name]
+     |     +--rw srl_nokia-tools-dhcp-server:name      srl_nokia-comm:name
+     |     +--rw srl_nokia-tools-dhcp-server:dhcpv4
+     |     |  +--rw srl_nokia-tools-dhcp-server:statistics
+     |     |     +--rw srl_nokia-tools-dhcp-server:clear?   empty
+     |     +--rw srl_nokia-tools-dhcp-server:dhcpv6
+     |        +--rw srl_nokia-tools-dhcp-server:statistics
+     |           +--rw srl_nokia-tools-dhcp-server:clear?   empty
+     +--rw srl-tools-event-handler:event-handler!
+     |  +--rw srl-tools-event-handler:instance* [name]
+     |     +--rw srl-tools-event-handler:name          srl-comm:name
+     |     +--rw srl-tools-event-handler:reload?       empty
+     |     +--rw srl-tools-event-handler:statistics
+     |        +--rw srl-tools-event-handler:clear?   empty
+     +--rw srl-tools-gribi-server:gribi-server! {srl-feat:jericho2 or srl-feat:jericho2cp}?
+     |  +--rw srl-tools-gribi-server:client* [id]
+     |     +--rw srl-tools-gribi-server:id            uint32
+     |     +--rw srl-tools-gribi-server:disconnect?   empty
+     +--rw srl_nokia-tools-l2cp:l2cp-transparency! {srl_nokia-feat:l2cp-transparency}?
+     |  +--rw srl_nokia-tools-l2cp:l2cp-total-statistics
+     |  |  +--rw srl_nokia-tools-l2cp:clear?   empty
+     |  +--rw srl_nokia-tools-l2cp:lldp
+     |  |  +--rw srl_nokia-tools-l2cp:clear?   empty
+     |  +--rw srl_nokia-tools-l2cp:lacp
+     |  |  +--rw srl_nokia-tools-l2cp:clear?   empty
+     |  +--rw srl_nokia-tools-l2cp:xstp
+     |  |  +--rw srl_nokia-tools-l2cp:clear?   empty
+     |  +--rw srl_nokia-tools-l2cp:dot1x
+     |  |  +--rw srl_nokia-tools-l2cp:clear?   empty
+     |  +--rw srl_nokia-tools-l2cp:ptp
+     |     +--rw srl_nokia-tools-l2cp:clear?   empty
+     +--rw srl-tools-p4rt-server:p4rt-server! {srl-feat:p4rt}?
+     |  +--rw srl-tools-p4rt-server:client* [id]
+     |     +--rw srl-tools-p4rt-server:id            uint32
+     |     +--rw srl-tools-p4rt-server:disconnect?   empty
+     +--rw srl_nokia-tools-sync:sync
+     |  +--rw srl_nokia-tools-sync:ptp
+     |     +--rw srl_nokia-tools-sync:statistics
+     |     |  +--rw srl_nokia-tools-sync:clear?   empty
+     |     +--rw srl_nokia-tools-sync:instance* [instance-number]
+     |        +--rw srl_nokia-tools-sync:instance-number    uint32
+     |        +--rw srl_nokia-tools-sync:statistics
+     |        |  +--rw srl_nokia-tools-sync:clear?   empty
+     |        +--rw srl_nokia-tools-sync:ptp-port-ds* [port-number]
+     |           +--rw srl_nokia-tools-sync:port-number    uint16
+     |           +--rw srl_nokia-tools-sync:statistics
+     |              +--rw srl_nokia-tools-sync:clear?   empty
+     +--rw srl-tools-tls:tls!
+        +--rw srl-tools-tls:generate-self-signed!
+        |  +--rw srl-tools-tls:common-name?         srl-comm:domain-name
+        |  +--rw srl-tools-tls:email?               srl-comm:name
+        |  +--rw srl-tools-tls:country?             string
+        |  +--rw srl-tools-tls:state?               srl-comm:name
+        |  +--rw srl-tools-tls:locality?            srl-comm:name
+        |  +--rw srl-tools-tls:organization?        srl-comm:name
+        |  +--rw srl-tools-tls:organization-unit?   srl-comm:name
+        |  +--rw srl-tools-tls:duration?            uint16
+        +--rw srl-tools-tls:generate-csr!
+           +--rw srl-tools-tls:common-name?         srl-comm:domain-name
+           +--rw srl-tools-tls:email?               srl-comm:name
+           +--rw srl-tools-tls:country?             string
+           +--rw srl-tools-tls:state?               srl-comm:name
+           +--rw srl-tools-tls:locality?            srl-comm:name
+           +--rw srl-tools-tls:organization?        srl-comm:name
+           +--rw srl-tools-tls:organization-unit?   srl-comm:name
+
+module: srl_nokia-tools-tunnel
+  +--rw tunnel
+     +--rw srl_nokia-tools-vxlan-tunnel:vxlan-tunnel {srl-feat:vxlan}?
+        +--rw srl_nokia-tools-vxlan-tunnel:statistics
+        |  +--rw srl_nokia-tools-vxlan-tunnel:clear?   empty
+        +--rw srl_nokia-tools-vxlan-tunnel:vtep* [address]
+           +--rw srl_nokia-tools-vxlan-tunnel:address       srl_nokia-comm:ip-address
+           +--rw srl_nokia-tools-vxlan-tunnel:statistics
+              +--rw srl_nokia-tools-vxlan-tunnel:clear?   empty
+
 module: srl_nokia-tunnel-interfaces
   +--rw tunnel-interface* [name] {srl-feat:vxlan}?
      +--rw name               tunnel-interface-all
