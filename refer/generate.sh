@@ -39,8 +39,7 @@ response_handler() {
   fi
 }
 
-for SRL_VER in ${SRL_VER_LIST[@]}
-do
+for SRL_VER in ${SRL_VER_LIST[@]}; do
   echo
   # Extract end user release cycle
   SRL_VER_CYCLE=v$(echo $SRL_VER | cut -d'-' -f1)
@@ -48,7 +47,7 @@ do
   # PULL SRL YANG MODEL
   YANG_DIR_NAME="$(pwd)/srl-$SRL_VER-yang-models"
 
-  docker pull ghcr.io/nokia/srlinux:$SRL_VER
+  docker pull ghcr.io/nokia/srlinux:$SRL_VER || echo "using local image"
   id=$(docker create ghcr.io/nokia/srlinux:$SRL_VER foo)
 
   mkdir -p $YANG_DIR_NAME
@@ -71,8 +70,8 @@ do
       echo "Warning: $SRL_VER does not have any openconfig yang model."
     fi
   fi
-  
-  if [ $PROCEED -eq 1 ];then
+
+  if [ $PROCEED -eq 1 ]; then
     if [ "$1" = "srl_nokia" ]; then
       # placeholder for models massaging if needed for a particual model/release
       echo ""
@@ -95,7 +94,7 @@ do
 
     # Delete combined folder
     rm -rf combined
-    
+
     # JSTREE PRETTY
     #-------------------
     # Navigate into release folder
@@ -109,7 +108,7 @@ do
     sed -i '0,/^REMOVE$/d' tree.html
 
     # Append Bulma CSS
-    cat $SCRIPT_DIR/jstree-to-bulma.html tree.html > tmp.html
+    cat $SCRIPT_DIR/jstree-to-bulma.html tree.html >tmp.html
     mv tmp.html tree.html
 
     # Clearing unnecessary variables
@@ -129,8 +128,8 @@ do
     find ./ -name "*tools*.yang" -exec rm -f {} \;
 
     # GENERATE PATHS. TEXT + JSON
-    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.24.4 generate path --file $MODEL_PATH $GNMIC_ADDONS --types > $OUT_DIR/paths.txt
-    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.24.4 generate path --file $MODEL_PATH $GNMIC_ADDONS --with-prefix --json > $OUT_DIR/paths.json
+    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.24.4 generate path --file $MODEL_PATH $GNMIC_ADDONS --types >$OUT_DIR/paths.txt
+    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.24.4 generate path --file $MODEL_PATH $GNMIC_ADDONS --with-prefix --json >$OUT_DIR/paths.json
 
     cd $SCRIPT_DIR
     # copy per-release index page to output dir
