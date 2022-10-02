@@ -25,9 +25,8 @@ else
 fi
 
 # change into the script directory
-SCRIPT_DIR="$(dirname "$0")"
+SCRIPT_DIR="$(realpath $(dirname "$0"))"
 cd $SCRIPT_DIR
-SCRIPT_DIR=$(pwd)
 
 # PYANG RESPONSE HANDLER
 response_handler() {
@@ -123,8 +122,10 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
     MODULE_HTML="<p class='title is-6'><font color=blue>Nokia SR Linux $SRL_VER_CYCLE YANG Browser</font></p>\n"
     sed -i "s|MODULES|$MODULE_HTML|g" tree.html
 
-    cd $YANG_DIR_NAME
+    # PATH SEARCH TOOL
+    #-------------------
     # remove tools modules as they clash with regular leaves and are not relevant for the path search
+    cd $YANG_DIR_NAME
     find ./ -name "*tools*.yang" -exec rm -f {} \;
 
     # GENERATE PATHS. TEXT + JSON
