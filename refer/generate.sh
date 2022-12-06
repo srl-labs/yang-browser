@@ -6,11 +6,16 @@
 # sed -i -e 's/\r$//' generate.sh
 
 # execute from repo root as `bash refer/generate.sh <srl_nokia | openconfig> [<srl_release1> <srl_release2> ...]`
+# example: bash refer/generate.sh srl_nokia 22.11.1
 
 MODEL_TYPE="$1"
 
 # SR Linux release version are passed as a space separated list of release version
 SRL_VER_LIST="${@:2}"
+
+GNMIC_CONTAINER=ghcr.io/openconfig/gnmic:0.27.1
+
+PYANG_CONTAINER=ghcr.io/hellt/pyang
 
 # Verify if model type is provided
 if [ "$MODEL_TYPE" = "srl_nokia" ]; then
@@ -73,6 +78,7 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
   if [ $PROCEED -eq 1 ]; then
     if [ "$1" = "srl_nokia" ]; then
       # placeholder for models massaging if needed for a particual model/release
+      sed -i 's/modifier "invert-match";//g' srl_nokia/models/common/srl_nokia-common.yang # remove modifiers that are not supported by goyang
       echo ""
     fi
 
@@ -84,11 +90,11 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
     find ./$MODEL_PATH -name "*.yang" | xargs -I % cp % combined
 
     # PYANG TREE
-    RESPONSE=$(docker run --rm -v $(pwd):/yang ghcr.io/hellt/pyang pyang -p ietf:iana:$MODEL_PATH -f tree combined/*.yang -o tree.txt 2>&1 >/dev/null)
+    RESPONSE=$(docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH -f tree combined/*.yang -o tree.txt 2>&1 >/dev/null)
     response_handler "$RESPONSE" "$SRL_VER-tree"
 
     # PYANG JSTREE
-    RESPONSE=$(docker run --rm -v $(pwd):/yang ghcr.io/hellt/pyang pyang -p ietf:iana:$MODEL_PATH --plugindir /opt/pyang-oc-plugin -f oc-jstree --oc-jstree-strip combined/*.yang -o tree.html 2>&1 >/dev/null)
+    RESPONSE=$(docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH --plugindir /opt/pyang-oc-plugin -f oc-jstree --oc-jstree-strip combined/*.yang -o tree.html 2>&1 >/dev/null)
     response_handler "$RESPONSE" "$SRL_VER-jstree"
 
     # Delete combined folder
@@ -129,8 +135,8 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
     find ./ -name "*tools*.yang" -exec rm -f {} \;
 
     # GENERATE PATHS. TEXT + JSON
-    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.24.4 generate path --file $MODEL_PATH $GNMIC_ADDONS --types >$OUT_DIR/paths.txt
-    docker run --rm -v $(pwd):/yang -w /yang ghcr.io/karimra/gnmic:0.24.4 generate path --file $MODEL_PATH $GNMIC_ADDONS --with-prefix --json >$OUT_DIR/paths.json
+    docker run --rm -v $(pwd):/yang -w /yang $GNMIC_CONTAINER generate path --file $MODEL_PATH $GNMIC_ADDONS --types >$OUT_DIR/paths.txt
+    docker run --rm -v $(pwd):/yang -w /yang $GNMIC_CONTAINER generate path --file $MODEL_PATH $GNMIC_ADDONS --with-prefix --json >$OUT_DIR/paths.json
 
     cd $SCRIPT_DIR
     # copy per-release index page to output dir
