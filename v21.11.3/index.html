@@ -86,7 +86,7 @@
             </li>
             <li>|</li>
             <li>
-              <a class="has-text-link" target="_blank" id="source">
+              <a class="has-text-link" href="https://github.com/nokia/srlinux-yang-models/tree/" target="_blank" id="source">
                 <span class="icon"><i class="fab fa-github"></i></span>
                 <span>Source</span>
               </a>
@@ -103,18 +103,56 @@
         <p id="message">
           <progress class="progress is-small is-primary" max="100">15%</progress>
         </p>
-        <div id="yangModel" style="display: none;">
-          <input class="input has-font-nokia" id="customSearch" type="text" placeholder="Search by State / Path / Type...">
+        <div class="is-hidden" id="yangModel">
+          <div class="field">
+            <p class="control">
+              <input class="input has-font-nokia" id="customSearch" type="text" placeholder="Search by State / Path / Type...">
+            </p>
+          </div>
           <div class="control mt-3">
-            <label class="radio"><input type="radio" name="pathType" onclick="toggleFilter(this)" value="na" checked>
-              All</label>
-            <label class="radio"><input type="radio" name="pathType" onclick="toggleFilter(this)" value="true">
-              State</label>
-            <label class="radio"><input type="radio" name="pathType" onclick="toggleFilter(this)" value="false">
-              Config</label>
+            <label class="radio"><input type="radio" name="pathType" onclick="toggleFilter(this)" value="na" checked> All</label>
+            <label class="radio"><input type="radio" name="pathType" onclick="toggleFilter(this)" value="true"> State</label>
+            <label class="radio"><input type="radio" name="pathType" onclick="toggleFilter(this)" value="false"> Config</label>
           </div>
           <div class="mt-3">
-            <label class="checkbox"><input type="checkbox" onclick="showPrefix()" id="hidePrefixCheck"> Hide prefix</label>
+            <label class="button is-rounded is-small"><input type="checkbox" onclick="showPrefix()" id="hidePrefixCheck">&nbsp; Show prefix</label>
+            <button class="button is-rounded is-small is-hidden" id="moreFilters" onclick="toggleNodeFeature()">
+              <span class="icon"><i class="fas fa-plus"></i></span>
+              <span>Filters</span>
+            </button>
+          </div>
+          <div class="mt-5 is-hidden" id="nodeAndFeature">
+            <div class="columns">
+              <div class="column is-narrow">
+                <nav class="panel">
+                  <p class="panel-heading is-size-6">Platform</p>
+                  <div class="panel-block">
+                    <p class="control">
+                      <input class="input is-small" type="text" placeholder="Search" id="nodeSearch" onkeyup="searchPanel('node')">
+                    </p>
+                  </div>
+                  <div class="panel-container" id="nodeList"></div>
+                  <div class="panel-block">
+                    <button class="button is-small is-link is-light is-fullwidth" onclick="resetChecks()">Reset</button>
+                  </div>
+                </nav>
+              </div>
+              <div class="column is-narrow">
+                <nav class="panel">
+                  <p class="panel-heading is-size-6">Features</p>
+                  <div class="panel-block">
+                    <p class="control">
+                      <input class="input is-small" type="text" placeholder="Search" id="featureSearch" onkeyup="searchPanel('feature')">
+                    </p>
+                  </div>
+                  <div class="panel-container" id="featureList"></div>
+                  <div class="panel-block">
+                    <button class="button is-small is-link is-light is-fullwidth" onclick="resetChecks()">Reset</button>
+                  </div>
+                </nav>
+              </div>
+            </div>
+            <p class="help"><strong>Note:</strong> Platform selection overrides already selected Features (if any)</p>
           </div>
           <table class="table is-hoverable is-fullwidth" id="myTable">
             <thead>
