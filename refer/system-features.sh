@@ -1,4 +1,4 @@
-fn="n2f-map.txt"
+fn="features.txt"
 rm -rf $fn
 touch $fn
 for entry in $(ls *.json); do
