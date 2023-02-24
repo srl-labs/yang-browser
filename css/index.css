@@ -65,3 +65,12 @@ a.disabled {
   position: fixed;
   font-size: 14px;
 }
+
+.panel-container {
+  max-height: 300px; 
+  overflow: auto;
+}
+
+.panel-block {
+  font-size: 14px;
+}
