@@ -18,6 +18,7 @@ for entry in *.json; do
 
     # Extract the values of all the fields in the JSON file, remove any spaces and quotes, and concatenate them into a single string separated by commas
     f=$(grep -o '[^[:space:]",]*' $entry | tr '\n' ',' | sed 's/,$//')
+    # f=$(grep '"' $entry | sed 's/ //g; s/"[,]*//g' | xargs)
 
     # Write the name of the file and its fields to the output file
     echo "$n: $f" >> $fn

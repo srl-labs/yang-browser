@@ -113,6 +113,11 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
     sed -i '0,/^REMOVE$/d' tree.html
 
     # Append Bulma CSS
+    if [ "$MODEL_TYPE" = "srl_nokia" ]; then
+      cat $SCRIPT_DIR/jstree-to-bulma.html tree.html >tmp.html
+    elif [ "$MODEL_TYPE" = "openconfig" ]; then
+      cat $SCRIPT_DIR/oc-jstree-to-bulma.html tree.html >tmp.html
+    fi
     cat $SCRIPT_DIR/jstree-to-bulma.html tree.html >tmp.html
     mv tmp.html tree.html
 
