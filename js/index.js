@@ -448,6 +448,12 @@ function filterTableFromFeatures() {
   //updatePageInfo("myTable");
 }
 
+// JQUERY CASE INSENSITIVE CONTAINS
+jQuery.expr[':'].contains = function(a, i, m) {
+  return jQuery(a).text().toUpperCase()
+    .indexOf(m[3].toUpperCase()) >= 0;
+};
+
 // SEARCH PANEL
 function searchPanel(kind) {
   const panelContainerId = "#" + kind + "List";
