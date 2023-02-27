@@ -61,7 +61,7 @@
     "type": "dscp",
     "description": "A list of DSCP values to be matched for incoming packets. An OR match should be performed, such that a packet must match one of the values defined in this list. If the field is left empty then any DSCP value matches.",
     "namespace": "urn:srl_nokia/acl",
-    "1eatures": [
+    "if-features": [
       "srl_nokia-feat:ip-acl-dscp-set"
     ]
   },
