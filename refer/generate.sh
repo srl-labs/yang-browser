@@ -13,7 +13,7 @@ MODEL_TYPE="$1"
 # SR Linux release version are passed as a space separated list of release version
 SRL_VER_LIST="${@:2}"
 
-GNMIC_CONTAINER=ghcr.io/openconfig/gnmic:0.27.1
+GNMIC_CONTAINER=ghcr.io/openconfig/gnmic:0.29.0
 
 PYANG_CONTAINER=ghcr.io/hellt/pyang
 
@@ -61,13 +61,13 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
   cd $YANG_DIR_NAME
   PROCEED=0
   if [ "$MODEL_TYPE" = "srl_nokia" ]; then
-    mkdir -p ../../$SRL_VER_CYCLE
-    OUT_DIR=$(realpath ../../$SRL_VER_CYCLE)
+    mkdir -p ../../release/$SRL_VER_CYCLE
+    OUT_DIR=$(realpath ../../release/$SRL_VER_CYCLE)
     PROCEED=1
   elif [ "$MODEL_TYPE" = "openconfig" ]; then
     if [ -d "./openconfig" ]; then
-      mkdir -p ../../$SRL_VER_CYCLE/openconfig
-      OUT_DIR=$(realpath ../../$SRL_VER_CYCLE/openconfig)
+      mkdir -p ../../release/$SRL_VER_CYCLE/openconfig
+      OUT_DIR=$(realpath ../../release/$SRL_VER_CYCLE/openconfig)
       PROCEED=1
     else
       echo
@@ -113,6 +113,11 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
     sed -i '0,/^REMOVE$/d' tree.html
 
     # Append Bulma CSS
+    if [ "$MODEL_TYPE" = "srl_nokia" ]; then
+      cat $SCRIPT_DIR/jstree-to-bulma.html tree.html >tmp.html
+    elif [ "$MODEL_TYPE" = "openconfig" ]; then
+      cat $SCRIPT_DIR/oc-jstree-to-bulma.html tree.html >tmp.html
+    fi
     cat $SCRIPT_DIR/jstree-to-bulma.html tree.html >tmp.html
     mv tmp.html tree.html
 
