@@ -5213,7 +5213,7 @@
     "is-state": true,
     "namespace": "urn:srl_nokia/qos",
     "if-features": [
-      "not (srl-feat:platform-7220-d5 or srl-feat:future-0-0)",
+      "not srl-feat:platform-7220-d5 or not srl-feat:future-0-0",
       "not srl-feat:platform-7220-d1"
     ]
   },
@@ -5225,7 +5225,7 @@
     "is-state": true,
     "namespace": "urn:srl_nokia/qos",
     "if-features": [
-      "not (srl-feat:platform-7220-d5 or srl-feat:future-0-0)",
+      "not srl-feat:platform-7220-d5 or not srl-feat:future-0-0",
       "not srl-feat:platform-7220-d1"
     ]
   },
@@ -8512,7 +8512,7 @@
     "namespace": "urn:srl_nokia/interfaces/local-mirror-destination",
     "if-features": [
       "srl_nokia-feat:mirroring",
-      "(not srl_nokia-feat:platform-7250-ixr-e)"
+      "not srl_nokia-feat:platform-7250-ixr-e"
     ]
   },
   {
@@ -8524,7 +8524,7 @@
     "namespace": "urn:srl_nokia/interfaces/local-mirror-destination",
     "if-features": [
       "srl_nokia-feat:mirroring",
-      "(not srl_nokia-feat:platform-7250-ixr-e)"
+      "not srl_nokia-feat:platform-7250-ixr-e"
     ]
   },
   {

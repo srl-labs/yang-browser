@@ -434,12 +434,15 @@ function getFeaturesByNode() {
 // FILTER TABLE BASED ON FEATURES
 function filterTableFromFeatures() {
   let selectedFeatures = [...getElByQuery("input[name=feature]:checked")].map(e => e.value);
-  selectedFeatures = selectedFeatures.map(i => "not:" + i);
+  selectedFeatures = selectedFeatures.map(i => "^((?!not:).)*" + i);
+  let keyFilter =selectedFeatures.join("|").trim();
+  keyFilter = keyFilter != "" ? keyFilter + "|common": keyFilter;
+  /*selectedFeatures = selectedFeatures.map(i => "not:" + i);
   let keyFilter = selectedFeatures.join("|").trim();
   if(keyFilter != "") {
     keyFilter = keyFilter + "|not:common";
     keyFilter = "^(?!.*(" + keyFilter + ")).*$";
-  }
+  }*/
   if(keyFilter != "") {
     getElById("moreFilters").classList.add("is-info", "is-light");
     myTable.column(6).search(keyFilter, true, false, false).draw();
