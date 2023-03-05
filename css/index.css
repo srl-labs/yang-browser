@@ -74,3 +74,7 @@ a.disabled {
 .panel-block {
   font-size: 14px;
 }
+
+.panel-block input[type=radio] {
+  margin-right: 5px;
+}
