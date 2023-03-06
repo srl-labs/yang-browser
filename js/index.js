@@ -19,6 +19,22 @@ const urlAdds = {
   })
 };
 
+// RENDER IF-FEATURES
+function renderFeatures(data) {
+  if(Array.isArray(data)) {
+    let tmp = data.join(", ");
+    tmp.includes("not") ? tmp = tmp.replaceAll("not ", "not:"): tmp;
+    tmp = tmp.replaceAll("srl_nokia-feat:", "");
+    tmp = tmp.replaceAll("srl-feat:", "");
+    tmp = tmp.replaceAll("srl_feat:", "");
+    tmp = tmp.replaceAll(" or ", "_or_");
+    tmp = tmp.replaceAll(", ", "_and_");
+    return tmp;
+  } else {
+    return "common";
+  }
+}
+
 // GLOBAL DATATABLE DECLARATION
 var myTable;
 const order = [[1, "asc"]];
@@ -43,19 +59,7 @@ var columnDefs = [
   { "targets": 5, "visible": false },
   { "targets": 6, "visible": false,
     "render": function (data, type, full, meta) {
-      if(Array.isArray(data)) {
-        let tmp = data.join(", ");
-        tmp.includes("not") ? tmp = tmp.replaceAll("not ", "not:"): tmp;
-        tmp = tmp.replaceAll("srl_nokia-feat:", "");
-        tmp = tmp.replaceAll("srl-feat:", "");
-        tmp = tmp.replaceAll("srl_feat:", "");
-        tmp = tmp.replaceAll(" or ", " ");
-        tmp = tmp.replaceAll(", ", " ");
-        tmp = tmp.replaceAll(" ", "<br>");
-        return tmp;
-      } else {
-        return "common";
-      }
+      return renderFeatures(data);
     } 
   }
 ]
@@ -355,7 +359,7 @@ function loadPlatformFeatures(response) {
   let featureList = getElById("featureList");
   nodes.forEach(entry => {
     inputElement = chtmle("input", {
-      type: "checkbox", class: "node-feature", name: "node", 
+      type: "radio", class: "node-feature", name: "node", 
       id: entry, value: entry, onclick: "getFeaturesByNode()"
     }, []);
     labelElement  = chtmle("label", {class: "panel-block"}, [inputElement, ctn(entry)]);
@@ -397,61 +401,98 @@ function getNodesByFeature() {
   let selectedFeatures = [...getElByQuery("input[name=feature]:checked")].map(e => e.value);
   if(selectedFeatures.length == 0) {
     resetChecks();
-  } 
-  /* else {
-    let mappedNodes = Object.keys(matrix).filter(k => selectedFeatures.every(i => matrix[k].includes(i)));
-    /* getElByName("node").forEach(entry => {
-      if(mappedNodes.includes(entry.id)) {
-        entry.checked = true;
-      } else {
-        entry.checked = false;
-      }
-    });
-  } */
-  filterTableFromFeatures();
+  }
+  searchFeatureColumn();
 }
 
 // GET ALL FEATURES BASED ON NODE
 function getFeaturesByNode() {
-  let selectedNodes = [...getElByQuery("input[name=node]:checked")].map(e => e.value);
-  if(selectedNodes.length == 0) {
+  let selectedNode = getElByQuery("input[name=node]:checked")[0].value;
+  let allFeatures = getElByQuery("input[name=feature]");
+  if(selectedNode == "") {
     resetChecks();
   } else {
-    let extract = [];
-    selectedNodes.forEach(i => extract.push(matrix[i]));
-    let commonFeatures = extract.reduce((p,c) => p.filter(e => c.includes(e)));
-    commonFeatures.forEach(entry => {
-      if(commonFeatures.includes(entry)) {
-        getElById(entry).checked = true;
+    let commonFeatures = matrix[selectedNode];
+    allFeatures.forEach(entry => {
+      if(commonFeatures.includes(entry.value)) {
+        entry.checked = true;
       } else {
-        getElById(entry).checked = false;
+        entry.checked = false;
       }
     })
   }
-  filterTableFromFeatures();
+  searchFeatureColumn();
 }
 
-// FILTER TABLE BASED ON FEATURES
-function filterTableFromFeatures() {
+// FILTER FEATURE COLUMN CONDITIONS TRANSFORMED
+function searchFeatureColumn() {
   let selectedFeatures = [...getElByQuery("input[name=feature]:checked")].map(e => e.value);
-  selectedFeatures = selectedFeatures.map(i => "^((?!not:).)*" + i);
-  let keyFilter =selectedFeatures.join("|").trim();
-  keyFilter = keyFilter != "" ? keyFilter + "|common": keyFilter;
-  /*selectedFeatures = selectedFeatures.map(i => "not:" + i);
-  let keyFilter = selectedFeatures.join("|").trim();
-  if(keyFilter != "") {
-    keyFilter = keyFilter + "|not:common";
-    keyFilter = "^(?!.*(" + keyFilter + ")).*$";
-  }*/
-  if(keyFilter != "") {
+  if(selectedFeatures.length > 0) {
     getElById("moreFilters").classList.add("is-info", "is-light");
-    myTable.column(6).search(keyFilter, true, false, false).draw();
-  }
-  else {
+    let filter = [];
+    const featureFilter = function(data) {
+      if(Array.isArray(data)) {
+        let tmp = data.join(", ");
+        tmp.includes("not") ? tmp = tmp.replaceAll("not ", "!"): tmp;
+        tmp = tmp.replaceAll("srl_nokia-feat:", "");
+        tmp = tmp.replaceAll("srl-feat:", "");
+        tmp = tmp.replaceAll("srl_feat:", "");
+        tmp = tmp.replaceAll(" or ", " | ");
+        tmp = tmp.replaceAll(", ", " & ");
+        return tmp;
+      } else {
+        return "common";
+      }
+    }
+    const isOperator = function(arg) {
+      if(arg == "|" || arg == "&") return true;
+      else return false;
+    }
+    let filteredData = myTable.column(6).data().filter(function (value, index) {
+      if(value != "common") return true;
+      else false;
+    });
+    filteredData.toArray().forEach(f => {
+      let exp = featureFilter(f);
+      selectedFeatures.forEach(i => {
+        if(exp.includes(i)) {
+          exp = exp.replaceAll(i, "+");
+        }
+      });
+      exp = exp.replaceAll("!+", "-");
+      let expSplit = exp.split(" ");
+      let expResult = [];
+      for(i = 0; i < expSplit.length; i++) {
+        if(expSplit[i] == "+" || expSplit[i] == "-") {
+          expResult.push(expSplit[i])
+          if(isOperator(expSplit[i + 1])) {
+            expResult.push(expSplit[i + 1]);
+          }
+        }
+      }
+      if(expResult.length > 0) {
+        if(isOperator(expResult[expResult.length - 1])) {
+          expResult.pop();
+        }
+        result = expResult.join(" ");
+        result = result.replaceAll("+", "1");
+        result = result.replaceAll("-", "0");
+        if(Function("return Boolean(" + result + ")")()) {
+          let filterAdds = renderFeatures(f);
+          if(!filter.includes(filterAdds)) {
+            filter.push(filterAdds);
+          }
+        }
+      }
+    })
+    if(filter.length > 0) {
+      const filterJoined = filter.join("|") + "|common";
+      myTable.column(6).search(filterJoined, true, false, false).draw();
+    }
+  } else {
     getElById("moreFilters").classList.remove("is-info", "is-light");
     myTable.column(6).search('').draw();
   }
-  //updatePageInfo("myTable");
 }
 
 // JQUERY CASE INSENSITIVE CONTAINS
@@ -480,9 +521,9 @@ function chtmle(tag, attrs, children) {
     el.appendChild(child);
   });
   return el;
-};
+}
 
 // CREATE TEXT NODE
 function ctn(text) {
   return document.createTextNode(text);
-};
+}
