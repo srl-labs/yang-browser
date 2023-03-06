@@ -428,6 +428,7 @@ function getFeaturesByNode() {
 function searchFeatureColumn() {
   let selectedFeatures = [...getElByQuery("input[name=feature]:checked")].map(e => e.value);
   if(selectedFeatures.length > 0) {
+    getElById("moreFilters").classList.add("is-info", "is-light");
     let filter = [];
     const featureFilter = function(data) {
       if(Array.isArray(data)) {
@@ -489,6 +490,7 @@ function searchFeatureColumn() {
       myTable.column(6).search(filterJoined, true, false, false).draw();
     }
   } else {
+    getElById("moreFilters").classList.remove("is-info", "is-light");
     myTable.column(6).search('').draw();
   }
 }
