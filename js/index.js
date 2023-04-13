@@ -429,7 +429,13 @@ function searchFeatureColumn() {
   let selectedFeatures = [...getElByQuery("input[name=feature]:checked")].map(e => e.value);
   if(selectedFeatures.length > 0) {
     getElById("moreFilters").classList.add("is-info", "is-light");
-    let filter = [];
+    let filter = ["^common$"];
+    const addToFilter = (f) => {
+      let filterAdds = "^" + renderFeatures(f) + "$";
+      if(!filter.includes(filterAdds)) {
+        filter.push(filterAdds);
+      }
+    }
     const featureFilter = function(data) {
       if(Array.isArray(data)) {
         let tmp = data.join(", ");
@@ -467,6 +473,7 @@ function searchFeatureColumn() {
           expResult.push(expSplit[i])
           if(isOperator(expSplit[i + 1])) {
             expResult.push(expSplit[i + 1]);
+            i++;
           }
         }
       }
@@ -478,15 +485,14 @@ function searchFeatureColumn() {
         result = result.replaceAll("+", "1");
         result = result.replaceAll("-", "0");
         if(Function("return Boolean(" + result + ")")()) {
-          let filterAdds = renderFeatures(f);
-          if(!filter.includes(filterAdds)) {
-            filter.push(filterAdds);
-          }
+          addToFilter(f);
         }
+      } else {
+        addToFilter(f);
       }
     })
     if(filter.length > 0) {
-      const filterJoined = filter.join("|") + "|common";
+      const filterJoined = filter.join("|");
       myTable.column(6).search(filterJoined, true, false, false).draw();
     }
   } else {
