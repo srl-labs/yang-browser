@@ -1,7 +1,7 @@
 name: all
 topology:
   defaults:
-    image: ghcr.io/nokia/srlinux:22.11.2
+    image: ghcr.io/nokia/srlinux:23.3.1
     kind: nokia_srlinux
   nodes:
     7220-IXR-D1:
