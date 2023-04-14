@@ -1,0 +1,30 @@
+name: all
+topology:
+  defaults:
+    image: ghcr.io/nokia/srlinux:22.11.2
+    kind: nokia_srlinux
+  nodes:
+    7220-IXR-D1:
+      type: ixrd1
+    7220-IXR-D2:
+      type: ixrd2
+    7220-IXR-D2L:
+      type: ixrd2l
+    7220-IXR-D3:
+      type: ixrd3
+    7220-IXR-D3L:
+      type: ixrd3l
+    7220-IXR-D5:
+      type: ixrd5
+    7220-IXR-H2:
+      type: ixrh2
+    7220-IXR-H3:
+      type: ixrh3
+    7250-IXR-6:
+      type: ixr6
+    7250-IXR-6e:
+      type: ixr6e
+    7250-IXR-10:
+      type: ixr10
+    7250-IXR-10e:
+      type: ixr10e
