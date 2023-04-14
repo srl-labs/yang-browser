@@ -5,4 +5,4 @@ refer/srl-*-yang-models
 **/*.clab.yml.bak
 
 72*.json
-features.txt
+./features.txt

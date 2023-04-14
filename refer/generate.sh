@@ -20,7 +20,7 @@ PYANG_CONTAINER=ghcr.io/hellt/pyang
 # Verify if model type is provided
 if [ "$MODEL_TYPE" = "srl_nokia" ]; then
   MODEL_PATH="srl_nokia/models"
-  GNMIC_ADDONS="--dir ietf/"
+  GNMIC_ADDONS="--dir ietf/ --dir openconfig"
 elif [ "$MODEL_TYPE" = "openconfig" ]; then
   MODEL_PATH="openconfig"
   GNMIC_ADDONS="--dir ietf/ --dir iana/"
@@ -76,11 +76,11 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
   fi
 
   if [ $PROCEED -eq 1 ]; then
-    if [ "$1" = "srl_nokia" ]; then
+    # if [ "$1" = "srl_nokia" ]; then
       # placeholder for models massaging if needed for a particual model/release
-      sed -i 's/modifier "invert-match";//g' srl_nokia/models/common/srl_nokia-common.yang # remove modifiers that are not supported by goyang
-      echo ""
-    fi
+      # sed -i 's/modifier "invert-match";//g' srl_nokia/models/common/srl_nokia-common.yang # remove modifiers that are not supported by goyang
+      # echo ""
+    # fi
 
     echo
     # PYANG TREE + JSTREE
