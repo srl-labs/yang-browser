@@ -5,10 +5,9 @@ set -e
 # remove all json files that might be there from previous extraction
 rm -f 72*.json
 
-for node in "clab-all-7220-IXR-D1" "clab-all-7220-IXR-D2" "clab-all-7220-IXR-D2L" "clab-all-7220-IXR-D3" "clab-all-7220-IXR-D3L" "clab-all-7220-IXR-D5" "clab-all-7220-IXR-H2" "clab-all-7220-IXR-H3" "clab-all-7250-IXR-6" "clab-all-7250-IXR-6e" "clab-all-7250-IXR-10" "clab-all-7250-IXR-10e"
+for node in "7220-IXR-D1" "7220-IXR-D2" "7220-IXR-D2L" "7220-IXR-D3" "7220-IXR-D3L" "7220-IXR-D5" "7220-IXR-H2" "7220-IXR-H3" "7250-IXR-6" "7250-IXR-6e" "7250-IXR-10" "7250-IXR-10e"
 do
-    platf_name=${node#clab-all-}
-    docker exec ${node} sr_cli 'info from state system features | as json' | jq .system.features >> ${platf_name}.json &
+    docker exec clab-all-${node} sr_cli 'info from state system features | as json' | jq .system.features >> ${node}.json &
 done
 
 wait
