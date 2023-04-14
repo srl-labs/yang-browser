@@ -1,3 +1,8 @@
 srl-*-yang-models
 refer/srl-*-yang-models
 .DS_Store
+**/clab-*
+**/*.clab.yml.bak
+
+72*.json
+features.txt
