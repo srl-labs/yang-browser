@@ -147,7 +147,7 @@ function apiFetch(kind) {
   .then(response => { 
     if(response != "skipped") {
       loadPlatformFeatures(response.trim());
-      document.getElementById("7220-D2L").click();
+      document.getElementById("7220-IXR-D2L").click();
     } else {
       console.log("Added filters are skipped...")
     }
