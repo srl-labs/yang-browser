@@ -702,7 +702,7 @@
     "if-features": [
       "not srl_nokia-feat:platform-7220-h2",
       "not srl_nokia-feat:platform-7220-h3",
-      "not\nsrl_nokia-feat:platform-7220-h4",
+      "not srl_nokia-feat:platform-7220-h4",
       "not srl_nokia-feat:future-0-0"
     ]
   },
@@ -717,7 +717,7 @@
     "if-features": [
       "not srl_nokia-feat:platform-7220-h2",
       "not srl_nokia-feat:platform-7220-h3",
-      "not\nsrl_nokia-feat:platform-7220-h4",
+      "not srl_nokia-feat:platform-7220-h4",
       "not srl_nokia-feat:future-0-0"
     ]
   },
@@ -732,7 +732,7 @@
     "if-features": [
       "not srl_nokia-feat:platform-7220-h2",
       "not srl_nokia-feat:platform-7220-h3",
-      "not\nsrl_nokia-feat:platform-7220-h4",
+      "not srl_nokia-feat:platform-7220-h4",
       "not srl_nokia-feat:future-0-0"
     ]
   },
@@ -747,7 +747,7 @@
     "if-features": [
       "not srl_nokia-feat:platform-7220-h2",
       "not srl_nokia-feat:platform-7220-h3",
-      "not\nsrl_nokia-feat:platform-7220-h4",
+      "not srl_nokia-feat:platform-7220-h4",
       "not srl_nokia-feat:future-0-0"
     ]
   },
@@ -1059,7 +1059,7 @@
     "if-features": [
       "not srl_nokia-feat:platform-7220-h2",
       "not srl_nokia-feat:platform-7220-h3",
-      "not\nsrl_nokia-feat:platform-7220-h4",
+      "not srl_nokia-feat:platform-7220-h4",
       "not srl_nokia-feat:future-0-0"
     ]
   },
@@ -1074,7 +1074,7 @@
     "if-features": [
       "not srl_nokia-feat:platform-7220-h2",
       "not srl_nokia-feat:platform-7220-h3",
-      "not\nsrl_nokia-feat:platform-7220-h4",
+      "not srl_nokia-feat:platform-7220-h4",
       "not srl_nokia-feat:future-0-0"
     ]
   },
@@ -1089,7 +1089,7 @@
     "if-features": [
       "not srl_nokia-feat:platform-7220-h2",
       "not srl_nokia-feat:platform-7220-h3",
-      "not\nsrl_nokia-feat:platform-7220-h4",
+      "not srl_nokia-feat:platform-7220-h4",
       "not srl_nokia-feat:future-0-0"
     ]
   },
@@ -1104,7 +1104,7 @@
     "if-features": [
       "not srl_nokia-feat:platform-7220-h2",
       "not srl_nokia-feat:platform-7220-h3",
-      "not\nsrl_nokia-feat:platform-7220-h4",
+      "not srl_nokia-feat:platform-7220-h4",
       "not srl_nokia-feat:future-0-0"
     ]
   },
@@ -1391,7 +1391,7 @@
     "if-features": [
       "not srl_nokia-feat:platform-7220-h2",
       "not srl_nokia-feat:platform-7220-h3",
-      "not\nsrl_nokia-feat:platform-7220-h4",
+      "not srl_nokia-feat:platform-7220-h4",
       "not srl_nokia-feat:future-0-0",
       "srl_nokia-feat:platform-7220-d2 or srl_nokia-feat:platform-7220-d3 or srl_nokia-feat:platform-7220-d4 or srl_nokia-feat:platform-7220-d5"
     ]
@@ -1407,7 +1407,7 @@
     "if-features": [
       "not srl_nokia-feat:platform-7220-h2",
       "not srl_nokia-feat:platform-7220-h3",
-      "not\nsrl_nokia-feat:platform-7220-h4",
+      "not srl_nokia-feat:platform-7220-h4",
       "not srl_nokia-feat:future-0-0",
       "srl_nokia-feat:platform-7220-d2 or srl_nokia-feat:platform-7220-d3 or srl_nokia-feat:platform-7220-d4 or srl_nokia-feat:platform-7220-d5"
     ]
@@ -1423,7 +1423,7 @@
     "if-features": [
       "not srl_nokia-feat:platform-7220-h2",
       "not srl_nokia-feat:platform-7220-h3",
-      "not\nsrl_nokia-feat:platform-7220-h4",
+      "not srl_nokia-feat:platform-7220-h4",
       "not srl_nokia-feat:future-0-0",
       "srl_nokia-feat:platform-7220-d2 or srl_nokia-feat:platform-7220-d3 or srl_nokia-feat:platform-7220-d4 or srl_nokia-feat:platform-7220-d5"
     ]
@@ -1439,7 +1439,7 @@
     "if-features": [
       "not srl_nokia-feat:platform-7220-h2",
       "not srl_nokia-feat:platform-7220-h3",
-      "not\nsrl_nokia-feat:platform-7220-h4",
+      "not srl_nokia-feat:platform-7220-h4",
       "not srl_nokia-feat:future-0-0",
       "srl_nokia-feat:platform-7220-d2 or srl_nokia-feat:platform-7220-d3 or srl_nokia-feat:platform-7220-d4 or srl_nokia-feat:platform-7220-d5"
     ]
@@ -6560,7 +6560,7 @@
     "description": "MAC ACL filter to be applied on this subinterface\n\nOn 7220 IXR platforms MAC ACL is mutually exclusive with IP ACLs.",
     "namespace": "urn:srl_nokia/acl",
     "if-features": [
-      "srl_nokia-feat:platform-7220-d2 or srl_nokia-feat:platform-7220-d3 or srl_nokia-feat:platform-7220-d4 or\nsrl_nokia-feat:platform-7220-d5"
+      "srl_nokia-feat:platform-7220-d2 or srl_nokia-feat:platform-7220-d3 or srl_nokia-feat:platform-7220-d4 or srl_nokia-feat:platform-7220-d5"
     ]
   },
   {
@@ -6584,7 +6584,7 @@
     "description": "MAC ACL filter to be applied on this subinterface\n\nOn 7220 IXR platforms MAC ACL is mutually exclusive with IP ACLs.",
     "namespace": "urn:srl_nokia/acl",
     "if-features": [
-      "srl_nokia-feat:platform-7220-d2 or srl_nokia-feat:platform-7220-d3 or srl_nokia-feat:platform-7220-d4 or\nsrl_nokia-feat:platform-7220-d5"
+      "srl_nokia-feat:platform-7220-d2 or srl_nokia-feat:platform-7220-d3 or srl_nokia-feat:platform-7220-d4 or srl_nokia-feat:platform-7220-d5"
     ]
   },
   {
