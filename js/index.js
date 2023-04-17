@@ -1,6 +1,7 @@
 // GLOBAL PAGE LOAD URL PARAMS
 var urlPath = "";
 var urlPathType = "";
+var urlPlatform = "";
 var urlHidePrefix = "";
 const pageUrl = window.location.href;
 const fetchUrlPrefix = pageUrl.split("?")[0];
@@ -99,13 +100,18 @@ function processUrlParams() {
   if(urlParams.has("pathType")) {
     urlPathType = urlParams.get("pathType");
   }
-  if(urlParams.has("hidePrefix")) {
-    urlHidePrefix = urlParams.get("hidePrefix");
+  if(urlParams.has("showPrefix")) {
+    urlHidePrefix = urlParams.get("showPrefix");
   }
   if(urlParams.has("path")) {
     urlPath = urlParams.get("path");
   }
-
+  if(urlParams.has("platform")) {
+    urlPlatform = urlParams.get("platform");
+    if(document.getElementById(urlPlatform) != null) {
+      document.getElementById(urlPlatform).click();
+    }
+  }
   if(urlPathType != "") {
     if(urlPathType == "All") {
       getElByName("pathType")[0].click();
@@ -125,30 +131,35 @@ function processUrlParams() {
 }
 
 function apiFetch(kind) {
-  let url;
-  if(kind == "paths") {
-    url = fetchUrlPrefix + "/paths.json"
-    fetch(url, urlAdds)
-    .then(response => response.json())
-    .then(response => loadHandler(response))
-    .catch(error => loadError(error));
-  } 
-  else if(kind == "features") {
-    url = fetchUrlPrefix + "/features.txt"
-    fetch(url, urlAdds)
-    .then(response => { 
-      if(!response.ok) {
-        throw "Added filters are skipped..."
-      }
-      return response.text(); 
-    })
-    .then(response => { 
-      if(response != undefined) {
-        loadPlatformFeatures(response.trim());
-      }
-    })
-    .catch(error => console.log(error));
-  }
+  let pathUrl = fetchUrlPrefix + "/paths.json";
+  let featUrl = fetchUrlPrefix + "/features.txt";
+
+  fetch(pathUrl, urlAdds)
+  .then(response => response.json())
+  .then(response => {
+    loadHandler(response);
+    return fetch(featUrl, urlAdds)
+  })
+  .then(response => { 
+    if(!response.ok) return "skipped";
+    return response.text(); 
+  })
+  .then(response => { 
+    if(response != "skipped") {
+      loadPlatformFeatures(response.trim());
+      document.getElementById("7220-D2L").click();
+    } else {
+      console.log("Added filters are skipped...")
+    }
+    return true;
+  })
+  .then(response => {
+    processUrlParams();
+    getElById("message").innerHTML = "";
+    getElById("yangModel").classList.remove("is-hidden");
+    getElById("created").classList.add("is-light");
+  })
+  .catch(error => console.log(error));
 }
 
 // PAGE ON-LOAD
@@ -166,14 +177,7 @@ window.onload = function() {
   const source = getElById("source");
   source.href = source.href + version;
 
-  apiFetch("paths");
-  apiFetch("features");
-  
-  processUrlParams();
-  getElById("message").innerHTML = "";
-  getElById("yangModel").classList.remove("is-hidden");
-  getElById("created").classList.add("is-light");
-
+  apiFetch();
 };
 
 // MY-TABLE FETCH ERROR
@@ -286,6 +290,7 @@ function updatePageInfo(tableName) {
 function copyPathToClipboard(from, data) {
   let hp = getElById("hidePrefixCheck").checked;
   let pt = getElByQuery('input[name="pathType"]:checked').value;
+  let platform = getElByQuery('input[name="node"]:checked');
   let params = {};
   if(pt == "na") {
     params["pathType"] = "All"
@@ -294,12 +299,15 @@ function copyPathToClipboard(from, data) {
   } else if(pt == "false") {
     params["pathType"] = "Config"
   }
-  params["hidePrefix"] = hp;
+  params["showPrefix"] = hp;
+  if(platform.length == 1) {
+    params["platform"] = platform[0].value;
+  }
   if(from == "row") {
     if(hp) {
-      params["path"] = data["path"];
-    } else {
       params["path"] = data["path-with-prefix"];
+    } else {
+      params["path"] = data["path"];
     }
   } else {
     params["path"] = getElById("customSearch").value;
@@ -468,13 +476,16 @@ function searchFeatureColumn() {
       exp = exp.replaceAll("!+", "-");
       let expSplit = exp.split(" ");
       let expResult = [];
+      let validOperators = ["+", "-", "&", "|"];
       for(i = 0; i < expSplit.length; i++) {
         if(expSplit[i] == "+" || expSplit[i] == "-") {
           expResult.push(expSplit[i])
-          if(isOperator(expSplit[i + 1])) {
-            expResult.push(expSplit[i + 1]);
-            i++;
-          }
+        } else if(!validOperators.includes(expSplit[i])) {
+          expResult.push("-");
+        }
+        if(isOperator(expSplit[i + 1])) {
+          expResult.push(expSplit[i + 1]);
+          i++;
         }
       }
       if(expResult.length > 0) {
