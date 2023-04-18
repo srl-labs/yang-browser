@@ -24,7 +24,7 @@ const urlAdds = {
 function renderFeatures(data) {
   if(Array.isArray(data)) {
     let tmp = data.join(", ");
-    tmp = tmp.replaceAll("\nsrl", " srl");
+    tmp = tmp.replaceAll("\n", " ");
     tmp.includes("not") ? tmp = tmp.replaceAll("not ", "not:"): tmp;
     tmp = tmp.replaceAll("srl_nokia-feat:", "");
     tmp = tmp.replaceAll("srl-feat:", "");
@@ -448,7 +448,7 @@ function searchFeatureColumn() {
     const featureFilter = function(data) {
       if(Array.isArray(data)) {
         let tmp = data.join(", ");
-        tmp = tmp.replaceAll("\nsrl", " srl");
+        tmp = tmp.replaceAll("\n", " ");
         tmp.includes("not") ? tmp = tmp.replaceAll("not ", "!"): tmp;
         tmp = tmp.replaceAll("srl_nokia-feat:", "");
         tmp = tmp.replaceAll("srl-feat:", "");
