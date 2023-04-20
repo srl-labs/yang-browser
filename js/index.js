@@ -1,6 +1,7 @@
 // GLOBAL PAGE LOAD URL PARAMS
 var urlPath = "";
 var urlPathType = "";
+var urlPlatform = "";
 var urlHidePrefix = "";
 const pageUrl = window.location.href;
 const fetchUrlPrefix = pageUrl.split("?")[0];
@@ -23,6 +24,7 @@ const urlAdds = {
 function renderFeatures(data) {
   if(Array.isArray(data)) {
     let tmp = data.join(", ");
+    tmp = tmp.replaceAll("\n", " ");
     tmp.includes("not") ? tmp = tmp.replaceAll("not ", "not:"): tmp;
     tmp = tmp.replaceAll("srl_nokia-feat:", "");
     tmp = tmp.replaceAll("srl-feat:", "");
@@ -99,13 +101,18 @@ function processUrlParams() {
   if(urlParams.has("pathType")) {
     urlPathType = urlParams.get("pathType");
   }
-  if(urlParams.has("hidePrefix")) {
-    urlHidePrefix = urlParams.get("hidePrefix");
+  if(urlParams.has("showPrefix")) {
+    urlHidePrefix = urlParams.get("showPrefix");
   }
   if(urlParams.has("path")) {
     urlPath = urlParams.get("path");
   }
-
+  if(urlParams.has("platform")) {
+    urlPlatform = urlParams.get("platform");
+    if(document.getElementById(urlPlatform) != null) {
+      document.getElementById(urlPlatform).click();
+    }
+  }
   if(urlPathType != "") {
     if(urlPathType == "All") {
       getElByName("pathType")[0].click();
@@ -125,30 +132,35 @@ function processUrlParams() {
 }
 
 function apiFetch(kind) {
-  let url;
-  if(kind == "paths") {
-    url = fetchUrlPrefix + "/paths.json"
-    fetch(url, urlAdds)
-    .then(response => response.json())
-    .then(response => loadHandler(response))
-    .catch(error => loadError(error));
-  } 
-  else if(kind == "features") {
-    url = fetchUrlPrefix + "/features.txt"
-    fetch(url, urlAdds)
-    .then(response => { 
-      if(!response.ok) {
-        throw "Added filters are skipped..."
-      }
-      return response.text(); 
-    })
-    .then(response => { 
-      if(response != undefined) {
-        loadPlatformFeatures(response.trim());
-      }
-    })
-    .catch(error => console.log(error));
-  }
+  let pathUrl = fetchUrlPrefix + "/paths.json";
+  let featUrl = fetchUrlPrefix + "/features.txt";
+
+  fetch(pathUrl, urlAdds)
+  .then(response => response.json())
+  .then(response => {
+    loadHandler(response);
+    return fetch(featUrl, urlAdds)
+  })
+  .then(response => { 
+    if(!response.ok) return "skipped";
+    return response.text(); 
+  })
+  .then(response => { 
+    if(response != "skipped") {
+      loadPlatformFeatures(response.trim());
+      document.getElementById("7220-IXR-D2L").click();
+    } else {
+      console.log("Added filters are skipped...")
+    }
+    return true;
+  })
+  .then(response => {
+    processUrlParams();
+    getElById("message").innerHTML = "";
+    getElById("yangModel").classList.remove("is-hidden");
+    getElById("created").classList.add("is-light");
+  })
+  .catch(error => console.log(error));
 }
 
 // PAGE ON-LOAD
@@ -166,14 +178,7 @@ window.onload = function() {
   const source = getElById("source");
   source.href = source.href + version;
 
-  apiFetch("paths");
-  apiFetch("features");
-  
-  processUrlParams();
-  getElById("message").innerHTML = "";
-  getElById("yangModel").classList.remove("is-hidden");
-  getElById("created").classList.add("is-light");
-
+  apiFetch();
 };
 
 // MY-TABLE FETCH ERROR
@@ -286,6 +291,7 @@ function updatePageInfo(tableName) {
 function copyPathToClipboard(from, data) {
   let hp = getElById("hidePrefixCheck").checked;
   let pt = getElByQuery('input[name="pathType"]:checked').value;
+  let platform = getElByQuery('input[name="node"]:checked');
   let params = {};
   if(pt == "na") {
     params["pathType"] = "All"
@@ -294,12 +300,15 @@ function copyPathToClipboard(from, data) {
   } else if(pt == "false") {
     params["pathType"] = "Config"
   }
-  params["hidePrefix"] = hp;
+  params["showPrefix"] = hp;
+  if(platform.length == 1) {
+    params["platform"] = platform[0].value;
+  }
   if(from == "row") {
     if(hp) {
-      params["path"] = data["path"];
-    } else {
       params["path"] = data["path-with-prefix"];
+    } else {
+      params["path"] = data["path"];
     }
   } else {
     params["path"] = getElById("customSearch").value;
@@ -431,7 +440,10 @@ function searchFeatureColumn() {
     getElById("moreFilters").classList.add("is-info", "is-light");
     let filter = ["^common$"];
     const addToFilter = (f) => {
-      let filterAdds = "^" + renderFeatures(f) + "$";
+      let rf = renderFeatures(f);
+      rf = rf.replaceAll("(", "\\(");
+      rf = rf.replaceAll(")", "\\)");
+      let filterAdds = "^" + rf + "$";
       if(!filter.includes(filterAdds)) {
         filter.push(filterAdds);
       }
@@ -439,12 +451,14 @@ function searchFeatureColumn() {
     const featureFilter = function(data) {
       if(Array.isArray(data)) {
         let tmp = data.join(", ");
+        tmp = tmp.replaceAll("\n", " ");
         tmp.includes("not") ? tmp = tmp.replaceAll("not ", "!"): tmp;
         tmp = tmp.replaceAll("srl_nokia-feat:", "");
         tmp = tmp.replaceAll("srl-feat:", "");
         tmp = tmp.replaceAll("srl_feat:", "");
         tmp = tmp.replaceAll(" or ", " | ");
         tmp = tmp.replaceAll(", ", " & ");
+        tmp = tmp.replaceAll("-", "_");
         return tmp;
       } else {
         return "common";
@@ -461,20 +475,32 @@ function searchFeatureColumn() {
     filteredData.toArray().forEach(f => {
       let exp = featureFilter(f);
       selectedFeatures.forEach(i => {
-        if(exp.includes(i)) {
-          exp = exp.replaceAll(i, "+");
+        let d2h = i.replaceAll("-", "_");
+        if(exp.includes(d2h)) {
+          let re = new RegExp(`\\b${d2h}\\b`, 'g');
+          exp = exp.replace(re, "+");
         }
       });
-      exp = exp.replaceAll("!+", "-");
+      exp = exp.replaceAll("!+", "=");
       let expSplit = exp.split(" ");
       let expResult = [];
+      let validOperators = ["+", "=", "&", "|"];
       for(i = 0; i < expSplit.length; i++) {
-        if(expSplit[i] == "+" || expSplit[i] == "-") {
+        if(expSplit[i] == "+" || expSplit[i] == "=") {
           expResult.push(expSplit[i])
-          if(isOperator(expSplit[i + 1])) {
-            expResult.push(expSplit[i + 1]);
-            i++;
+        } else {
+          let validation = validOperators.map(x => expSplit[i].includes(x));
+          const uniqValid = [...new Set(validation)];
+          if(uniqValid.length == 1 && !uniqValid[0]) {
+            let tmpRep = expSplit[i].replace(/[a-z0-9_]+/g, "=").replace("!=", "+");
+            expResult.push(tmpRep);
+          } else {
+            expResult.push(expSplit[i]);
           }
+        }
+        if(isOperator(expSplit[i + 1])) {
+          expResult.push(expSplit[i + 1]);
+          i++;
         }
       }
       if(expResult.length > 0) {
@@ -483,7 +509,7 @@ function searchFeatureColumn() {
         }
         result = expResult.join(" ");
         result = result.replaceAll("+", "1");
-        result = result.replaceAll("-", "0");
+        result = result.replaceAll("=", "0");
         if(Function("return Boolean(" + result + ")")()) {
           addToFilter(f);
         }
