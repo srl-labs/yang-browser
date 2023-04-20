@@ -440,7 +440,10 @@ function searchFeatureColumn() {
     getElById("moreFilters").classList.add("is-info", "is-light");
     let filter = ["^common$"];
     const addToFilter = (f) => {
-      let filterAdds = "^" + renderFeatures(f) + "$";
+      let rf = renderFeatures(f);
+      rf = rf.replaceAll("(", "\\(");
+      rf = rf.replaceAll(")", "\\)");
+      let filterAdds = "^" + rf + "$";
       if(!filter.includes(filterAdds)) {
         filter.push(filterAdds);
       }
@@ -455,6 +458,7 @@ function searchFeatureColumn() {
         tmp = tmp.replaceAll("srl_feat:", "");
         tmp = tmp.replaceAll(" or ", " | ");
         tmp = tmp.replaceAll(", ", " & ");
+        tmp = tmp.replaceAll("-", "_");
         return tmp;
       } else {
         return "common";
@@ -471,19 +475,28 @@ function searchFeatureColumn() {
     filteredData.toArray().forEach(f => {
       let exp = featureFilter(f);
       selectedFeatures.forEach(i => {
-        if(exp.includes(i)) {
-          exp = exp.replaceAll(i, "+");
+        let d2h = i.replaceAll("-", "_");
+        if(exp.includes(d2h)) {
+          let re = new RegExp(`\\b${d2h}\\b`, 'g');
+          exp = exp.replace(re, "+");
         }
       });
-      exp = exp.replaceAll("!+", "-");
+      exp = exp.replaceAll("!+", "=");
       let expSplit = exp.split(" ");
       let expResult = [];
-      let validOperators = ["+", "-", "&", "|"];
+      let validOperators = ["+", "=", "&", "|"];
       for(i = 0; i < expSplit.length; i++) {
-        if(expSplit[i] == "+" || expSplit[i] == "-") {
+        if(expSplit[i] == "+" || expSplit[i] == "=") {
           expResult.push(expSplit[i])
-        } else if(!validOperators.includes(expSplit[i])) {
-          expResult.push("-");
+        } else {
+          let validation = validOperators.map(x => expSplit[i].includes(x));
+          const uniqValid = [...new Set(validation)];
+          if(uniqValid.length == 1 && !uniqValid[0]) {
+            let tmpRep = expSplit[i].replace(/[a-z0-9_]+/g, "=").replace("!=", "+");
+            expResult.push(tmpRep);
+          } else {
+            expResult.push(expSplit[i]);
+          }
         }
         if(isOperator(expSplit[i + 1])) {
           expResult.push(expSplit[i + 1]);
@@ -496,7 +509,7 @@ function searchFeatureColumn() {
         }
         result = expResult.join(" ");
         result = result.replaceAll("+", "1");
-        result = result.replaceAll("-", "0");
+        result = result.replaceAll("=", "0");
         if(Function("return Boolean(" + result + ")")()) {
           addToFilter(f);
         }
