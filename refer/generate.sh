@@ -13,7 +13,7 @@ MODEL_TYPE="$1"
 # SR Linux release version are passed as a space separated list of release version
 SRL_VER_LIST="${@:2}"
 
-GNMIC_CONTAINER=ghcr.io/openconfig/gnmic:0.29.0
+GNMIC_CONTAINER=ghcr.io/openconfig/gnmic:0.31.0
 
 PYANG_CONTAINER=ghcr.io/hellt/pyang
 
