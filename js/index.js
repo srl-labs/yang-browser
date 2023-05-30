@@ -450,6 +450,8 @@ function searchFeatureColumn() {
     }
     const featureFilter = function(data) {
       if(Array.isArray(data)) {
+        data = data.map(i => "(" + i);
+        data = data.map(i => i + ")");
         let tmp = data.join(", ");
         tmp = tmp.replaceAll("\n", " ");
         tmp.includes("not") ? tmp = tmp.replaceAll("not ", "!"): tmp;
@@ -474,6 +476,10 @@ function searchFeatureColumn() {
     });
     filteredData.toArray().forEach(f => {
       let exp = featureFilter(f);
+
+      // Since future-0-0 does not exist, mark and do not exist by default
+      exp = exp.replaceAll("future_0_0", "=");
+
       selectedFeatures.forEach(i => {
         let d2h = i.replaceAll("-", "_");
         if(exp.includes(d2h)) {
