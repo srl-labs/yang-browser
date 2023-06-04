@@ -22,10 +22,10 @@ const urlAdds = {
 
 // RENDER IF-FEATURES
 function renderFeatures(data) {
-  if(Array.isArray(data)) {
+  if (Array.isArray(data)) {
     let tmp = data.join(", ");
     tmp = tmp.replaceAll("\n", " ");
-    tmp.includes("not") ? tmp = tmp.replaceAll("not ", "not:"): tmp;
+    tmp.includes("not") ? tmp = tmp.replaceAll("not ", "not:") : tmp;
     tmp = tmp.replaceAll("srl_nokia-feat:", "");
     tmp = tmp.replaceAll("srl-feat:", "");
     tmp = tmp.replaceAll("srl_feat:", "");
@@ -44,29 +44,30 @@ const pagingType = "simple";
 const dom = "<'pt-3'><'level is-mobile'<'level-left'><'level-right'<'level-item'i><'level-item'p>>><'table-container't>";
 var columnDefs = [
   { "targets": 0, "width": "10%" },
-  { 
+  {
     "targets": 1, "width": "70%", "visible": false,
     "render": function (data, type, full, meta) {
-      return type === 'display'? '<div class="tooltip" title="' + full.description + '">' + data : data;
+      return type === 'display' ? '<div class="tooltip" title="' + full.description + '">' + data : data;
     }
   },
-  { 
+  {
     "targets": 2, "width": "70%",
     "render": function (data, type, full, meta) {
-      return type === 'display'? '<div class="tooltip" title="' + full.description + '">' + data : data;
+      return type === 'display' ? '<div class="tooltip" title="' + full.description + '">' + data : data;
     }
   },
   { "targets": 3, "width": "20%" },
   { "targets": 4, "visible": false, "searchable": false },
   { "targets": 5, "visible": false },
-  { "targets": 6, "visible": false,
+  {
+    "targets": 6, "visible": false,
     "render": function (data, type, full, meta) {
       return renderFeatures(data);
-    } 
+    }
   }
 ]
-const languageDataTable = { 
-  "search": "", 
+const languageDataTable = {
+  "search": "",
   "searchPlaceholder": "",
   "info": "_START_ - _END_ of _TOTAL_",
   "thousands": "",
@@ -98,34 +99,34 @@ function getElByClass(arg) {
 //PROCESS URL PARAMS
 function processUrlParams() {
   let urlParams = new URLSearchParams(pageUrl.split("?")[1]);
-  if(urlParams.has("pathType")) {
+  if (urlParams.has("pathType")) {
     urlPathType = urlParams.get("pathType");
   }
-  if(urlParams.has("showPrefix")) {
+  if (urlParams.has("showPrefix")) {
     urlHidePrefix = urlParams.get("showPrefix");
   }
-  if(urlParams.has("path")) {
+  if (urlParams.has("path")) {
     urlPath = urlParams.get("path");
   }
-  if(urlParams.has("platform")) {
+  if (urlParams.has("platform")) {
     urlPlatform = urlParams.get("platform");
-    if(document.getElementById(urlPlatform) != null) {
+    if (document.getElementById(urlPlatform) != null) {
       document.getElementById(urlPlatform).click();
     }
   }
-  if(urlPathType != "") {
-    if(urlPathType == "All") {
+  if (urlPathType != "") {
+    if (urlPathType == "All") {
       getElByName("pathType")[0].click();
-    } else if(urlPathType == "State") {
+    } else if (urlPathType == "State") {
       getElByName("pathType")[1].click();
-    } else if(urlPathType == "Config") {
+    } else if (urlPathType == "Config") {
       getElByName("pathType")[2].click();
     }
   }
-  if(urlHidePrefix == "true") {
+  if (urlHidePrefix == "true") {
     getElById("hidePrefixCheck").click();
   }
-  if(urlPath != "") {
+  if (urlPath != "") {
     $("#customSearch").val(urlPath);
     $("#customSearch").keyup();
   }
@@ -136,39 +137,39 @@ function apiFetch(kind) {
   let featUrl = fetchUrlPrefix + "/features.txt";
 
   fetch(pathUrl, urlAdds)
-  .then(response => response.json())
-  .then(response => {
-    loadHandler(response);
-    return fetch(featUrl, urlAdds)
-  })
-  .then(response => { 
-    if(!response.ok) return "skipped";
-    return response.text(); 
-  })
-  .then(response => { 
-    if(response != "skipped") {
-      loadPlatformFeatures(response.trim());
-      document.getElementById("7220-IXR-D2L").click();
-    } else {
-      console.log("Added filters are skipped...")
-    }
-    return true;
-  })
-  .then(response => {
-    processUrlParams();
-    getElById("message").innerHTML = "";
-    getElById("yangModel").classList.remove("is-hidden");
-    getElById("created").classList.add("is-light");
-  })
-  .catch(error => console.log(error));
+    .then(response => response.json())
+    .then(response => {
+      loadHandler(response);
+      return fetch(featUrl, urlAdds)
+    })
+    .then(response => {
+      if (!response.ok) return "skipped";
+      return response.text();
+    })
+    .then(response => {
+      if (response != "skipped") {
+        loadPlatformFeatures(response.trim());
+        document.getElementById("7220-IXR-D2L").click();
+      } else {
+        console.log("Added filters are skipped...")
+      }
+      return true;
+    })
+    .then(response => {
+      processUrlParams();
+      getElById("message").innerHTML = "";
+      getElById("yangModel").classList.remove("is-hidden");
+      getElById("created").classList.add("is-light");
+    })
+    .catch(error => console.log(error));
 }
 
 // PAGE ON-LOAD
-window.onload = function() {
+window.onload = function () {
   let urlSplit = pageUrl.split("/");
   let version = urlSplit[urlSplit.length - 2];
   let versionAddon = version;
-  if(version == "openconfig") {
+  if (version == "openconfig") {
     version = urlSplit[urlSplit.length - 3];
     versionAddon = version + " OpenConfig";
   }
@@ -202,15 +203,15 @@ function loadHandler(response) {
     "language": languageDataTable,
     "data": response,
     "columns": [
-      {"data": "is-state", "defaultContent": "false"},
-      {"data": "path-with-prefix"}, 
-      {"data": "path"}, 
-      {"data": "type"}, 
-      {"data": "description", "defaultContent": ""},
-      {"data": "is-state", "defaultContent": "false"},
-      {"data": "if-features", "defaultContent": "common"}
+      { "data": "is-state", "defaultContent": "false" },
+      { "data": "path-with-prefix" },
+      { "data": "path" },
+      { "data": "type" },
+      { "data": "description", "defaultContent": "" },
+      { "data": "is-state", "defaultContent": "false" },
+      { "data": "if-features", "defaultContent": "common" }
     ],
-    "drawCallback": function() {
+    "drawCallback": function () {
       tableDrawCall("myTable");
     }
   });
@@ -223,17 +224,17 @@ function tableDrawCall(tableName) {
   $(f).find("input").addClass("input");
   $(p).addClass("buttons is-grouped");
   $(p + " .paginate_button").addClass("button");
-  $('.paginate_button').on('click', function(e) {
+  $('.paginate_button').on('click', function (e) {
     updatePageInfo(tableName);
   });
 }
 
 // TABLE SEARCH
-$("#customSearch").on("keyup", function() {
+$("#customSearch").on("keyup", function () {
   myTable.search(this.value).draw();
   let p = $(this).parent().get(0);
-  if(this.value != "") {
-    if(!getElById("ss")) {
+  if (this.value != "") {
+    if (!getElById("ss")) {
       let newChild = '<a class="icon is-small is-right" id="ss"><i class="fas fa-share-alt"></i></a>';
       $(p).addClass("has-icons-right");
       $(p).append(newChild);
@@ -242,7 +243,7 @@ $("#customSearch").on("keyup", function() {
       $("#ss").attr("onclick", 'copyPathToClipboard("search", "")');
     }
   } else {
-    if(getElById("ss")) {
+    if (getElById("ss")) {
       $("#ss").html("");
       $(p).children().last().remove();
       $(p).removeClass("has-icons-right");
@@ -253,7 +254,7 @@ $("#customSearch").on("keyup", function() {
 // TOGGLE FILTER
 function toggleFilter(element) {
   let keyFilter = element.value;
-  if(keyFilter != "na") {
+  if (keyFilter != "na") {
     myTable.column(5).search(keyFilter).draw();
   }
   else {
@@ -275,12 +276,12 @@ function updatePageInfo(tableName) {
   let p = "#" + tableName + "_previous";
   let f = "#" + tableName + "_filter";
   let info = myTable.page.info();
-  if(info.page == 0) {
+  if (info.page == 0) {
     $(p).addClass("disabled");
   } else {
     $(p).removeClass("disabled");
   }
-  if(info.pages == 0 || info.pages == 1 || info.page == (info.pages - 1)) {
+  if (info.pages == 0 || info.pages == 1 || info.page == (info.pages - 1)) {
     $(n).addClass("disabled");
   } else {
     $(n).removeClass("disabled");
@@ -293,19 +294,19 @@ function copyPathToClipboard(from, data) {
   let pt = getElByQuery('input[name="pathType"]:checked').value;
   let platform = getElByQuery('input[name="node"]:checked');
   let params = {};
-  if(pt == "na") {
+  if (pt == "na") {
     params["pathType"] = "All"
-  } else if(pt == "true") {
+  } else if (pt == "true") {
     params["pathType"] = "State"
-  } else if(pt == "false") {
+  } else if (pt == "false") {
     params["pathType"] = "Config"
   }
   params["showPrefix"] = hp;
-  if(platform.length == 1) {
+  if (platform.length == 1) {
     params["platform"] = platform[0].value;
   }
-  if(from == "row") {
-    if(hp) {
+  if (from == "row") {
+    if (hp) {
       params["path"] = data["path-with-prefix"];
     } else {
       params["path"] = data["path"];
@@ -313,7 +314,7 @@ function copyPathToClipboard(from, data) {
   } else {
     params["path"] = getElById("customSearch").value;
   }
-  if(params["path"] != "") {
+  if (params["path"] != "") {
     let searchParams = new URLSearchParams(params);
     let tmpPageUrl = pageUrl.substring(0, pageUrl.length - 1) + "?";
     let encoded = tmpPageUrl + searchParams;
@@ -328,7 +329,7 @@ function copyPathToClipboard(from, data) {
 // DOUBLE CLICK EVENT ON TABLE ROW
 $("#myTable tbody").on("dblclick", "tr", function () {
   let data = myTable.row(this).data();
-  if(data !== undefined) {
+  if (data !== undefined) {
     copyPathToClipboard("row", data);
   }
 });
@@ -338,7 +339,7 @@ function toggleNodeFeature() {
   const nf = getElById("nodeAndFeature");
   const nfClasses = nf.className;
   const btnIcon = getElById("moreFilters").childNodes[1];
-  if(nfClasses.includes("is-hidden")) {
+  if (nfClasses.includes("is-hidden")) {
     nf.classList.remove("is-hidden");
     btnIcon.innerHTML = '<i class="fas fa-minus"></i>';
   } else {
@@ -357,7 +358,7 @@ function loadPlatformFeatures(response) {
     nodes.push(n);
     matrix[n] = f;
     f.forEach(k => {
-      if(!features.includes(k)) {
+      if (!features.includes(k)) {
         features.push(k);
       }
     });
@@ -368,18 +369,18 @@ function loadPlatformFeatures(response) {
   let featureList = getElById("featureList");
   nodes.forEach(entry => {
     inputElement = chtmle("input", {
-      type: "radio", class: "node-feature", name: "node", 
+      type: "radio", class: "node-feature", name: "node",
       id: entry, value: entry, onclick: "getFeaturesByNode()"
     }, []);
-    labelElement  = chtmle("label", {class: "panel-block"}, [inputElement, ctn(entry)]);
+    labelElement = chtmle("label", { class: "panel-block" }, [inputElement, ctn(entry)]);
     nodeList.appendChild(labelElement);
   });
   features.forEach(entry => {
     inputElement = chtmle("input", {
-      type: "checkbox", class: "node-feature", name: "feature", 
+      type: "checkbox", class: "node-feature", name: "feature",
       id: entry, value: entry, onclick: "getNodesByFeature()"
     }, []);
-    labelElement = chtmle("label", {class: "panel-block"}, [inputElement, ctn(entry)]);
+    labelElement = chtmle("label", { class: "panel-block" }, [inputElement, ctn(entry)]);
     featureList.appendChild(labelElement);
   });
 
@@ -398,7 +399,7 @@ function resetPanelSearch() {
 function resetChecks() {
   resetPanelSearch();
   let nodeAndFeature = getElByClass("node-feature");
-  for(let entry of nodeAndFeature) {
+  for (let entry of nodeAndFeature) {
     entry.checked = false;
   }
   myTable.column(6).search('').draw();
@@ -408,7 +409,7 @@ function resetChecks() {
 // GET ALL NODES BASED ON FEATURE
 function getNodesByFeature() {
   let selectedFeatures = [...getElByQuery("input[name=feature]:checked")].map(e => e.value);
-  if(selectedFeatures.length == 0) {
+  if (selectedFeatures.length == 0) {
     resetChecks();
   }
   searchFeatureColumn();
@@ -418,12 +419,12 @@ function getNodesByFeature() {
 function getFeaturesByNode() {
   let selectedNode = getElByQuery("input[name=node]:checked")[0].value;
   let allFeatures = getElByQuery("input[name=feature]");
-  if(selectedNode == "") {
+  if (selectedNode == "") {
     resetChecks();
   } else {
     let commonFeatures = matrix[selectedNode];
     allFeatures.forEach(entry => {
-      if(commonFeatures.includes(entry.value)) {
+      if (commonFeatures.includes(entry.value)) {
         entry.checked = true;
       } else {
         entry.checked = false;
@@ -436,7 +437,7 @@ function getFeaturesByNode() {
 // FILTER FEATURE COLUMN CONDITIONS TRANSFORMED
 function searchFeatureColumn() {
   let selectedFeatures = [...getElByQuery("input[name=feature]:checked")].map(e => e.value);
-  if(selectedFeatures.length > 0) {
+  if (selectedFeatures.length > 0) {
     getElById("moreFilters").classList.add("is-info", "is-light");
     let filter = ["^common$"];
     const addToFilter = (f) => {
@@ -444,17 +445,16 @@ function searchFeatureColumn() {
       rf = rf.replaceAll("(", "\\(");
       rf = rf.replaceAll(")", "\\)");
       let filterAdds = "^" + rf + "$";
-      if(!filter.includes(filterAdds)) {
+      if (!filter.includes(filterAdds)) {
         filter.push(filterAdds);
       }
     }
-    const featureFilter = function(data) {
-      if(Array.isArray(data)) {
-        data = data.map(i => "(" + i);
-        data = data.map(i => i + ")");
+    const featureFilter = function (data) {
+      if (Array.isArray(data)) {
+        data = data.map(i => `(${i})`);
         let tmp = data.join(", ");
         tmp = tmp.replaceAll("\n", " ");
-        tmp.includes("not") ? tmp = tmp.replaceAll("not ", "!"): tmp;
+        tmp.includes("not") ? tmp = tmp.replaceAll("not ", "!") : tmp;
         tmp = tmp.replaceAll("srl_nokia-feat:", "");
         tmp = tmp.replaceAll("srl-feat:", "");
         tmp = tmp.replaceAll("srl_feat:", "");
@@ -466,12 +466,12 @@ function searchFeatureColumn() {
         return "common";
       }
     }
-    const isOperator = function(arg) {
-      if(arg == "|" || arg == "&") return true;
+    const isOperator = function (arg) {
+      if (arg == "|" || arg == "&") return true;
       else return false;
     }
     let filteredData = myTable.column(6).data().filter(function (value, index) {
-      if(value != "common") return true;
+      if (value != "common") return true;
       else false;
     });
     filteredData.toArray().forEach(f => {
@@ -482,7 +482,7 @@ function searchFeatureColumn() {
 
       selectedFeatures.forEach(i => {
         let d2h = i.replaceAll("-", "_");
-        if(exp.includes(d2h)) {
+        if (exp.includes(d2h)) {
           let re = new RegExp(`\\b${d2h}\\b`, 'g');
           exp = exp.replace(re, "+");
         }
@@ -491,39 +491,39 @@ function searchFeatureColumn() {
       let expSplit = exp.split(" ");
       let expResult = [];
       let validOperators = ["+", "=", "&", "|"];
-      for(i = 0; i < expSplit.length; i++) {
-        if(expSplit[i] == "+" || expSplit[i] == "=") {
+      for (i = 0; i < expSplit.length; i++) {
+        if (expSplit[i] == "+" || expSplit[i] == "=") {
           expResult.push(expSplit[i])
         } else {
           let validation = validOperators.map(x => expSplit[i].includes(x));
           const uniqValid = [...new Set(validation)];
-          if(uniqValid.length == 1 && !uniqValid[0]) {
+          if (uniqValid.length == 1 && !uniqValid[0]) {
             let tmpRep = expSplit[i].replace(/[a-z0-9_]+/g, "=").replace("!=", "+");
             expResult.push(tmpRep);
           } else {
             expResult.push(expSplit[i]);
           }
         }
-        if(isOperator(expSplit[i + 1])) {
+        if (isOperator(expSplit[i + 1])) {
           expResult.push(expSplit[i + 1]);
           i++;
         }
       }
-      if(expResult.length > 0) {
-        if(isOperator(expResult[expResult.length - 1])) {
+      if (expResult.length > 0) {
+        if (isOperator(expResult[expResult.length - 1])) {
           expResult.pop();
         }
         result = expResult.join(" ");
         result = result.replaceAll("+", "1");
         result = result.replaceAll("=", "0");
-        if(Function("return Boolean(" + result + ")")()) {
+        if (Function("return Boolean(" + result + ")")()) {
           addToFilter(f);
         }
       } else {
         addToFilter(f);
       }
     })
-    if(filter.length > 0) {
+    if (filter.length > 0) {
       const filterJoined = filter.join("|");
       myTable.column(6).search(filterJoined, true, false, false).draw();
     }
@@ -534,7 +534,7 @@ function searchFeatureColumn() {
 }
 
 // JQUERY CASE INSENSITIVE CONTAINS
-jQuery.expr[':'].contains = function(a, i, m) {
+jQuery.expr[':'].contains = function (a, i, m) {
   return jQuery(a).text().toUpperCase()
     .indexOf(m[3].toUpperCase()) >= 0;
 };
@@ -551,11 +551,11 @@ function searchPanel(kind) {
 // CREATE HTML ELEMENT
 function chtmle(tag, attrs, children) {
   let el = document.createElement(tag);
-  Object.keys(attrs).forEach(function(key){
+  Object.keys(attrs).forEach(function (key) {
     let val = attrs[key];
     el.setAttribute(key, val);
   });
-  children.forEach(function(child){
+  children.forEach(function (child) {
     el.appendChild(child);
   });
   return el;
