@@ -6,3 +6,6 @@ refer/srl-*-yang-models
 
 72*.json
 ./features.txt
+
+.svelte-kit
+node_modules
