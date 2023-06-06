@@ -15,7 +15,7 @@ SRL_VER_LIST="${@:2}"
 
 GNMIC_CONTAINER=ghcr.io/openconfig/gnmic:0.31.0
 
-PYANG_CONTAINER=ghcr.io/hellt/pyang
+PYANG_CONTAINER=ghcr.io/hellt/pyang:2.5.3
 
 # Verify if model type is provided
 if [ "$MODEL_TYPE" = "srl_nokia" ]; then
