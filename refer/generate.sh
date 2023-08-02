@@ -13,7 +13,7 @@ MODEL_TYPE="$1"
 # SR Linux release version are passed as a space separated list of release version
 SRL_VER_LIST="${@:2}"
 
-GNMIC_CONTAINER=ghcr.io/openconfig/gnmic:0.31.0
+GNMIC_CONTAINER=ghcr.io/openconfig/gnmic:0.31.6
 
 PYANG_CONTAINER=ghcr.io/hellt/pyang:2.5.3
 
@@ -41,6 +41,14 @@ response_handler() {
   else
     echo "$2: OK"
   fi
+}
+
+# convert features from the D2L json file to pyang format so that we can generate
+# tree and jstree output for a featureset of D2L
+extract_pyang_features() {
+  features_mod="srl_nokia-features"
+  fs=$(cat ../../7220-IXR-D2L.json | jq -r 'join(",")')
+  echo ${features_mod}:${fs}
 }
 
 for SRL_VER in ${SRL_VER_LIST[@]}; do
@@ -89,12 +97,19 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
     mkdir -p combined
     find ./$MODEL_PATH -name "*.yang" | xargs -I % cp % combined
 
+    # extract pyang features
+    features=$(extract_pyang_features)
+    # echo "Features: $features"
+    # exit 1
+    
     # PYANG TREE
-    RESPONSE=$(docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH -f tree combined/*.yang -o tree.txt 2>&1 >/dev/null)
+    # echo docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH -f tree -F ${features} combined/*.yang -o tree.txt
+
+    RESPONSE=$(docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH -f tree -F ${features} combined/*.yang -o tree.txt 2>&1 >/dev/null)
     response_handler "$RESPONSE" "$SRL_VER-tree"
 
     # PYANG JSTREE
-    RESPONSE=$(docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH --plugindir /opt/pyang-oc-plugin -f oc-jstree --oc-jstree-strip combined/*.yang -o tree.html 2>&1 >/dev/null)
+    RESPONSE=$(docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH --plugindir /opt/pyang-oc-plugin -f oc-jstree -F ${features} --oc-jstree-strip combined/*.yang -o tree.html 2>&1 >/dev/null)
     response_handler "$RESPONSE" "$SRL_VER-jstree"
 
     # Delete combined folder
@@ -153,3 +168,4 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
     echo
   fi
 done
+
