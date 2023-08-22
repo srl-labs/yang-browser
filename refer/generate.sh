@@ -100,10 +100,13 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
     # extract pyang features
     features=$(extract_pyang_features)
     # echo "Features: $features"
-    # exit 1
     
     # PYANG TREE
-    # echo docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH -f tree -F ${features} combined/*.yang -o tree.txt
+    # this is just for testing of features that are missing in yang
+    # comment out when done
+    # docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH -f tree -F ${features} combined/*.yang -o tree.txt
+    # exit 1
+    # end of testing
 
     RESPONSE=$(docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH -f tree -F ${features} combined/*.yang -o tree.txt 2>&1 >/dev/null)
     response_handler "$RESPONSE" "$SRL_VER-tree"
