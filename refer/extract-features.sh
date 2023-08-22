@@ -9,14 +9,20 @@
 
 # note, that some features reported by the platform might not be present in the YANG, which cause the pyang to error.
 # to date the following features were identified as invalid for D2L platform, they have to be removed from the JSON file before `generate.sh` script is called
+# bgp-app-warm-restart
 # cam-cammgr-thread-programming
 # cam-multithread-programming
-# future-23-3
+# dynamic-mcid
+# future-23-7
 # ipv6
 # irb-interface,
+# l2-mac-learn-mgr-warm-restart
+# l2-mac-mgr-warm-restart
+# l2-static-mac-mgr-warm-restart
 # load-persistent-passwords-at-startup,
 # mgmt-server-app-warm-restart,
 # qos-high-threshold-system-limit,
+# snmp-mib-bgp
 # snmp-mib-chassis,
 # snmp-mib-interface
 
