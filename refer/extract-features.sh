@@ -62,7 +62,8 @@ for entry in *.json; do
 done
 
 # move the features file to the release folder
-mkdir -p ../../release/$SRL_VERSION
-mv $fn ../../release/$SRL_VERSION
+echo "macking directory $(realpath ./release/v$SRL_VERSION)"
+mkdir -p ./release/v$SRL_VERSION
+mv $fn ./release/v$SRL_VERSION
 
 echo "Features aggregated into a features.txt file!"
