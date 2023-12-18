@@ -35,19 +35,21 @@ set -e
 # export SRL_VERSION that is used by the containerlab to spin up the needed version of srl container
 export SRL_VERSION
 
-# remove all json files that might be there from previous extraction
-rm -f 72*.json
+# sudo -E containerlab deploy -c -t ./refer/all.clab.yml
 
-sudo -E containerlab deploy -c -t ./refer/all.clab.yml
+# remove all json files that might be there from previous extraction
+rm -f ./tmp/*.json
 
 for node in "7220-IXR-D1" "7220-IXR-D2" "7220-IXR-D2L" "7220-IXR-D3" "7220-IXR-D3L" "7220-IXR-D4" "7220-IXR-D5" "7220-IXR-D5T" "7220-IXR-H2" "7220-IXR-H3" "7220-IXR-H4" "7250-IXR-6" "7250-IXR-6e" "7250-IXR-10" "7250-IXR-10e"
 do
-    docker exec clab-all-${node} sr_cli 'info from state system features | as json' | jq .system.features >> ${node}.json &
+    docker exec clab-all-${node} sr_cli 'info from state system features | as json' | jq .system.features >> ./tmp/${node}.json &
 done
 
 wait
 echo "Features have been extracted to JSON files, proceeding with aggregating them into a single file..."
 
+# change to ./tmp
+pushd ./tmp
 # file name to extract features for all platforms
 fn="features.txt"
 
@@ -66,10 +68,12 @@ for entry in *.json; do
     # Write the name of the file and its fields to the output file
     echo "$platform: $features" >> $fn
 done
+popd
 
 # move the features file to the release folder
-echo "macking directory $(realpath ./release/v$SRL_VERSION)"
-mkdir -p ./release/v$SRL_VERSION
-mv $fn ./release/v$SRL_VERSION
+echo "making directory ./static/releases/v$SRL_VERSION"
+mkdir -p ./static/releases/v$SRL_VERSION
+
+mv ./tmp/$fn ./static/releases/v$SRL_VERSION
 
 echo "Features aggregated into a features.txt file!"
