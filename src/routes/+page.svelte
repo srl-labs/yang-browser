@@ -122,6 +122,6 @@
     </div>
   </div>
   <div class="flex-grow-0 flex-shrink-0">
-    <Footer home={false} />
+    <Footer home={true} />
   </div>
 </div>

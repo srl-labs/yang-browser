@@ -31,3 +31,14 @@ export interface TreePayLoad {
   release: string,
   paths: string[]
 }
+
+export interface PathDef {
+  path: string,
+  "path-with-prefix": string,
+  type: string,
+  "enum-values"?: string[],
+  description: string,
+  default?: string,
+  namespace?: string,
+  "if-features"?: string[]
+}

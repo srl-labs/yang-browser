@@ -1,7 +1,7 @@
 <script lang="ts">
   import { writable, derived } from 'svelte/store';
   
-  import type { PayLoad } from '$lib/structure';
+  import type { PathDef } from '$lib/structure';
 
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
@@ -12,7 +12,7 @@
   let paths = data.paths;
 
   // DEFAULTS
-  let count = 20;
+  let count = 40;
   let pathPrefix = false;
 
   let search = "";
@@ -27,14 +27,14 @@
   const scopeChange = (val: string) => scope = val;
   const spaceSplit = (str: string) => str.split(/\s+/);
 
-  const getState = (x) => ('is-state' in x ? "true" : "false");
-  const getPath = (x) => (pathPrefix ? x["path-with-prefix"] : x["path"])
-  const getEnumValues = (x) => ('enum-values' in x ? x["enum-values"].join(",") : '')
+  const getState = (x: PathDef) => ('is-state' in x ? "true" : "false");
+  const getPath = (x: PathDef) => (pathPrefix ? x["path-with-prefix"] : x["path"])
+  const getEnumValues = (x: PathDef) => ('enum-values' in x ? x["enum-values"].join(",") : '')
   const getSearchKeys = (str: string) => spaceSplit(str).join("|")
 
   const pathClearToTree = (str: string) => str.replaceAll("=*", "").replace("<mark>", "").replace("</mark>", "");
 
-  const searchTerm = (x, term: string) => {
+  const searchTerm = (x: PathDef, term: string) => {
     let keys = spaceSplit(term);
     let pathChosen = pathPrefix ? x["path-with-prefix"] : x["path"];
     let searchStr = pathChosen + ";" + x["type"];
@@ -75,7 +75,7 @@
 </script>
 
 <svelte:head>
-	<title>NSP Path Browser {release}</title>
+	<title>Nokia SR Linux {release} Yang Model</title>
 </svelte:head>
 
 <div class="min-w-[280px] overflow-x-auto font-nokia-headline-light">
@@ -163,6 +163,6 @@
         </tbody>
       </table>
     </div>
-    <Footer home={false}/>
-  </div>  
+  </div>
+  <Footer home={false}/>
 </div>
