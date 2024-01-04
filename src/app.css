@@ -24,6 +24,10 @@
 
   .dropdown:hover .dropdown-content {display: block;}
 
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+
   /* Scroll Light */
   .scroll-light::-webkit-scrollbar {
     width: 2px;

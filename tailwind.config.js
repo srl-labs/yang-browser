@@ -5,7 +5,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        'nokia-old-blue': 'rgb(18, 65, 145)',
+        'nokia-blue': '#005AFF',
+        'nokia-blue-black': '#001135',
+        'nokia-old-blue': 'rgb(18, 65, 145)'
       }
     },
     fontFamily: {

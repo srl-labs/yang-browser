@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from "svelte";
 	import { pathFocus } from '$lib/components/sharedStore';
 
 	export let expanded = true;
@@ -47,9 +48,8 @@
 				{#if entry.children.length > 0}
 					<svelte:self {modelName} {...entry} expanded={false} urlPath={urlPath} />
 				{:else}
-					{@const item = entry.details.split(";")}
 					<button class="ml-2.5 px-2 py-0.5 text-blue-600 dark:text-blue-500 hover:underline" on:click={() => pathFocus.set(entry.details)}>
-						<div title="{item[1]}">{entry.name}</div>
+						<div title="{entry.details.path}">{entry.name}</div>
 					</button>
 				{/if}
 			</li>

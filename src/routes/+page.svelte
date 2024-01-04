@@ -46,7 +46,7 @@
 	<title>Nokia SR Linux Yang Models</title>
 </svelte:head>
 
-<div class="flex flex-col items-center min-h-screen pt-5 has-header-img font-nokia-headline-light">
+<div class="flex flex-col items-center min-h-screen pt-5 has-header-img font-nunito">
   <div class="flex-grow-0 flex-shrink-0">
     <div class="text-sm">
       <a class="px-3 py-1.5 bg-blue-500 text-white rounded-full text-center inline-block items-center" href="https://learn.srlinux.dev/yang/browser" target="_blank" rel="noreferrer">
@@ -64,11 +64,11 @@
       <div class="flex">
         <div class="py-5 space-y-6">
           <p><img src="/images/nokia_b.png" width="90" alt="Logo" /></p>
-          <h3 class="text-3xl font-light text-nokia-old-blue">SR Linux Yang Models</h3>
+          <h3 class="text-3xl font-light text-blue-900">SR Linux Yang Models</h3>
           {#each top4 as major}
             <div class="flex items-center">
               <p class="mr-4 text-xl">{major}</p>
-              <div class="flex flex-wrap gap-2">
+              <div class="flex items-center flex-wrap gap-2 text-sm">
                 {#each rs[major].top3 as minor}
                   <a class="px-3 py-1.5 border border-black rounded text-center w-20" href="{minor}">{minor.slice(1)}</a>
                 {/each}
@@ -80,7 +80,7 @@
                     </svg>
                   </button>
                   <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-white rounded-lg shadow md:w-32 max-h-[150px] overflow-y-auto">
-                    <ul class="py-2 text-sm text-gray-700">
+                    <ul class="py-2 text-gray-700">
                       {#each rs[major].others as entry}
                         <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-100">{entry.slice(1)}</a></li>
                       {/each}
@@ -93,7 +93,7 @@
         </div>
       </div>
       <div class="flex">
-        <div class="px-6 py-5 bg-white rounded shadow-xl space-y-4 max-w-[650px]">
+        <div class="px-6 py-5 bg-white rounded shadow-xl space-y-4 max-w-[650px] text-sm">
           <p>
             <a class="text-blue-700 hover:underline" href="https://www.nokia.com/networks/products/service-router-linux-NOS" target="_blank" rel="noreferrer">Nokia SR Linux</a> 
             makes extensive use of structured data models. Each application regardless if it's being provided by Nokia or written by a user against the NDK has a 
@@ -112,7 +112,7 @@
               to traverse the tree representation of the entire YANG data model of SR Linux
             </li>
             <li class="ml-8">
-              Source <code class="text-sm">.yang</code> files neatly stored in a 
+              Source <code class="text-xs">.yang</code> files neatly stored in a 
               <a class="text-blue-700 hover:underline" href="https://github.com/nokia/srlinux-yang-models" target="_blank" rel="noreferrer">nokia/srlinux-yang-models</a>
               repository for programmatic access and code generation
             </li>

@@ -78,7 +78,7 @@
 	<title>Nokia SR Linux {release} Yang Model</title>
 </svelte:head>
 
-<div class="min-w-[280px] overflow-x-auto font-nokia-headline-light">
+<div class="min-w-[280px] overflow-x-auto font-nunito">
   <Header release={release} home={true} />
   <div class="p-6 dark:bg-gray-800">
     <div class="mb-2">

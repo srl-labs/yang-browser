@@ -2,13 +2,6 @@
 	import { browser } from "$app/environment";
 	import { onMount } from "svelte";
 
-  import type { Releases } from '$lib/structure';
-
-  import yaml from 'js-yaml';
-  import rel from '$lib/releases.yaml?raw';
-  const allReleases = yaml.load(rel) as Releases;
-  const validReleases = Object.keys(allReleases);
-
   let darkMode = false;
 
   export let release: string;
@@ -46,32 +39,23 @@
 
 </script>
 
-<div class="p-6 bg-white dark:bg-gray-800">
+<div class="px-6 py-10 has-header-img">
   <div class="flex justify-between">
     <div class="flex items-center">
-      <a class="flex mr-2" href="../"><img src="/images/{darkMode ? 'nokia_w.png' : 'nokia_b.png'}" width="70" alt="Logo"/></a>
-    </div>
-    <div class="hidden md:flex items-center">
-      <p class="text-nokia-old-blue dark:text-white text-xl">SR Linux <span class="font-extrabold">{release}</span> Yang Model</p>
+      <a class="flex mr-3" href="../"><img src="/images/navbar-logo.png" width="25" alt="Logo"/></a>
+      <p class="text-gray-800 text-xl font-light">SR Linux <span class="font-extrabold">{release}</span> Yang Model</p>
     </div>
     <div class="flex items-center">
-      <div class="dropdown ml-4 relative">
-        <button class="dropdown-button text-center inline-flex items-center py-1 px-2 bg-gray-200 hover:bg-gray-300 rounded-full text-xs">
+      <a class="text-xs text-white bg-gray-500 hover:bg-gray-600 px-3 py-1 rounded-full text-center" href="/{release}{home ? '/tree' : ''}">{home ? 'Tree' : 'Path'} Browser</a>
+      <div class="dropdown ml-3 relative">
+        <button class="dropdown-button text-center inline-flex items-center py-1 px-2 text-white bg-gray-500 hover:bg-gray-600 rounded-full text-xs">
           More
           <svg class="w-2 h-2 ms-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
           </svg>
         </button>
-        <div id="dropdownHover" class="dropdown-content absolute right-0 z-10 w-36 hidden bg-white rounded-lg shadow">
+        <div id="dropdownHover" class="dropdown-content absolute right-0 z-10 hidden bg-white rounded-lg shadow">
           <ul class="py-2 text-sm text-gray-700">
-            <li>
-              <a class="flex items-center px-4 py-2 hover:bg-gray-100" href="/{release}{home ? '/tree' : ''}" target="_blank">
-                <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 19 19">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.013 7.962a3.519 3.519 0 0 0-4.975 0l-3.554 3.554a3.518 3.518 0 0 0 4.975 4.975l.461-.46m-.461-4.515a3.518 3.518 0 0 0 4.975 0l3.553-3.554a3.518 3.518 0 0 0-4.974-4.975L10.3 3.7"/>
-                </svg>
-                Tree Browser
-              </a>
-            </li>
             <li>
               <a class="flex items-center px-4 py-2 hover:bg-gray-100" href="/releases/{release}/tree.txt" target="_blank">
                 <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
