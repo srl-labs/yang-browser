@@ -4,6 +4,7 @@ export interface Releases {
 
 export interface Release {
   openconfig: boolean
+  features: boolean
 }
 
 export interface HomeGroup {
@@ -16,14 +17,12 @@ export interface HomeGroup {
   }
 }
 
-export interface Other {
-  name: string, 
-  path: string
-}
-
 export interface PayLoad {
   release: string,
-  paths: string[]
+  paths: string[],
+  features?: {
+    [key: string]: string
+  }
 }
 
 export interface TreePayLoad {

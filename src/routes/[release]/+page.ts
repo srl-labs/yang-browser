@@ -18,9 +18,21 @@ export async function load({ url, fetch, params }) {
       const resp = await fetch(fetchUrl);
       const yangPaths = await resp.json();
 
-      return {
-        release: release,
-        paths: await yangPaths
+      if(allReleases[release].features) {
+        const featureUrl = `${pathUrl}/releases/${release}/features.txt`;
+        const featureResp = await fetch(featureUrl);
+        const featureRaw = await featureResp.text();
+        return {
+          release: release,
+          paths: await yangPaths,
+          features: await yaml.load(featureRaw)
+        }
+      }
+      else {
+        return {
+          release: release,
+          paths: await yangPaths
+        }
       }
     } catch(e) {
       throw error(404, "Error fetching yang tree");

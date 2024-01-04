@@ -1,15 +1,20 @@
 <script lang="ts">
   import { writable, derived } from 'svelte/store';
   
-  import type { PathDef } from '$lib/structure';
+  import type { PayLoad, PathDef } from '$lib/structure';
 
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
 
-  /** @type {import('./$types').PageData} */
-	export let data;
+	export let data: PayLoad;
   let release = data.release;
   let paths = data.paths;
+  let features: any = {};
+  if("features" in data) {
+    for (const [key, value] of Object.entries(data.features)) {
+      features[key] = value.split(/\s+/);
+    }
+  }
 
   // DEFAULTS
   let count = 40;

@@ -1,48 +1,72 @@
 v23.10.1:
   openconfig: true
+  features: true
 v23.7.2:
   openconfig: true
+  features: true
 v23.7.1:
   openconfig: true
+  features: true
 v23.3.3:
   openconfig: true
+  features: true
 v23.3.2:
   openconfig: true
+  features: true
 v23.3.1:
   openconfig: true
+  features: true
 v22.11.2:
   openconfig: true
+  features: true
 v22.11.1:
   openconfig: true
+  features: true
 v22.6.4:
   openconfig: true
+  features: false
 v22.6.3:
   openconfig: true
+  features: false
 v22.6.2:
   openconfig: true
+  features: false
 v22.6.1:
   openconfig: true
+  features: false
 v22.3.3:
   openconfig: true
+  features: false
 v22.3.2:
   openconfig: true
+  features: false
 v22.3.1:
   openconfig: true
+  features: false
 v21.11.3:
   openconfig: true
+  features: false
 v21.11.2:
   openconfig: true
+  features: false
 v21.11.1:
   openconfig: true
+  features: false
 v21.6.4:
   openconfig: false
+  features: false
 v21.6.3:
   openconfig: false
+  features: false
 v21.6.2:
   openconfig: false
+  features: false
 v21.6.1:
   openconfig: false
+  features: false
 v21.3.2:
   openconfig: false
+  features: false
 v21.3.1:
   openconfig: false
+  features: false
