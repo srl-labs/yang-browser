@@ -30,6 +30,7 @@
   const getState = (x) => ('is-state' in x ? "true" : "false");
   const getPath = (x) => (pathPrefix ? x["path-with-prefix"] : x["path"])
   const getEnumValues = (x) => ('enum-values' in x ? x["enum-values"].join(",") : '')
+  const getSearchKeys = (str: string) => spaceSplit(str).join("|")
 
   const pathClearToTree = (str: string) => str.replaceAll("=*", "").replace("<mark>", "").replace("</mark>", "");
 
@@ -41,20 +42,16 @@
     return output;
   }
 
-  const markTerm = (x, term: string) => {
-    let keys = spaceSplit(term);
-    const pattern = new RegExp(keys.join('|'), 'g');
-    let tmp = "";
-    if(pathPrefix) {
-      tmp = x["path-with-prefix"].replace(pattern, match => `<mark>${match}</mark>`);
-      x["path-with-prefix"] = tmp;
-    } else {
-      tmp = x["path"].replace(pattern, match => `<mark>${match}</mark>`);
-      x["path"] = tmp;
-    }
-    tmp = x["type"].replace(pattern, match => `<mark>${match}</mark>`);
-    x["type"] = tmp;
-    return x;
+  const highlight = (node: HTMLDivElement, [rawRex, text]: [string, string]) => {
+    let marker = (txt: string, rex: RegExp) => txt.replace(rex, (term) => `<mark>${term}</mark>`);
+    let action = () => node.innerHTML = marker(text, new RegExp(rawRex, "g"));
+    action();
+    return {
+      update(obj: [string, string]) {
+        [rawRex, text] = obj;
+        action();
+      },
+    };
   }
 
   // WRITABLE STORES
@@ -66,13 +63,11 @@
 
   let yangFilter = derived([term, stateFilter],  ([$term, $stateFilter]) => $stateFilter.filter((x: any) => searchTerm(x, $term)));
 
-  let highlight = derived([term, yangFilter],  ([$term, $yangFilter]) => $yangFilter.map((x: any) => $term != "" ? markTerm(x, $term) : x));
-
-  let total = derived(highlight, ($highlight) => {start.set(0); return $highlight.length});
+  let total = derived(yangFilter, ($yangFilter) => {start.set(0); return $yangFilter.length});
 
   let end = derived([start, total], ([$start, $total]) => ($start + count) <= $total ? ($start + count) : $total);
 
-  let paginated = derived([start, end, highlight], ([$start, $end, $highlight]) => $highlight.slice($start, $end));
+  let paginated = derived([start, end, yangFilter], ([$start, $end, $yangFilter]) => $yangFilter.slice($start, $end));
 
   // UPDATE TABLE PAGINATION
   const updateTable = (s: number) => {if(s >= 0 && s < $total) start.set(s)}
@@ -147,8 +142,8 @@
             {#each $paginated as item}
               <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300">
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{getState(item)}</td>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div title="{item["description"]}">{@html getPath(item)}</div></td>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div title="{getEnumValues(item)}">{@html item["type"]}</div></td>
+                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div title="{item["description"]}" use:highlight={[getSearchKeys($term), getPath(item)]}></div></td>
+                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div title="{getEnumValues(item)}" use:highlight={[getSearchKeys($term), item["type"]]}></div></td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
                   <div title="Show path in tree">
                     <a data-sveltekit-preload-data="tap" href="/{release}/tree?path={pathClearToTree(item["path"])}">
