@@ -7,7 +7,7 @@
 
   const releases = yaml.load(rel) as Releases;
   const all = Object.keys(releases).sort().reverse();
-  const top4 = [...new Set(all.map(r => r.split(".")[0]))].slice(0, 2);
+  const top4 = [...new Set(all.map(r => r.split(".")[0]))].slice(0, 3);
 
   let rs: HomeGroup = {};
   let archive: string[] = [];

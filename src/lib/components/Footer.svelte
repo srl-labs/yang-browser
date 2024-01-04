@@ -4,7 +4,7 @@
 
 <br />
 <p
-	class="p-5 text-sm text-center font-nunito {home
+	class="p-5 text-sm text-center {home
 		? 'text-gray-200'
 		: 'text-gray-500 dark:text-gray-400'}">
 	Created by
