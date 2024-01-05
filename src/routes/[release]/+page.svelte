@@ -85,7 +85,7 @@
 
 <div class="min-w-[280px] overflow-x-auto font-nunito">
   <Header release={release} home={true} />
-  <div class="p-6 dark:bg-gray-800">
+  <div class="p-6 dark:bg-gray-800 container mx-auto">
     <div class="mb-2">
       <input type="text" id="search" bind:value={search} placeholder="Search..." class="w-full px-3 py-2 text-sm rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
     </div>  

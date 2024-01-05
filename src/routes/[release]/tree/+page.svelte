@@ -95,7 +95,7 @@
 
 <div class="min-w-[280px] overflow-x-auto font-nunito">
   <Header release={release} home={false} />
-  <div class="p-6 dark:bg-gray-800 overflow-x-auto text-sm">
+  <div class="p-6 dark:bg-gray-800 overflow-x-auto text-sm container mx-auto">
     <div class="font-fira text-xs tracking-tight">
       <YangTree modelName="{release}" name={$yangTarget.name} children={$yangTarget.children} details={$yangTarget.details} urlPath={urlPath} />
     </div>

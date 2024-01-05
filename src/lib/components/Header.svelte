@@ -39,23 +39,32 @@
 
 </script>
 
-<div class="px-6 py-10 has-header-img">
-  <div class="flex justify-between">
+<div class="py-10 has-header-img">
+  <div class="px-6 flex justify-between container mx-auto">
     <div class="flex items-center">
-      <a class="flex mr-3" href="../"><img src="/images/navbar-logo.png" width="25" alt="Logo"/></a>
-      <p class="text-gray-800 text-xl font-light">SR Linux <span class="font-extrabold">{release}</span> Yang Model</p>
+      <a class="flex mr-3" href="../"><img src="/images/navbar-logo.png" width="30" alt="Logo"/></a>
+      <div>
+        <p class="text-gray-800 text-xl">SR Linux <a class="hover:text-blue-700" href="/{release}">{release}</a></p>
+        <p class="text-gray-800 text-xs">Yang Model</p>
+      </div>
     </div>
     <div class="flex items-center">
-      <a class="text-xs text-white bg-gray-500 hover:bg-gray-600 px-3 py-1 rounded-full text-center" href="/{release}{home ? '/tree' : ''}">{home ? 'Tree' : 'Path'} Browser</a>
-      <div class="dropdown ml-3 relative">
-        <button class="dropdown-button text-center inline-flex items-center py-1 px-2 text-white bg-gray-500 hover:bg-gray-600 rounded-full text-xs">
-          More
-          <svg class="w-2 h-2 ms-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+        <div class="dropdown ml-3 relative">
+        <button class="dropdown-button text-center inline-flex items-center text-xs">
+          <svg class="w-4 h-4 hover:text-blue-700" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.143 1H1.857A.857.857 0 0 0 1 1.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 7 6.143V1.857A.857.857 0 0 0 6.143 1Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 17 6.143V1.857A.857.857 0 0 0 16.143 1Zm-10 10H1.857a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 7 16.143v-4.286A.857.857 0 0 0 6.143 11Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286a.857.857 0 0 0 .857-.857v-4.286a.857.857 0 0 0-.857-.857Z"/>
           </svg>
         </button>
-        <div id="dropdownHover" class="dropdown-content absolute right-0 z-10 hidden bg-white rounded-lg shadow">
+        <div id="dropdownHover" class="dropdown-content absolute right-0 z-10 hidden w-36 bg-white rounded-lg shadow">
           <ul class="py-2 text-sm text-gray-700">
+            <li>
+              <a class="flex items-center px-4 py-2 hover:bg-gray-100" href="/{release}{home ? '/tree' : ''}">
+                <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 1v4a1 1 0 0 1-1 1H1m5 8.514L4 12.5l2-2m4 4.014 2-2.014-2-2m5 7.5a.97.97 0 0 1-.933 1H1.933A.97.97 0 0 1 1 18V5.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 5.828 1h8.239A.97.97 0 0 1 15 2v16Z"/>
+                </svg>
+                {home ? 'Tree' : 'Path'} Browser
+              </a>
+            </li>
             <li>
               <a class="flex items-center px-4 py-2 hover:bg-gray-100" href="/releases/{release}/tree.txt" target="_blank">
                 <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
@@ -83,7 +92,7 @@
           </ul>
         </div>
       </div>
-      <button class="flex w-8 h-5 ml-3 rounded-full items-center transition duration-30 {darkMode ? 'bg-gray-500' : 'bg-gray-400'}" on:click={toggleDarkMode}>
+      <button class="flex w-8 h-5 ml-4 mb-1.5 rounded-full items-center transition duration-30 {darkMode ? 'bg-gray-500' : 'bg-gray-400'}" on:click={toggleDarkMode}>
         <div id="switch-toggle" class="w-5 h-5 p-1 relative rounded-full transition duration-500 transform {darkMode ? 'bg-gray-600 translate-x-3' : 'bg-white -translate-x-0' }">
           <svg id="toggle-light-icon" class="text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -94,9 +103,5 @@
         </div>
       </button>
     </div>
-  </div>
-  <div class="md:hidden pt-6 text-center">
-    <p class="text-nokia-old-blue text-2xl">SR Linux <span class="font-extrabold">{release}</span></p>
-    <p class="text-nokia-old-blue text-2xl">Yang Model</p>
   </div>
 </div>
