@@ -9,16 +9,22 @@
 	export let data: PayLoad;
   let release = data.release;
   let paths = data.paths;
-  let features: any = {};
+  let platforms: any = {};
+  let features: string[] = [];
   if("features" in data) {
+    let allFeatures: string[] = [];
     for (const [key, value] of Object.entries(data.features)) {
-      features[key] = value.split(/\s+/);
+      let platformFeatures = value.split(/\s+/);
+      platforms[key] = platformFeatures;
+      allFeatures = allFeatures.concat(platformFeatures);
     }
+    features = [...new Set(allFeatures)].sort();
   }
 
   // DEFAULTS
   let count = 40;
   let pathPrefix = false;
+  let moreFilters = false;
 
   let search = "";
   let term = writable("");
@@ -83,9 +89,9 @@
 	<title>Nokia SR Linux {release} Yang Model</title>
 </svelte:head>
 
-<div class="min-w-[280px] overflow-x-auto font-nunito">
+<div class="min-w-[280px] overflow-x-auto font-nunito dark:bg-gray-800">
   <Header release={release} home={true} />
-  <div class="p-6 dark:bg-gray-800 container mx-auto">
+  <div class="p-6 container mx-auto">
     <div class="mb-2">
       <input type="text" id="search" bind:value={search} placeholder="Search..." class="w-full px-3 py-2 text-sm rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
     </div>  
@@ -122,9 +128,58 @@
         {/if}
       </div>
     </div>
-    <div class="flex items-center px-3 py-1 w-fit border hover:border-gray-300 dark:border-gray-500 dark:hover:border-gray-400 rounded-full cursor-pointer">
-      <input id="prefix-checkbox" type="checkbox" value="" class="w-3 h-3 cursor-pointer" checked={pathPrefix} on:change={() => pathPrefix = !pathPrefix}>
-      <label for="prefix-checkbox" class="ms-2 text-xs font-medium text-gray-900 dark:text-gray-300 select-none cursor-pointer">Show prefix</label>
+    <div class="flex items-center">
+      <div class="flex items-center px-3 py-1 w-fit border hover:border-gray-300 dark:border-gray-500 dark:hover:border-gray-400 rounded-full cursor-pointer">
+        <input id="prefix-checkbox" type="checkbox" class="w-3 h-3 cursor-pointer" checked={pathPrefix} on:change={() => pathPrefix = !pathPrefix}>
+        <label for="prefix-checkbox" class="ms-2 text-xs text-gray-900 dark:text-gray-300 select-none cursor-pointer">Show prefix</label>
+      </div>
+      <button class="flex items-center ml-2 px-3 py-1 w-fit text-xs rounded-full bg-blue-100 hover:bg-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600 dark:text-white" on:click={() => moreFilters = !moreFilters}>
+        {#if !moreFilters}
+          <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+          </svg>
+        {/if}
+        {#if moreFilters}
+          <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+          </svg>
+        {/if}
+        Filters
+      </button>
+    </div>
+    <div class="{moreFilters ? 'block' : 'hidden'}">
+      <div class="flex items-center mt-4 text-sm space-x-6">
+        <div class="rounded-lg border border-gray-200 dark:border-gray-600">
+          <p class="px-4 py-2 font-bold text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">Platform</p>
+          <div class="overflow-y-auto h-72">
+            <ul class="w-40">
+              {#each Object.keys(platforms) as entry, i}
+                <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
+                  <div class="flex items-center px-3">
+                    <input id="radio-{entry}" type="radio" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-600">
+                    <label for="radio-{entry}" class="w-full py-2 ms-2 text-[13px] text-gray-900 dark:text-gray-300">{entry}</label>
+                  </div>
+                </li>
+              {/each}
+            </ul>
+          </div>
+        </div>
+        <div class="rounded-lg border border-gray-200 dark:border-gray-600">
+          <p class="px-4 py-2 font-bold text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">Features</p>
+          <div class="overflow-y-auto h-72">
+            <ul>
+              {#each features as entry, i}
+                <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
+                  <div class="flex items-center px-3">
+                    <input id="checkbox-{entry}" type="checkbox" name="list-radio" class="w-3 h-3">
+                    <label for="checkbox-{entry}" class="w-full py-2 ms-2 text-[13px] text-gray-900 dark:text-gray-300">{entry}</label>
+                  </div>
+                </li>
+              {/each}
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="overflow-x-auto max-w-full mt-5">
       <table class="text-left w-full">
@@ -134,7 +189,7 @@
           <col span="1" class="w-[13%]">
           <col span="1" class="w-[2%]">
         </colgroup>
-        <thead class="text-xs uppercase text-gray-800 dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
+        <thead class="text-xs uppercase text-gray-800 dark:text-gray-300 bg-gray-100 dark:bg-gray-700">
           <tr>
             <th scope="col" class="p-3">State</th>
             <th scope="col" class="p-3">Path</th>

@@ -68,16 +68,16 @@
       <div class="flex">
         <div class="py-5 space-y-6">
           <p><img src="/images/nokia_b.png" width="80" alt="Logo" /></p>
-          <h3 class="text-2xl font- text-blue-900">SR Linux Yang Models</h3>
+          <h3 class="text-3xl text-nokia-old-blue font-light">SR Linux Yang Models</h3>
           {#each top4 as major}
             <div class="flex items-center">
               <p class="mr-4 text-xl">{major}</p>
               <div class="flex items-center flex-wrap gap-2 text-sm">
                 {#each rs[major].top3 as minor}
-                  <a class="px-3 py-1.5 border border-black rounded text-center w-20" href="{minor}">{minor.slice(1)}</a>
+                  <a class="px-3 py-1.5 border border-gray-700 hover:bg-gray-700 hover:text-white rounded text-center w-20" href="{minor}">{minor.slice(1)}</a>
                 {/each}
                 <div class="dropdown">
-                  <button class="dropdown-button px-3 py-1.5 border border-black rounded text-center w-20 inline-flex items-center">
+                  <button class="dropdown-button px-3 py-1.5 border border-gray-700 hover:bg-gray-700 hover:text-white rounded text-center w-20 inline-flex items-center">
                     More
                     <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
@@ -86,7 +86,7 @@
                   <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-white rounded-lg shadow md:w-32 max-h-[150px] overflow-y-auto">
                     <ul class="py-2 text-gray-700">
                       {#each rs[major].others as entry}
-                        <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-100">{entry.slice(1)}</a></li>
+                        <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-200">{entry.slice(1)}</a></li>
                       {/each}
                     </ul>
                   </div>
