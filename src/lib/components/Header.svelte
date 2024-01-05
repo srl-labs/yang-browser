@@ -39,16 +39,16 @@
 
 </script>
 
-<div class="has-header-img py-5">
+<div class="has-header-img dark:has-header-img-inverted py-5">
   <div class="px-6 container mx-auto">
     <div class="flex justify-between">
       <div class="flex items-center">
-        <a class="flex mr-3" href="../"><img src="/images/nokia_b.png" width="80" alt="Logo"/></a>
+        <a class="flex mr-3" href="../"><img src="/images/{darkMode ? 'nokia_w.png' : 'nokia_b.png'}" width="80" alt="Logo"/></a>
       </div>
       <div class="flex items-center">
         <div class="dropdown ml-3 relative">
           <button class="dropdown-button text-center inline-flex items-center text-xs">
-            <svg class="w-4 h-4 hover:text-blue-700" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+            <svg class="w-4 h-4 hover:text-blue-700 dark:text-white dark:hover:text-blue-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.143 1H1.857A.857.857 0 0 0 1 1.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 7 6.143V1.857A.857.857 0 0 0 6.143 1Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 17 6.143V1.857A.857.857 0 0 0 16.143 1Zm-10 10H1.857a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 7 16.143v-4.286A.857.857 0 0 0 6.143 11Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286a.857.857 0 0 0 .857-.857v-4.286a.857.857 0 0 0-.857-.857Z"/>
             </svg>
           </button>
@@ -102,8 +102,8 @@
       </div>
     </div>
     <div class="py-10 text-center">
-      <p class="text-nokia-old-blue font-light text-3xl">SR Linux <a class="hover:text-blue-700 font-normal" href="/{release}">{release}</a></p>
-      <p class="text-gray-800">{home ? 'Path' : 'Tree'} Browser</p>
+      <p class="text-nokia-old-blue dark:text-white font-light text-3xl">SR Linux <a class="hover:text-blue-700 font-normal" href="/{release}">{release}</a></p>
+      <p class="text-gray-800 dark:text-white">{home ? 'Path' : 'Tree'} Browser</p>
     </div>
   </div>
 </div>
