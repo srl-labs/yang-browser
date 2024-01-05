@@ -101,7 +101,7 @@
         </button>
       </div>
     </div>
-    <div class="py-10">
+    <div class="py-10 text-center">
       <p class="text-nokia-old-blue font-light text-3xl">SR Linux <a class="hover:text-blue-700 font-normal" href="/{release}">{release}</a></p>
       <p class="text-gray-800">{home ? 'Path' : 'Tree'} Browser</p>
     </div>
