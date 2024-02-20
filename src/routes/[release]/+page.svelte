@@ -34,6 +34,14 @@
   let state = writable("");
   $: state.set(scope);
 
+  let platformSearch = "";
+  let platFind = writable("");
+  $: platFind.set(platformSearch.trim());
+
+  let featureSearch = "";
+  let featFind = writable("");
+  $: featFind.set(featureSearch.trim());
+
   // INTERNAL FUNCTIONS
   const scopeChange = (val: string) => scope = val;
   const spaceSplit = (str: string) => str.split(/\s+/);
@@ -68,8 +76,17 @@
   // WRITABLE STORES
   let start = writable(0);
   let yangPaths = writable(paths);
+  let platStore = writable(Object.keys(platforms));
+  let featStore = writable(features);
+
+  let platSelect = writable("");
+  let featSelect = derived(platSelect, ($platSelect) => $platSelect != "" ? platforms[$platSelect]: []);
 
   // DERIVED STORES
+  let platList = derived([platFind, platStore],  ([$platFind, $platStore]) => $platStore.filter((x: string) => x.includes($platFind)));
+  
+  let featList = derived([featFind, featStore],  ([$featFind, $featStore]) => $featStore.filter((x: string) => x.includes($featFind)));
+  
   let stateFilter = derived([state, yangPaths], ([$state, $yangPaths]) => $yangPaths.filter((x: any) => $state == "" ? true : getState(x) == $state));
 
   let yangFilter = derived([term, stateFilter],  ([$term, $stateFilter]) => $stateFilter.filter((x: any) => searchTerm(x, $term)));
@@ -147,16 +164,19 @@
         Filters
       </button>
     </div>
-    <div class="{moreFilters ? 'block' : 'hidden'}">
-      <div class="flex items-center mt-4 text-sm space-x-6">
-        <div class="rounded-lg border border-gray-200 dark:border-gray-600">
+    <div class="{moreFilters ? 'block' : 'block'}">
+      <div class="flex flex-wrap items-start mt-4 text-sm md:space-x-6">
+        <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-40">
           <p class="px-4 py-2 font-bold text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">Platform</p>
-          <div class="overflow-y-auto h-72">
-            <ul class="w-40">
-              {#each Object.keys(platforms) as entry, i}
+          <div class="p-2 border-b border-gray-200 dark:border-gray-600">
+            <input type="text" id="platformSearch" bind:value={platformSearch} placeholder="Search..." class="w-full px-3 py-1 text-xs rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
+          </div>
+          <div class="overflow-y-auto max-h-72 scroll-light dark:scroll-dark">
+            <ul class="">
+              {#each $platList as entry, i}
                 <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
                   <div class="flex items-center px-3">
-                    <input id="radio-{entry}" type="radio" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-600">
+                    <input id="radio-{entry}" type="radio" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-600" on:click={platSelect.set(entry)}>
                     <label for="radio-{entry}" class="w-full py-2 ms-2 text-[13px] text-gray-900 dark:text-gray-300">{entry}</label>
                   </div>
                 </li>
@@ -164,14 +184,17 @@
             </ul>
           </div>
         </div>
-        <div class="rounded-lg border border-gray-200 dark:border-gray-600">
+        <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-fit mt-5 md:mt-0">
           <p class="px-4 py-2 font-bold text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">Features</p>
-          <div class="overflow-y-auto h-72">
+          <div class="p-2 border-b border-gray-200 dark:border-gray-600">
+            <input type="text" id="featureSearch" bind:value={featureSearch} placeholder="Search..." class="w-full px-3 py-1 text-xs rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
+          </div>
+          <div class="overflow-y-auto max-h-72 scroll-light dark:scroll-dark">
             <ul>
-              {#each features as entry, i}
+              {#each $featList as entry, i}
                 <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
                   <div class="flex items-center px-3">
-                    <input id="checkbox-{entry}" type="checkbox" name="list-radio" class="w-3 h-3">
+                    <input id="checkbox-{entry}" type="checkbox" name="list-checkbox" class="w-3 h-3" checked={selectedFeatures.includes(entry) ? true : false}>
                     <label for="checkbox-{entry}" class="w-full py-2 ms-2 text-[13px] text-gray-900 dark:text-gray-300">{entry}</label>
                   </div>
                 </li>
