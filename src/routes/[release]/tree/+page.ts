@@ -14,21 +14,54 @@ export async function load({ url, fetch, params }) {
   const validReleases = Object.keys(allReleases);
 
   if(validReleases.includes(release)) {
-    if (url.searchParams.has("path")) {
-      path = url.searchParams.get("path").trim();
-    }
-    try {
-      const fetchUrl = `${pathUrl}/releases/${release}/paths.json`;
-      const resp = await fetch(fetchUrl);
-      const yangPaths = await resp.json();
+    let urlPath = "";
+    let modelTitle = "Nokia"
+    let model = "nokia"
 
-      return {
-        path: path,
-        release: release,
-        paths: await yangPaths
+    if (url.searchParams.has("path")) {
+      urlPath = url.searchParams.get("path").trim();
+    }
+
+    if (url.searchParams.has("model")) {
+      model = url.searchParams.get("model").trim()
+    }
+    
+    if(model != "openconfig" && model != "nokia") {
+      throw error(404, "Unsupported model")
+    } else {
+      let other = []
+      if(model == "openconfig") {
+        if(allReleases[release].openconfig) {
+          modelTitle = "OpenConfig"
+          other.push({name: "Nokia", path: `/${release}/tree`})
+        } else {
+          throw error(404, "Unsupported model")
+        }
+      } else {
+        if(allReleases[release].openconfig) {
+          other.push({name: "OpenConfig", path: `/${release}/tree?model=openconfig`})
+        }
       }
-    } catch(e) {
-      throw error(404, "Error fetching yang tree");
+
+      try {
+        let fetchUrl = `${pathUrl}/releases/${release}/paths.json`
+        if (model !== "nokia") {
+          fetchUrl = `${pathUrl}/releases/${release}/${model}/paths.json`
+        }
+        const resp = await fetch(fetchUrl);
+        const yangPaths = await resp.json();
+
+        return {
+          urlPath: urlPath,
+          model: model,
+          modelTitle: modelTitle,
+          release: release,
+          other: other,
+          paths: await yangPaths
+        }
+      } catch(e) {
+        throw error(404, "Error fetching yang tree");
+      }
     }
   } else {
     throw error(404, "Unsupported Release");

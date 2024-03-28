@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from "svelte";
 	import { pathFocus } from '$lib/components/sharedStore';
 
 	export let expanded = true;
@@ -11,7 +10,7 @@
 	const dump = details;
 
 	// EXPAND OVERRIDE IF PATH PARAM IN URL
-	if(modelName != name) expanded = urlPath.includes(name) ? true : false;
+	if(modelName != name) expanded = urlPath.split("/").includes(name) ? true : false;
 	
 	// LOCAL FUNCTIONS
 	const toggle = () => expanded = !expanded;

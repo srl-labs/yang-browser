@@ -17,18 +17,35 @@ export interface HomeGroup {
   }
 }
 
+export interface Other {
+  name: string, 
+  path: string
+}
+
 export interface PayLoad {
+  model: string,
+  modelTitle: string, 
   release: string,
+  other: Other[],
   paths: string[],
-  features?: {
-    [key: string]: string
-  }
+  features: Platforms
+}
+
+export interface Platforms {
+  [key: string]: string
+}
+
+export interface PlatformFeatures {
+  [key: string]: string[]
 }
 
 export interface TreePayLoad {
-  path: string,
+  urlPath: string,
+  model: string,
+  modelTitle: string, 
   release: string,
-  paths: string[]
+  other: Other[],
+  paths: string[],
 }
 
 export interface PathDef {
@@ -39,5 +56,5 @@ export interface PathDef {
   description: string,
   default?: string,
   namespace?: string,
-  "if-features"?: string[]
+  "if-features": string[]
 }

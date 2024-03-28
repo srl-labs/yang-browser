@@ -2,9 +2,14 @@
 	import { browser } from "$app/environment";
 	import { onMount } from "svelte";
 
+  import type { Other } from '$lib/structure';
+
   let darkMode = false;
 
+  export let model: string;
+  export let modelTitle: string;
   export let release: string;
+  export let other: Other[];
   export let home: boolean;
 
   // THEME HANDLER
@@ -52,7 +57,7 @@
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.143 1H1.857A.857.857 0 0 0 1 1.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 7 6.143V1.857A.857.857 0 0 0 6.143 1Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 17 6.143V1.857A.857.857 0 0 0 16.143 1Zm-10 10H1.857a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 7 16.143v-4.286A.857.857 0 0 0 6.143 11Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286a.857.857 0 0 0 .857-.857v-4.286a.857.857 0 0 0-.857-.857Z"/>
             </svg>
           </button>
-          <div id="dropdownHover" class="dropdown-content absolute right-0 z-10 hidden w-36 bg-white rounded-lg shadow">
+          <div id="dropdownHover" class="dropdown-content absolute right-0 z-10 hidden w-36 md:w-44 bg-white rounded-lg shadow">
             <ul class="py-2 text-sm text-gray-700">
               <li>
                 <a class="flex items-center px-4 py-2 hover:bg-gray-100" href="/{release}{home ? '/tree' : ''}">
@@ -86,6 +91,26 @@
                   Source
                 </a>
               </li>
+              <li>
+                <a class="flex items-center px-4 py-2 hover:bg-gray-100" href="/releases/{release}/tree.html" target="_blank">
+                  <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.828 10h6.239m-6.239 4h6.239M6 1v4a1 1 0 0 1-1 1H1m14-4v16a.97.97 0 0 1-.933 1H1.933A.97.97 0 0 1 1 18V5.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 5.828 1h8.239A.97.97 0 0 1 15 2Z"/>
+                  </svg>
+                  Pyang Tree
+                </a>
+              </li>
+              {#if other?.length}
+                {#each other as entry}
+                  <li>
+                    <a data-sveltekit-reload class="flex items-center px-4 py-2 hover:bg-gray-100 text-blue-700" href="{entry.path}">
+                      <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 1v4a1 1 0 0 1-1 1H1m5 8.514L4 12.5l2-2m4 4.014 2-2.014-2-2m5 7.5a.97.97 0 0 1-.933 1H1.933A.97.97 0 0 1 1 18V5.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 5.828 1h8.239A.97.97 0 0 1 15 2v16Z"/>
+                      </svg>
+                      {entry.name} Model
+                    </a>
+                  </li>
+                {/each}
+              {/if}
             </ul>
           </div>
         </div>
@@ -102,7 +127,7 @@
       </div>
     </div>
     <div class="py-10 text-center">
-      <p class="text-nokia-old-blue dark:text-white font-light text-3xl">SR Linux <a class="hover:text-blue-700 font-normal" href="/{release}">{release}</a></p>
+      <p class="text-nokia-old-blue dark:text-white font-light text-3xl">SR Linux <span class="text-blue-800 font-normal">{release} {model !== "nokia" ? modelTitle : ""} </span> Model</p>
       <p class="text-gray-800 dark:text-white">{home ? 'Path' : 'Tree'} Browser</p>
     </div>
   </div>

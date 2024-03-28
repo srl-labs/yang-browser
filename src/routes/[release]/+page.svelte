@@ -1,38 +1,29 @@
 <script lang="ts">
-  import { writable, derived } from 'svelte/store';
+  import { writable, derived } from 'svelte/store'
   
-  import type { PayLoad, PathDef } from '$lib/structure';
+  import type { PayLoad, PathDef } from '$lib/structure'
+
+  import { extractFeatures, searchBasedYangFilter, highlight, featureBasedYangFilter } from './functions'
 
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
 
 	export let data: PayLoad;
-  let release = data.release;
-  let paths = data.paths;
-  let platforms: any = {};
-  let features: string[] = [];
-  if("features" in data) {
-    let allFeatures: string[] = [];
-    for (const [key, value] of Object.entries(data.features)) {
-      let platformFeatures = value.split(/\s+/);
-      platforms[key] = platformFeatures;
-      allFeatures = allFeatures.concat(platformFeatures);
-    }
-    features = [...new Set(allFeatures)].sort();
-  }
+  let {model, modelTitle, release, other, paths, features} = data;
+  let [platforms, uniqueFeatures] = extractFeatures(features);
 
   // DEFAULTS
   let count = 40;
-  let pathPrefix = false;
-  let moreFilters = false;
+  let showPathPrefix = false;
+  let showMoreFilters = false;
 
-  let search = "";
-  let term = writable("");
-  $: term.set(search.trim());
+  let searchInput = "";
+  let searchStore = writable("");
+  $: searchStore.set(searchInput.trim());
 
-  let scope = "";
-  let state = writable("");
-  $: state.set(scope);
+  let stateInput = "";
+  let stateStore = writable("");
+  $: stateStore.set(stateInput);
 
   let platformSearch = "";
   let platFind = writable("");
@@ -43,62 +34,50 @@
   $: featFind.set(featureSearch.trim());
 
   // INTERNAL FUNCTIONS
-  const scopeChange = (val: string) => scope = val;
+  const scopeChange = (val: string) => stateInput = val;
   const spaceSplit = (str: string) => str.split(/\s+/);
 
-  const getState = (x: PathDef) => ('is-state' in x ? "true" : "false");
-  const getPath = (x: PathDef) => (pathPrefix ? x["path-with-prefix"] : x["path"])
-  const getEnumValues = (x: PathDef) => ('enum-values' in x ? x["enum-values"].join(",") : '')
+  const getState = (x: PathDef) => ("is-state" in x ? "true" : "false");
+  const getPath = (x: PathDef) => (showPathPrefix ? x["path-with-prefix"] : x["path"])
+  const getEnumValues = (x: PathDef) => ("enum-values" in x ? x["enum-values"].join(", ") : '')
   const getSearchKeys = (str: string) => spaceSplit(str).join("|")
 
   const pathClearToTree = (str: string) => str.replaceAll("=*", "").replace("<mark>", "").replace("</mark>", "");
 
-  const searchTerm = (x: PathDef, term: string) => {
-    let keys = spaceSplit(term);
-    let pathChosen = pathPrefix ? x["path-with-prefix"] : x["path"];
-    let searchStr = pathChosen + ";" + x["type"];
-    let output = keys.every(x => searchStr.includes(x));
-    return output;
-  }
-
-  const highlight = (node: HTMLDivElement, [rawRex, text]: [string, string]) => {
-    let marker = (txt: string, rex: RegExp) => txt.replace(rex, (term) => `<mark>${term}</mark>`);
-    let action = () => node.innerHTML = marker(text, new RegExp(rawRex, "g"));
-    action();
-    return {
-      update(obj: [string, string]) {
-        [rawRex, text] = obj;
-        action();
-      },
-    };
-  }
-
   // WRITABLE STORES
   let start = writable(0);
   let yangPaths = writable(paths);
-  let platStore = writable(Object.keys(platforms));
-  let featStore = writable(features);
 
-  let platSelect = writable("");
-  let featSelect = derived(platSelect, ($platSelect) => $platSelect != "" ? platforms[$platSelect]: []);
+  let platStore = writable({});
+  let featStore = writable([]);
+
+  if(Object.keys(platforms)?.length) platStore.set(Object.keys(platforms));
+  if(uniqueFeatures?.length) featStore.set(uniqueFeatures);
 
   // DERIVED STORES
-  let platList = derived([platFind, platStore],  ([$platFind, $platStore]) => $platStore.filter((x: string) => x.includes($platFind)));
+  let platList = derived([platFind, platStore], ([$platFind, $platStore]) => $platStore?.length ? $platStore.filter((x: string) => x.includes($platFind)) : []);
+  let featList = derived([featFind, featStore], ([$featFind, $featStore]) => $featStore?.length ? $featStore.filter((x: string) => x.includes($featFind)) : []);
+
+  let platSelect = writable("7220-IXR-D2L");
+  let featSelect = derived(platSelect, ($platSelect: string) => $platSelect != "" && Object.keys(platforms)?.length ? platforms[$platSelect]: []);
   
-  let featList = derived([featFind, featStore],  ([$featFind, $featStore]) => $featStore.filter((x: string) => x.includes($featFind)));
-  
-  let stateFilter = derived([state, yangPaths], ([$state, $yangPaths]) => $yangPaths.filter((x: any) => $state == "" ? true : getState(x) == $state));
+  let stateFilter = derived([stateStore, yangPaths], ([$stateStore, $yangPaths]) => $yangPaths.filter((x: any) => $stateStore == "" ? true : getState(x) == $stateStore));
+  let yangFilter = derived([searchStore, stateFilter], ([$searchStore, $stateFilter]) => $stateFilter.filter((x: any) => searchBasedYangFilter(x, $searchStore, showPathPrefix)));
 
-  let yangFilter = derived([term, stateFilter],  ([$term, $stateFilter]) => $stateFilter.filter((x: any) => searchTerm(x, $term)));
+  let platFeatYangFilter = derived([featSelect, yangFilter],  ([$featSelect, $yangFilter]) => $featSelect?.length ? $yangFilter.filter((x: any) => featureBasedYangFilter(x, $featSelect)) : $yangFilter);
 
-  let total = derived(yangFilter, ($yangFilter) => {start.set(0); return $yangFilter.length});
-
+  let total = derived(platFeatYangFilter, ($platFeatYangFilter) => {start.set(0); return $platFeatYangFilter.length});
   let end = derived([start, total], ([$start, $total]) => ($start + count) <= $total ? ($start + count) : $total);
 
-  let paginated = derived([start, end, yangFilter], ([$start, $end, $yangFilter]) => $yangFilter.slice($start, $end));
+  let paginated = derived([start, end, platFeatYangFilter], ([$start, $end, $platFeatYangFilter]) => $platFeatYangFilter.slice($start, $end));
 
   // UPDATE TABLE PAGINATION
   const updateTable = (s: number) => {if(s >= 0 && s < $total) start.set(s)}
+
+  const featSelectFilter = (ar: any, f: string) => {
+    console.log(ar, f)
+    return ar.filter(x => x !== f)
+  }
 
 </script>
 
@@ -107,24 +86,24 @@
 </svelte:head>
 
 <div class="min-w-[280px] overflow-x-auto font-nunito dark:bg-gray-800">
-  <Header release={release} home={true} />
+  <Header model={model} modelTitle={modelTitle} release={release} other={other} home={true} />
   <div class="p-6 container mx-auto">
     <div class="mb-2">
-      <input type="text" id="search" bind:value={search} placeholder="Search..." class="w-full px-3 py-2 text-sm rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
+      <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full px-3 py-2 text-sm rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
     </div>  
     <div class="flex justify-between flex-wrap">
       <div class="flex py-3">
         <div class="flex dark:text-gray-400">
           <div class="flex items-center mr-4">
-            <input id="all-radio" type="radio" name="is-state-group" class="w-4 h-4" checked={scope === ""} on:change={() => scopeChange("")}>
+            <input id="all-radio" type="radio" name="is-state-group" class="w-4 h-4" checked={stateInput === ""} on:change={() => scopeChange("")}>
             <label for="all-radio" class="ml-2 text-sm text-gray-900 dark:text-gray-400 cursor-pointer">All</label>
           </div>
           <div class="flex items-center mr-4">
-            <input id="state-radio" type="radio" name="is-state-group" class="w-4 h-4" checked={scope === "true"} on:change={() => scopeChange("true")}>
+            <input id="state-radio" type="radio" name="is-state-group" class="w-4 h-4" checked={stateInput === "true"} on:change={() => scopeChange("true")}>
             <label for="state-radio" class="ml-2 text-sm text-gray-900 dark:text-gray-400 cursor-pointer">State</label>
           </div>
           <div class="flex items-center mr-4">
-            <input id="config-radio" type="radio" name="is-state-group" class="w-4 h-4" checked={scope === "false"} on:change={() => scopeChange("false")}>
+            <input id="config-radio" type="radio" name="is-state-group" class="w-4 h-4" checked={stateInput === "false"} on:change={() => scopeChange("false")}>
             <label for="config-radio" class="ml-2 text-sm text-gray-900 dark:text-gray-400 cursor-pointer">Config</label>
           </div>
         </div>
@@ -147,27 +126,29 @@
     </div>
     <div class="flex items-center">
       <div class="flex items-center px-3 py-1 w-fit border hover:border-gray-300 dark:border-gray-500 dark:hover:border-gray-400 rounded-full cursor-pointer">
-        <input id="prefix-checkbox" type="checkbox" class="w-3 h-3 cursor-pointer" checked={pathPrefix} on:change={() => pathPrefix = !pathPrefix}>
+        <input id="prefix-checkbox" type="checkbox" class="w-3 h-3 cursor-pointer" checked={showPathPrefix} on:change={() => showPathPrefix = !showPathPrefix}>
         <label for="prefix-checkbox" class="ms-2 text-xs text-gray-900 dark:text-gray-300 select-none cursor-pointer">Show prefix</label>
       </div>
-      <button class="flex items-center ml-2 px-3 py-1 w-fit text-xs rounded-full bg-blue-100 hover:bg-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600 dark:text-white" on:click={() => moreFilters = !moreFilters}>
-        {#if !moreFilters}
-          <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-          </svg>
-        {/if}
-        {#if moreFilters}
-          <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
-          </svg>
-        {/if}
-        Filters
-      </button>
+      {#if uniqueFeatures?.length}
+        <button class="flex items-center ml-2 px-3 py-1 w-fit text-xs rounded-full bg-blue-100 hover:bg-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600 dark:text-white" on:click={() => showMoreFilters = !showMoreFilters}>
+          {#if !showMoreFilters}
+            <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+            </svg>
+          {/if}
+          {#if showMoreFilters}
+            <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+            </svg>
+          {/if}
+          Filters
+        </button>
+      {/if}
     </div>
-    <div class="{moreFilters ? 'block' : 'block'}">
+    <div class="{showMoreFilters ? 'block' : 'hidden'}">
       <div class="flex flex-wrap items-start mt-4 text-sm md:space-x-6">
         <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-40">
-          <p class="px-4 py-2 font-bold text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">Platform</p>
+          <p class="px-4 py-2 font-bold text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">Platform</p>
           <div class="p-2 border-b border-gray-200 dark:border-gray-600">
             <input type="text" id="platformSearch" bind:value={platformSearch} placeholder="Search..." class="w-full px-3 py-1 text-xs rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
           </div>
@@ -176,7 +157,7 @@
               {#each $platList as entry, i}
                 <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
                   <div class="flex items-center px-3">
-                    <input id="radio-{entry}" type="radio" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-600" on:click={platSelect.set(entry)}>
+                    <input id="radio-{entry}" type="radio" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-600" on:click={() => platSelect.set(entry)} checked={entry === $platSelect ? true : false}>
                     <label for="radio-{entry}" class="w-full py-2 ms-2 text-[13px] text-gray-900 dark:text-gray-300">{entry}</label>
                   </div>
                 </li>
@@ -185,7 +166,7 @@
           </div>
         </div>
         <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-fit mt-5 md:mt-0">
-          <p class="px-4 py-2 font-bold text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">Features</p>
+          <p class="px-4 py-2 font-bold text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">Features</p>
           <div class="p-2 border-b border-gray-200 dark:border-gray-600">
             <input type="text" id="featureSearch" bind:value={featureSearch} placeholder="Search..." class="w-full px-3 py-1 text-xs rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
           </div>
@@ -194,7 +175,7 @@
               {#each $featList as entry, i}
                 <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
                   <div class="flex items-center px-3">
-                    <input id="checkbox-{entry}" type="checkbox" name="list-checkbox" class="w-3 h-3" checked={selectedFeatures.includes(entry) ? true : false}>
+                    <input id="checkbox-{entry}" type="checkbox" name="list-checkbox" class="w-3 h-3" checked={$featSelect.includes(entry) ? true : false}>
                     <label for="checkbox-{entry}" class="w-full py-2 ms-2 text-[13px] text-gray-900 dark:text-gray-300">{entry}</label>
                   </div>
                 </li>
@@ -225,11 +206,11 @@
             {#each $paginated as item}
               <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300">
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{getState(item)}</td>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div title="{item["description"]}" use:highlight={[getSearchKeys($term), getPath(item)]}></div></td>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div title="{getEnumValues(item)}" use:highlight={[getSearchKeys($term), item["type"]]}></div></td>
+                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div title="{item.description}" use:highlight={[getSearchKeys($searchStore), getPath(item)]}></div></td>
+                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div title="{getEnumValues(item)}" use:highlight={[getSearchKeys($searchStore), item.type]}></div></td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
                   <div title="Show path in tree">
-                    <a data-sveltekit-preload-data="tap" href="/{release}/tree?path={pathClearToTree(item["path"])}">
+                    <a data-sveltekit-preload-data="tap" href="/{release}/tree?path={pathClearToTree(item.path)}">
                       <svg class="w-3 h-3 hover:text-gray-500 dark:hover:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
                       </svg>
