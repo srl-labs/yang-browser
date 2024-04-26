@@ -85,7 +85,7 @@
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                       </svg>
                     </button>
-                    <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-white rounded-lg shadow md:w-32 max-h-[160px] overflow-y-auto scroll-light dark:scroll-dark">
+                    <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-white rounded-lg shadow md:w-32 max-h-[160px] overflow-y-auto scroll-light">
                       <ul class="py-2 text-gray-700">
                         {#each rs[major].others as entry}
                           <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-200">{entry.slice(1)}</a></li>
