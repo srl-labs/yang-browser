@@ -34,13 +34,7 @@ v22.6.2:
 v22.6.1:
   openconfig: true
   features: false
-v22.3.3:
-  openconfig: true
-  features: false
 v22.3.2:
-  openconfig: true
-  features: false
-v22.3.1:
   openconfig: true
   features: false
 v21.11.3:
