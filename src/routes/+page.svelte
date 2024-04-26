@@ -49,7 +49,7 @@
 
 <div class="flex flex-col items-center min-h-screen pt-5 has-header-img font-nunito">
   <div class="flex-grow-0 flex-shrink-0">
-    <div class="w-screen text-right text-xs mr-10">
+    <div class="w-screen text-right text-xs pr-5">
       <a class="px-3 py-1.5 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-full text-center inline-flex items-center" href="https://learn.srlinux.dev/yang/browser" target="_blank" rel="noreferrer">
         <svg class="w-3 h-3 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 16.5c0-1-8-2.7-9-2V1.8c1-1 9 .707 9 1.706M10 16.5V3.506M10 16.5c0-1 8-2.7 9-2V1.8c-1-1-9 .707-9 1.706"/>
