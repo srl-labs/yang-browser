@@ -9,7 +9,7 @@
   import Footer from '$lib/components/Footer.svelte';
 
 	export let data: PayLoad;
-  let {model, modelTitle, release, other, paths, features} = data;
+  let {model, modelTitle, release, other, paths, search, features} = data;
   let [platforms, uniqueFeatures] = extractFeatures(features);
 
   // DEFAULTS
@@ -17,7 +17,7 @@
   let showPathPrefix = false;
   let showMoreFilters = false;
 
-  let searchInput = "";
+  let searchInput = search;
   let searchStore = writable("");
   $: searchStore.set(searchInput.trim());
 

@@ -12,11 +12,16 @@ export async function load({ url, fetch, params }) {
   const validReleases = Object.keys(allReleases)
 
   if(validReleases.includes(release)) {
+    let search = ""
     let modelTitle = "Nokia"
     let model = "nokia"
 
     if (url.searchParams.has("model")) {
       model = url.searchParams.get("model").trim()
+    }
+
+    if (url.searchParams.has("search")) {
+      search = url.searchParams.get("search").trim();
     }
     
     if(model != "openconfig" && model != "nokia") {
@@ -44,27 +49,23 @@ export async function load({ url, fetch, params }) {
         const resp = await fetch(fetchUrl);
         const yangPaths = await resp.json();
 
-        if(model === "nokia" && allReleases[release].features) {
-          const featureUrl = `${pathUrl}/releases/${release}/features.txt`;
-          const featureResp = await fetch(featureUrl);
-          const featureRaw = await featureResp.text();
-          return {
-            model: model,
-            modelTitle: modelTitle,
-            release: release,
-            other: other,
-            paths: await yangPaths,
-            features: await yaml.load(featureRaw)
-          }
-        }
-        return {
+        let payload = {
           model: model,
           modelTitle: modelTitle,
           release: release,
           other: other,
+          search: decodeURIComponent(search),
           paths: await yangPaths,
           features: {}
         }
+
+        if(model === "nokia" && allReleases[release].features) {
+          const featureUrl = `${pathUrl}/releases/${release}/features.txt`;
+          const featureResp = await fetch(featureUrl);
+          const featureRaw = await featureResp.text();
+          payload.features = await yaml.load(featureRaw)
+        }
+        return payload
       } catch(e) {
         throw error(404, "Error fetching yang tree");
       }

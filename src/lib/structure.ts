@@ -28,6 +28,7 @@ export interface PayLoad {
   release: string,
   other: Other[],
   paths: string[],
+  search: string,
   features: Platforms
 }
 
