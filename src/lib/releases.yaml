@@ -1,3 +1,9 @@
+v24.3.1:
+  openconfig: true
+  features: true
+v23.10.2:
+  openconfig: true
+  features: true
 v23.10.1:
   openconfig: true
   features: true

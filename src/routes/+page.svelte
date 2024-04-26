@@ -5,18 +5,19 @@
 
   import Footer from '$lib/components/Footer.svelte';
 
+  const show = 4
   const releases = yaml.load(rel) as Releases;
   const all = Object.keys(releases).sort().reverse();
-  const top4 = [...new Set(all.map(r => r.split(".")[0]))].slice(0, 3);
+  const relGroup = [...new Set(all.map(r => r.split(".")[0]))].slice(0, show);
 
   let rs: HomeGroup = {};
   let archive: string[] = [];
-  top4.map(x => rs[x] = {"top3": [], "all": {}, "others": []})
+  relGroup.map(x => rs[x] = {"top": [], "all": {}, "others": []})
   
   all.reverse().map(function(r) {
     let m1 = r.split(".")[0];
     let m2 = r.split(".")[1];
-    if(top4.includes(m1)) {
+    if(relGroup.includes(m1)) {
       if(rs[m1]["all"][m2] == undefined) {
         rs[m1]["all"][m2] = []
       }
@@ -29,7 +30,7 @@
   Object.keys(rs).map(function(x) {
     let tmp = rs[x]["all"];
     Object.keys(tmp).reverse().map(function(y) {
-      rs[x]["top3"].push(tmp[y][tmp[y].length - 1])
+      rs[x]["top"].push(tmp[y][tmp[y].length - 1])
       if(tmp[y].length > 1) {
         tmp[y].pop();
       } else {
@@ -69,28 +70,30 @@
         <div class="py-5 space-y-6">
           <p><img src="/images/nblue.png" width="80" alt="Logo" /></p>
           <h3 class="text-3xl text-nokia-old-blue font-light">SR Linux Yang Models</h3>
-          {#each top4 as major}
+          {#each relGroup as major}
             <div class="flex items-center">
               <p class="mr-4 text-xl">{major}</p>
               <div class="flex items-center flex-wrap gap-2 text-sm">
-                {#each rs[major].top3 as minor}
+                {#each rs[major].top as minor}
                   <a class="px-3 py-1.5 border border-gray-700 hover:bg-gray-700 hover:text-white rounded text-center w-20" href="{minor}">{minor.slice(1)}</a>
                 {/each}
-                <div class="dropdown">
-                  <button class="dropdown-button px-3 py-1.5 border border-gray-700 hover:bg-gray-700 hover:text-white rounded text-center w-20 inline-flex items-center">
-                    More
-                    <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                    </svg>
-                  </button>
-                  <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-white rounded-lg shadow md:w-32 max-h-[150px] overflow-y-auto">
-                    <ul class="py-2 text-gray-700">
-                      {#each rs[major].others as entry}
-                        <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-200">{entry.slice(1)}</a></li>
-                      {/each}
-                    </ul>
+                {#if rs[major].others?.length }
+                  <div class="dropdown">
+                    <button class="dropdown-button px-3 py-1.5 border border-gray-700 hover:bg-gray-700 hover:text-white rounded text-center w-20 inline-flex items-center">
+                      More
+                      <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                      </svg>
+                    </button>
+                    <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-white rounded-lg shadow md:w-32 max-h-[150px] overflow-y-auto">
+                      <ul class="py-2 text-gray-700">
+                        {#each rs[major].others as entry}
+                          <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-200">{entry.slice(1)}</a></li>
+                        {/each}
+                      </ul>
+                    </div>
                   </div>
-                </div>
+                {/if}
               </div>
             </div>
           {/each}

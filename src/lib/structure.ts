@@ -9,7 +9,7 @@ export interface Release {
 
 export interface HomeGroup {
   [key: string]: {
-    top3: string[],
+    top: string[],
     others: string[],
     all: {
       [key: string]: string[]
