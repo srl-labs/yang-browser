@@ -50,21 +50,31 @@
 
   let platStore = writable({});
   let featStore = writable([]);
+  let featDeviate = writable([]);
+  let featExtra = writable([]);
 
   if(Object.keys(platforms)?.length) platStore.set(Object.keys(platforms));
   if(uniqueFeatures?.length) featStore.set(uniqueFeatures);
+
+  const featFilterAction = (platFeatures: string[], deviation: string[], extras: string[]) => {
+    if(platFeatures?.length) {
+      platFeatures = platFeatures.filter(f => !deviation.includes(f))
+      return platFeatures.concat(extras)
+    } else return []
+  } 
 
   // DERIVED STORES
   let platList = derived([platFind, platStore], ([$platFind, $platStore]) => $platStore?.length ? $platStore.filter((x: string) => x.includes($platFind)) : []);
   let featList = derived([featFind, featStore], ([$featFind, $featStore]) => $featStore?.length ? $featStore.filter((x: string) => x.includes($featFind)) : []);
 
   let platSelect = writable("7220-IXR-D2L");
-  let featSelect = derived(platSelect, ($platSelect: string) => $platSelect != "" && Object.keys(platforms)?.length ? platforms[$platSelect]: []);
+  let featSelect = derived(platSelect, ($platSelect) => $platSelect != "" && Object.keys(platforms)?.length ? platforms[$platSelect]: []);
+  let featFilter = derived([featSelect, featDeviate, featExtra], ([$featSelect, $featDeviate, $featExtra]) => featFilterAction($featSelect, $featDeviate, $featExtra));
   
   let stateFilter = derived([stateStore, yangPaths], ([$stateStore, $yangPaths]) => $yangPaths.filter((x: any) => $stateStore == "" ? true : getState(x) == $stateStore));
   let yangFilter = derived([searchStore, stateFilter], ([$searchStore, $stateFilter]) => $stateFilter.filter((x: any) => searchBasedYangFilter(x, $searchStore, showPathPrefix)));
 
-  let platFeatYangFilter = derived([featSelect, yangFilter],  ([$featSelect, $yangFilter]) => $featSelect?.length ? $yangFilter.filter((x: any) => featureBasedYangFilter(x, $featSelect)) : $yangFilter);
+  let platFeatYangFilter = derived([featFilter, yangFilter],  ([$featFilter, $yangFilter]) => $featFilter?.length ? $yangFilter.filter((x: any) => featureBasedYangFilter(x, $featFilter)) : $yangFilter);
 
   let total = derived(platFeatYangFilter, ($platFeatYangFilter) => {start.set(0); return $platFeatYangFilter.length});
   let end = derived([start, total], ([$start, $total]) => ($start + count) <= $total ? ($start + count) : $total);
@@ -74,11 +84,26 @@
   // UPDATE TABLE PAGINATION
   const updateTable = (s: number) => {if(s >= 0 && s < $total) start.set(s)}
 
-  const featSelectFilter = (ar: any, f: string) => {
-    console.log(ar, f)
-    return ar.filter(x => x !== f)
+  const updateFeatDeviate = (checked: boolean, feat: string) => {
+    let fd = $featDeviate
+    let fe = $featExtra
+    if(!checked && $featSelect.includes(feat) && !fd.includes(feat)) {
+      fd.push(feat)
+      featDeviate.set(fd)
+    }
+    else if(checked && $featSelect.includes(feat) && fd.includes(feat)) {
+      fd = fd.filter(item => item !== feat)
+      featDeviate.set(fd)
+    }
+    else if(checked && !$featSelect.includes(feat) && !fe.includes(feat)) {
+      fe.push(feat)
+      featExtra.set(fe)
+    }
+    else if(!checked && !$featSelect.includes(feat) && fe.includes(feat)) {
+      fe = fe.filter(item => item !== feat)
+      featExtra.set(fe)
+    }
   }
-
 </script>
 
 <svelte:head>
@@ -157,8 +182,8 @@
               {#each $platList as entry, i}
                 <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
                   <div class="flex items-center px-3">
-                    <input id="radio-{entry}" type="radio" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-600" on:click={() => platSelect.set(entry)} checked={entry === $platSelect ? true : false}>
-                    <label for="radio-{entry}" class="w-full py-2 ms-2 text-[13px] text-gray-900 dark:text-gray-300">{entry}</label>
+                    <input id="radio-{entry}" type="radio" name="list-radio" class="w-4 h-4 cursor-pointer text-blue-600 bg-gray-100 dark:bg-gray-600" on:click={() => platSelect.set(entry)} checked={entry === $platSelect ? true : false}>
+                    <label for="radio-{entry}" class="w-full cursor-pointer py-2 ms-2 text-[13px] {entry === $platSelect ? 'text-green-600 dark:text-green-500' : 'text-gray-900 dark:text-gray-300'}">{entry}</label>
                   </div>
                 </li>
               {/each}
@@ -175,8 +200,8 @@
               {#each $featList as entry, i}
                 <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
                   <div class="flex items-center px-3">
-                    <input id="checkbox-{entry}" type="checkbox" name="list-checkbox" class="w-3 h-3" checked={$featSelect.includes(entry) ? true : false}>
-                    <label for="checkbox-{entry}" class="w-full py-2 ms-2 text-[13px] text-gray-900 dark:text-gray-300">{entry}</label>
+                    <input id="checkbox-{entry}" type="checkbox" name="list-checkbox" class="w-3 h-3 cursor-pointer" on:click={(e) => updateFeatDeviate(e.target.checked, entry)} checked={$featFilter.includes(entry) ? true : false}>
+                    <label for="checkbox-{entry}" class="w-full cursor-pointer py-2 ms-2 text-[13px] {$featSelect.includes(entry) ? 'text-green-600 dark:text-green-500' : 'text-gray-900 dark:text-gray-300'}">{entry}</label>
                   </div>
                 </li>
               {/each}
