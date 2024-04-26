@@ -67,7 +67,7 @@
     <div class="md:flex gap-x-20 items-center justify-between">
       <div class="flex">
         <div class="py-5 space-y-6">
-          <p><img src="/images/nokia_b.png" width="80" alt="Logo" /></p>
+          <p><img src="/images/nblue.png" width="80" alt="Logo" /></p>
           <h3 class="text-3xl text-nokia-old-blue font-light">SR Linux Yang Models</h3>
           {#each top4 as major}
             <div class="flex items-center">

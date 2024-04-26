@@ -48,7 +48,7 @@
   <div class="px-6 container mx-auto">
     <div class="flex justify-between">
       <div class="flex items-center">
-        <a class="flex mr-3" href="../"><img src="/images/{darkMode ? 'nokia_w.png' : 'nokia_b.png'}" width="80" alt="Logo"/></a>
+        <a class="flex mr-3" href="../"><img src="/images/{darkMode ? 'wnokia.png' : 'nblue.png'}" width="80" alt="Logo"/></a>
       </div>
       <div class="flex items-center">
         <div class="dropdown ml-3 relative">
