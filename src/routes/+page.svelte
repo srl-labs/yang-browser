@@ -100,9 +100,9 @@
             </div>
           {/each}
           {#if archive?.length}
-            <div class="flex items-center ml-11 flex-wrap gap-2 text-sm/7">
+            <div class="flex items-center ml-11 flex-wrap gap-2 text-base/7">
               <div class="dropdown">
-                <button class="dropdown-button px-3 py-1 border border-gray-700 hover:bg-gray-700 hover:text-white rounded text-center inline-flex items-center">
+                <button class="dropdown-button px-3 py-2 text-sm border border-gray-700 hover:bg-gray-700 hover:text-white rounded text-center inline-flex items-center">
                   Earlier Releases
                   <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
