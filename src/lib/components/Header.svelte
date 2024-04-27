@@ -47,7 +47,7 @@
 <!-- SIDEBAR -->
 <div class="fixed h-screen overflow-hidden">
   <aside id="sidebar" class="text-sm font-nokia-headline-light pb-4 overflow-y-auto scroll-light dark:scroll-dark z-20 w-[250px] transition-transform -translate-x-full h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
-    <div class="px-4 space-y-4 pt-[95px] md:pt-[105px]">
+    <div class="px-4 space-y-4 {model === "nokia" ? 'pt-[80px] lg:pt-[85px]' : 'pt-[95px] lg:pt-[105px]'}">
       <ul class="space-y-2 text-gray-800 dark:text-gray-300">
         <li>
           <a class="flex items-center px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 hover:rounded-lg" href="/{release}{home ? '/tree' : ''}">
