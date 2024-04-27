@@ -42,8 +42,6 @@
   const getEnumValues = (x: PathDef) => ("enum-values" in x ? x["enum-values"].join(", ") : '')
   const getSearchKeys = (str: string) => spaceSplit(str).join("|")
 
-  const pathClearToTree = (str: string) => str.replaceAll("=*", "").replace("<mark>", "").replace("</mark>", "");
-
   // WRITABLE STORES
   let start = writable(0);
   let yangPaths = writable(paths);
@@ -110,38 +108,38 @@
 	<title>Nokia SR Linux {release} Yang Model</title>
 </svelte:head>
 
-<div class="min-w-[280px] overflow-x-auto font-nunito dark:bg-gray-800">
+<div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800">
   <Header model={model} modelTitle={modelTitle} release={release} other={other} home={true} />
   <div class="p-6 container mx-auto">
     <div class="mb-2">
-      <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full px-3 py-2 text-sm rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
+      <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full text-sm px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
     </div>  
     <div class="flex justify-between flex-wrap">
       <div class="flex py-3">
-        <div class="flex dark:text-gray-400">
+        <div class="flex text-gray-800 dark:text-gray-300 text-sm">
           <div class="flex items-center mr-4">
             <input id="all-radio" type="radio" name="is-state-group" class="w-4 h-4" checked={stateInput === ""} on:change={() => scopeChange("")}>
-            <label for="all-radio" class="ml-2 text-sm text-gray-900 dark:text-gray-400 cursor-pointer">All</label>
+            <label for="all-radio" class="ml-2 cursor-pointer">All</label>
           </div>
           <div class="flex items-center mr-4">
             <input id="state-radio" type="radio" name="is-state-group" class="w-4 h-4" checked={stateInput === "true"} on:change={() => scopeChange("true")}>
-            <label for="state-radio" class="ml-2 text-sm text-gray-900 dark:text-gray-400 cursor-pointer">State</label>
+            <label for="state-radio" class="ml-2 cursor-pointer">State</label>
           </div>
           <div class="flex items-center mr-4">
             <input id="config-radio" type="radio" name="is-state-group" class="w-4 h-4" checked={stateInput === "false"} on:change={() => scopeChange("false")}>
-            <label for="config-radio" class="ml-2 text-sm text-gray-900 dark:text-gray-400 cursor-pointer">Config</label>
+            <label for="config-radio" class="ml-2 cursor-pointer">Config</label>
           </div>
         </div>
       </div>
-      <div class="flex items-center py-3 ml-auto">
+      <div class="flex items-center py-3 ml-auto text-sm">
         {#if $total > 0}
-          <p class="mr-2 text-sm dark:text-gray-400">{$start + 1} - {$end > 1 ? $end : 0} of {$total}</p>
-          <button class="ml-2 {$start == 0 ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white text-sm rounded" disabled="{$start == 0}" on:click={() => updateTable($start - count)}>
+          <p class="mr-2 text-gray-800 dark:text-gray-200">{$start + 1} - {$end > 1 ? $end : 0} of {$total}</p>
+          <button class="ml-2 {$start == 0 ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$start == 0}" on:click={() => updateTable($start - count)}>
             <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd"/>
             </svg>
           </button>
-          <button class="ml-2 {$end == $total ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white text-sm rounded" disabled="{$end == $total}" on:click={() => updateTable($end)}>
+          <button class="ml-2 {$end == $total ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$end == $total}" on:click={() => updateTable($end)}>
             <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/>
             </svg>
@@ -171,11 +169,11 @@
       {/if}
     </div>
     <div class="{showMoreFilters ? 'block' : 'hidden'}">
-      <div class="flex flex-wrap items-start mt-4 text-sm md:space-x-6">
+      <div class="flex flex-wrap items-start mt-4 md:space-x-6">
         <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-40">
           <p class="px-4 py-2 font-bold text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">Platform</p>
           <div class="p-2 border-b border-gray-200 dark:border-gray-600">
-            <input type="text" id="platformSearch" bind:value={platformSearch} placeholder="Search..." class="w-full px-3 py-1 text-xs rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
+            <input type="text" id="platformSearch" bind:value={platformSearch} placeholder="Search..." class="w-full px-3 py-1 text-sm rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
           </div>
           <div class="overflow-y-auto max-h-72 scroll-light dark:scroll-dark">
             <ul class="">
@@ -183,7 +181,7 @@
                 <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
                   <div class="flex items-center px-3">
                     <input id="radio-{entry}" type="radio" name="list-radio" class="w-4 h-4 cursor-pointer text-blue-600 bg-gray-100 dark:bg-gray-600" on:click={() => platSelect.set(entry)} checked={entry === $platSelect ? true : false}>
-                    <label for="radio-{entry}" class="w-full cursor-pointer py-2 ms-2 text-[13px] {entry === $platSelect ? 'text-green-600 dark:text-green-500' : 'text-gray-900 dark:text-gray-300'}">{entry}</label>
+                    <label for="radio-{entry}" class="w-full cursor-pointer py-2 ms-2 text-sm {entry === $platSelect ? 'text-gray-900 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}">{entry}</label>
                   </div>
                 </li>
               {/each}
@@ -193,7 +191,7 @@
         <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-fit mt-5 md:mt-0">
           <p class="px-4 py-2 font-bold text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">Features</p>
           <div class="p-2 border-b border-gray-200 dark:border-gray-600">
-            <input type="text" id="featureSearch" bind:value={featureSearch} placeholder="Search..." class="w-full px-3 py-1 text-xs rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
+            <input type="text" id="featureSearch" bind:value={featureSearch} placeholder="Search..." class="w-full px-3 py-1 text-sm rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
           </div>
           <div class="overflow-y-auto max-h-72 scroll-light dark:scroll-dark">
             <ul>
@@ -201,7 +199,7 @@
                 <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
                   <div class="flex items-center px-3">
                     <input id="checkbox-{entry}" type="checkbox" name="list-checkbox" class="w-3 h-3 cursor-pointer" on:click={(e) => updateFeatDeviate(e.target.checked, entry)} checked={$featFilter.includes(entry) ? true : false}>
-                    <label for="checkbox-{entry}" class="w-full cursor-pointer py-2 ms-2 text-[13px] {$featSelect.includes(entry) ? 'text-green-600 dark:text-green-500' : 'text-gray-900 dark:text-gray-300'}">{entry}</label>
+                    <label for="checkbox-{entry}" class="w-full cursor-pointer py-2 ms-2 text-sm {$featSelect.includes(entry) ? 'text-gray-900 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}">{entry}</label>
                   </div>
                 </li>
               {/each}
@@ -210,7 +208,7 @@
         </div>
       </div>
     </div>
-    <div class="overflow-x-auto max-w-full mt-5">
+    <div class="overflow-x-auto rounded-t-lg max-w-full mt-5">
       <table class="text-left w-full">
         <colgroup>
           <col span="1" class="w-[5%]">
@@ -235,7 +233,7 @@
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div title="{getEnumValues(item)}" use:highlight={[getSearchKeys($searchStore), item.type]}></div></td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
                   <div title="Show path in tree">
-                    <a data-sveltekit-preload-data="tap" href="/{release}/tree?path={pathClearToTree(item.path)}">
+                    <a data-sveltekit-preload-data="tap" href="/{release}/tree?path={item.path}">
                       <svg class="w-3 h-3 hover:text-gray-500 dark:hover:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
                       </svg>

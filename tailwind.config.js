@@ -7,7 +7,10 @@ export default {
       colors: {
         'nokia-blue': '#005AFF',
         'nokia-blue-black': '#001135',
-        'nokia-old-blue': 'rgb(18, 65, 145)'
+        'nokia-old-blue': 'rgb(18, 65, 145)',
+        'nokia-yellow': '#F7B737',
+        'nokia-orange': '#F47F31',
+        'nokia-red': '#E23B3B'
       }
     },
     fontFamily: {

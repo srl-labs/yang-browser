@@ -127,7 +127,7 @@
       </div>
     </div>
     <div class="py-10 text-center">
-      <p class="text-nokia-old-blue dark:text-white font-light text-3xl">SR Linux <span class="text-blue-800 dark:text-blue-600 font-normal">{release} {model !== "nokia" ? modelTitle : ""} </span> Model</p>
+      <p class="text-nokia-old-blue dark:text-white font-light text-3xl">SR Linux <span class="font-bold">{release} </span> {model !== "nokia" ? modelTitle : ""} Model</p>
       <p class="text-gray-800 dark:text-white">{home ? 'Path' : 'Tree'} Browser</p>
     </div>
   </div>
