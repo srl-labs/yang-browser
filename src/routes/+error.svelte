@@ -3,7 +3,7 @@
 
 	const custom = {
 		error: {
-			body: "flex h-screen p-7 font-nunito",
+			body: "flex h-screen p-7 font-nokia-headline-light",
 			container: "m-auto",
 			message: "rounded min-w-[400px]",
 			message_header: "text-white bg-red-400 px-5 py-3 rounded-t",
