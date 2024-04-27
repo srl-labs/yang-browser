@@ -23,7 +23,7 @@
 </script>
 
 {#if modelName == name}
-	<p class="flex items-center dark:text-gray-300 py-0.5">{name}</p>
+	<p class="flex items-center dark:text-gray-300 py-0.5">{name} Tree Browser</p>
 {:else}
 	<button class="flex items-center py-0.5 {expanded ? 'text-gray-400 dark:text-gray-500': 'dark:text-gray-300'} hover:text-green-600 hover:dark:text-green-600" on:click={toggle}>
 		<span class="flex pr-1">

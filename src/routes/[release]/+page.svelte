@@ -108,10 +108,11 @@
 	<title>Nokia SR Linux {release} Yang Model</title>
 </svelte:head>
 
-<div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800">
-  <Header model={model} modelTitle={modelTitle} release={release} other={other} home={true} />
+<Header model={model} modelTitle={modelTitle} release={release} other={other} home={true} />
+<div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 {model === "nokia" ? 'pt-[60px] lg:pt-[65px]' : 'pt-[75px] lg:pt-[85px]'}">
   <div class="p-6 container mx-auto">
-    <div class="mb-2">
+    <p class="text-gray-800 dark:text-gray-300 font-nokia-headline">Path Browser</p>
+    <div class="my-2">
       <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full text-sm px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
     </div>  
     <div class="flex justify-between flex-wrap">
@@ -171,7 +172,7 @@
     <div class="{showMoreFilters ? 'block' : 'hidden'}">
       <div class="flex flex-wrap items-start mt-4 md:space-x-6">
         <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-40">
-          <p class="px-4 py-2 font-bold text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">Platform</p>
+          <p class="px-4 py-2 font-nokia-headline text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">Platform</p>
           <div class="p-2 border-b border-gray-200 dark:border-gray-600">
             <input type="text" id="platformSearch" bind:value={platformSearch} placeholder="Search..." class="w-full px-3 py-1 text-sm rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
           </div>
@@ -189,7 +190,7 @@
           </div>
         </div>
         <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-fit mt-5 md:mt-0">
-          <p class="px-4 py-2 font-bold text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">Features</p>
+          <p class="px-4 py-2 font-nokia-headline text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">Features</p>
           <div class="p-2 border-b border-gray-200 dark:border-gray-600">
             <input type="text" id="featureSearch" bind:value={featureSearch} placeholder="Search..." class="w-full px-3 py-1 text-sm rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
           </div>
