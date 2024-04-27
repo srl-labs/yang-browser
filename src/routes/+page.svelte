@@ -5,7 +5,7 @@
 
   import Footer from '$lib/components/Footer.svelte';
 
-  const show = 4
+  const show = 3
   const releases = yaml.load(rel) as Releases;
   const all = Object.keys(releases).sort().reverse();
   const relGroup = [...new Set(all.map(r => r.split(".")[0]))].slice(0, show);
@@ -47,7 +47,7 @@
 	<title>Nokia SR Linux Yang Models</title>
 </svelte:head>
 
-<div class="flex flex-col items-center min-h-screen pt-5 has-header-img font-nunito">
+<div class="flex flex-col items-center min-h-screen pt-5 has-header-img font-nokia-headline-light">
   <div class="flex-grow-0 flex-shrink-0">
     <div class="w-screen text-right text-xs pr-5">
       <a class="px-3 py-1.5 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-full text-center inline-flex items-center" href="https://learn.srlinux.dev/yang/browser" target="_blank" rel="noreferrer">
@@ -65,15 +65,15 @@
     </div>
   </div>
   <div class="flex-grow-1 flex-shrink-0 m-auto px-6 py-10">
-    <div class="md:flex gap-x-20 items-center justify-between">
+    <div class="md:flex md:gap-x-10 lg:gap-x-20 items-center justify-between">
       <div class="flex">
         <div class="py-5 space-y-6">
-          <p><img src="/images/nblue.png" width="80" alt="Logo" /></p>
-          <h3 class="text-3xl text-nokia-old-blue font-light">SR Linux Yang Models</h3>
+          <p><img src="/images/nblue.png" width="85" alt="Logo"/></p>
+          <h3 class="text-3xl text-nokia-old-blue">SR Linux Yang Models</h3>
           {#each relGroup as major}
             <div class="flex items-center">
               <p class="mr-4 text-xl">{major}</p>
-              <div class="flex items-center flex-wrap gap-2 text-sm">
+              <div class="flex items-center flex-wrap gap-2 text-base/7">
                 {#each rs[major].top as minor}
                   <a class="px-3 py-1.5 border border-gray-700 hover:bg-gray-700 hover:text-white rounded text-center w-20" href="{minor}">{minor.slice(1)}</a>
                 {/each}
@@ -85,22 +85,45 @@
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                       </svg>
                     </button>
-                    <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-white rounded-lg shadow md:w-32 max-h-[160px] overflow-y-auto scroll-light">
-                      <ul class="py-2 text-gray-700">
-                        {#each rs[major].others as entry}
-                          <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-200">{entry.slice(1)}</a></li>
-                        {/each}
-                      </ul>
+                    <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-white rounded-lg shadow">
+                      <div class="my-2 w-24 md:w-32 max-h-[160px] overflow-y-auto scroll-light">
+                        <ul class="text-gray-700">
+                          {#each rs[major].others as entry}
+                            <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-200">{entry.slice(1)}</a></li>
+                          {/each}
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 {/if}
               </div>
             </div>
           {/each}
+          {#if archive?.length}
+            <div class="flex items-center ml-11 flex-wrap gap-2 text-base/7">
+              <div class="dropdown">
+                <button class="dropdown-button px-3 py-1.5 border border-gray-700 hover:bg-gray-700 hover:text-white rounded text-center inline-flex items-center">
+                  Earlier Releases
+                  <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                  </svg>
+                </button>
+                <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-white rounded-lg shadow">
+                  <div class="my-2 w-40 max-h-[160px] overflow-y-auto scroll-light">
+                    <ul class="text-gray-700">
+                      {#each archive as entry}
+                        <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-200">{entry.slice(1)}</a></li>
+                      {/each}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {/if}
         </div>
       </div>
       <div class="flex">
-        <div class="px-6 py-5 bg-white rounded shadow-xl space-y-4 max-w-[650px] text-sm">
+        <div class="px-6 py-5 bg-white rounded shadow-xl space-y-4 max-w-[650px] text-base/7">
           <p>
             <a class="text-blue-700 hover:underline" href="https://www.nokia.com/networks/products/service-router-linux-NOS" target="_blank" rel="noreferrer">Nokia SR Linux</a> 
             makes extensive use of structured data models. Each application regardless if it's being provided by Nokia or written by a user against the NDK has a 
