@@ -75,7 +75,7 @@
               <p class="mr-4 text-xl">{major}</p>
               <div class="flex items-center flex-wrap gap-2 text-base/7">
                 {#each rs[major].top as minor}
-                  <a class="px-3 py-1.5 border border-gray-700 hover:bg-gray-700 hover:text-white rounded text-center w-20" href="{minor}">{minor.slice(1)}</a>
+                  <a data-sveltekit-reload class="px-3 py-1.5 border border-gray-700 hover:bg-gray-700 hover:text-white rounded text-center w-20" href="{minor}">{minor.slice(1)}</a>
                 {/each}
                 {#if rs[major].others?.length }
                   <div class="dropdown">
@@ -89,7 +89,7 @@
                       <div class="my-2 w-24 md:w-32 max-h-[160px] overflow-y-auto scroll-light">
                         <ul class="text-gray-700">
                           {#each rs[major].others as entry}
-                            <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-200">{entry.slice(1)}</a></li>
+                            <li><a data-sveltekit-reload href="{entry}" class="block px-4 py-2 hover:bg-gray-200">{entry.slice(1)}</a></li>
                           {/each}
                         </ul>
                       </div>
@@ -112,7 +112,7 @@
                   <div class="my-2 w-40 max-h-[160px] overflow-y-auto scroll-light">
                     <ul class="text-gray-700">
                       {#each archive as entry}
-                        <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-200">{entry.slice(1)}</a></li>
+                        <li><a data-sveltekit-reload href="{entry}" class="block px-4 py-2 hover:bg-gray-200">{entry.slice(1)}</a></li>
                       {/each}
                     </ul>
                   </div>
