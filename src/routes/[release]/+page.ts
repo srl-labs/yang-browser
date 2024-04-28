@@ -63,7 +63,7 @@ export async function load({ url, fetch, params }) {
           const featureUrl = `${pathUrl}/releases/${release}/features.txt`;
           const featureResp = await fetch(featureUrl);
           const featureRaw = await featureResp.text();
-          payload.features = await yaml.load(featureRaw)
+          payload["features"] = await yaml.load(featureRaw);
         }
         return payload
       } catch(e) {
