@@ -6,7 +6,7 @@ import yaml from 'js-yaml'
 import rel from '$lib/releases.yaml?raw'
 const allReleases = yaml.load(rel) as Releases
 
-export async function load({ url, fetch, params, parent }) {
+export async function load({ url, fetch, params }) {
   const pathUrl = url.origin
   const release = params.release
   const validReleases = Object.keys(allReleases)
@@ -41,40 +41,51 @@ export async function load({ url, fetch, params, parent }) {
         }
       }
 
-      let yangPaths: any[] = []
-      let platFeats = {}
-
-      async function fetchPageData(pathUrl: string, release: string, model: string) {
-        try {
-          const yangUrl = `${pathUrl}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`;
-          const response = await fetch(yangUrl);
-          yangPaths = await response.json();
-        } catch(e) {
-          throw error(404, "Error fetching yang tree")
-        }
-      
-        if(model === "nokia" && allReleases[release].features) {
-          try {
-            const response = await fetch(`${pathUrl}/releases/${release}/features.txt`);
-            const responseText = await response.text();
-            platFeats = yaml.load(responseText)
-          } catch(e) {
-            throw error(404, "Error fetching platform features")
-          }
-        }
-      }
-
-      await fetchPageData(pathUrl, release, model);
-
-      return {
+      let payload = {
         model: model,
         modelTitle: modelTitle,
         release: release,
         other: other,
         search: decodeURIComponent(search),
-        paths: yangPaths,
-        features: platFeats
+        paths: [],
+        features: {}
       }
+
+      const yangPathUrl = `${pathUrl}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`;
+      const yangPaths = fetch(yangPathUrl).then(response => response.json())
+      .catch(error => {throw error(404, "Error fetching yang tree")})
+      
+      payload["paths"] = await yangPaths
+      
+      if(model === "nokia" && allReleases[release].features) {
+        const platFeats = fetch(`${pathUrl}/releases/${release}/features.txt`)
+        .then(response => response.text())
+        .then(response => yaml.load(response))
+        .catch(error => {throw error(404, "Error fetching platform features")});
+
+        return {
+          model: model,
+          modelTitle: modelTitle,
+          release: release,
+          other: other,
+          search: decodeURIComponent(search),
+          paths: await yangPaths,
+          features: await platFeats
+        }
+      } 
+      else {
+        return {
+          model: model,
+          modelTitle: modelTitle,
+          release: release,
+          other: other,
+          search: decodeURIComponent(search),
+          paths: await yangPaths,
+          features: {}
+        }
+      }
+      
+      return payload
     }
   } else {
     throw error(404, "Unsupported Release");
