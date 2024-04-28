@@ -41,42 +41,40 @@ export async function load({ url, fetch, params, parent }) {
         }
       }
 
-      let payload = {
+      let yangPaths: any[] = []
+      let platFeats = {}
+
+      async function fetchPageData(pathUrl: string, release: string, model: string) {
+        try {
+          const yangUrl = `${pathUrl}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`;
+          const response = await fetch(yangUrl);
+          yangPaths = await response.json();
+        } catch(e) {
+          throw error(404, "Error fetching yang tree")
+        }
+      
+        if(model === "nokia" && allReleases[release].features) {
+          try {
+            const response = await fetch(`${pathUrl}/releases/${release}/features.txt`);
+            const responseText = await response.text();
+            platFeats = yaml.load(responseText)
+          } catch(e) {
+            throw error(404, "Error fetching platform features")
+          }
+        }
+      }
+
+      await fetchPageData(pathUrl, release, model);
+
+      return {
         model: model,
         modelTitle: modelTitle,
         release: release,
         other: other,
         search: decodeURIComponent(search),
-        paths: [],
-        features: {}
+        paths: yangPaths,
+        features: platFeats
       }
-
-      let yangPathUrl = `${pathUrl}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`;
-      let yangPaths = fetch(yangPathUrl).then(response => response.json())
-      .catch(error => {throw error(404, "Error fetching yang tree")})
-      
-      payload["paths"] = await yangPaths
-
-      if(model === "nokia" && allReleases[release].features) {
-        let features: Platforms = {}
-        
-        let platforms = await fetch(`${pathUrl}/releases/${release}/features.txt`)
-        .then(response => response.text())
-        .catch(error => {throw error(404, "Error fetching platform features")});
-
-        /*const response = await fetch(`${pathUrl}/releases/${release}/features.txt`);
-        const respText: string | undefined = await response.text();
-        if (response.ok || respText != "") {
-          features = yaml.load(respText);
-        } else {
-          throw new Error("Error fetching platform features");
-        }*/
-
-        console.log(platforms)
-        payload["features"] = yaml.load(platforms);
-      }
-      
-      return payload
     }
   } else {
     throw error(404, "Unsupported Release");
