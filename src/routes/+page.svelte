@@ -44,7 +44,7 @@
 </script>
   
 <svelte:head>
-	<title>Nokia SR Linux Yang Models</title>
+	<title>Nokia SR Linux YANG Models</title>
 </svelte:head>
 
 <div class="flex flex-col items-center min-h-screen pt-5 has-header-img font-nokia-headline-light">
@@ -69,7 +69,7 @@
       <div class="flex">
         <div class="py-5 space-y-6">
           <p><img src="/images/nblue.png" width="85" alt="Logo"/></p>
-          <h3 class="text-3xl text-nokia-old-blue">SR Linux Yang Models</h3>
+          <h3 class="text-3xl text-nokia-old-blue">SR Linux YANG Models</h3>
           {#each relGroup as major}
             <div class="flex items-center">
               <p class="mr-4 text-xl">{major}</p>
