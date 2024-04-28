@@ -41,24 +41,12 @@ export async function load({ url, fetch, params }) {
         }
       }
 
-      let payload = {
-        model: model,
-        modelTitle: modelTitle,
-        release: release,
-        other: other,
-        search: decodeURIComponent(search),
-        paths: [],
-        features: {}
-      }
-
       const yangPathUrl = `${pathUrl}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`;
-      const yangPaths = fetch(yangPathUrl).then(response => response.json())
+      let yangPaths = fetch(yangPathUrl).then(response => response.json())
       .catch(error => {throw error(404, "Error fetching yang tree")})
-      
-      payload["paths"] = await yangPaths
-      
+
       if(model === "nokia" && allReleases[release].features) {
-        const platFeats = fetch(`${pathUrl}/releases/${release}/features.txt`)
+        let platFeats = fetch(`${pathUrl}/releases/${release}/features.txt`)
         .then(response => response.text())
         .then(response => yaml.load(response))
         .catch(error => {throw error(404, "Error fetching platform features")});
