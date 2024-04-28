@@ -6,7 +6,7 @@ import yaml from 'js-yaml'
 import rel from '$lib/releases.yaml?raw'
 const allReleases = yaml.load(rel) as Releases
 
-export async function load({ url, fetch, params }) {
+export async function load({ url, fetch, params, parent }) {
   const pathUrl = url.origin
   const release = params.release
   const validReleases = Object.keys(allReleases)
@@ -59,16 +59,21 @@ export async function load({ url, fetch, params }) {
 
       if(model === "nokia" && allReleases[release].features) {
         let features: Platforms = {}
+        
+        let platforms = await fetch(`${pathUrl}/releases/${release}/features.txt`)
+        .then(response => response.text())
+        .catch(error => {throw error(404, "Error fetching platform features")});
 
-        const response = await fetch(`${pathUrl}/releases/${release}/features.txt`);
+        /*const response = await fetch(`${pathUrl}/releases/${release}/features.txt`);
         const respText: string | undefined = await response.text();
         if (response.ok || respText != "") {
           features = yaml.load(respText);
         } else {
           throw new Error("Error fetching platform features");
-        }
+        }*/
 
-        payload["features"] = features;
+        console.log(platforms)
+        payload["features"] = yaml.load(platforms);
       }
       
       return payload
