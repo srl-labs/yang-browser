@@ -17,11 +17,11 @@ export async function load({ url, fetch, params }) {
     let model = "nokia"
 
     if (url.searchParams.has("model")) {
-      model = url.searchParams.get("model").trim()
+      model = url.searchParams.get("model")!.trim()
     }
 
     if (url.searchParams.has("search")) {
-      search = url.searchParams.get("search").trim();
+      search = url.searchParams.get("search")!.trim();
     }
     
     if(model != "openconfig" && model != "nokia") {
@@ -41,34 +41,32 @@ export async function load({ url, fetch, params }) {
         }
       }
 
-      try {
-        let fetchUrl = `${pathUrl}/releases/${release}/paths.json`
-        if (model !== "nokia") {
-          fetchUrl = `${pathUrl}/releases/${release}/${model}/paths.json`
-        }
-        const resp = await fetch(fetchUrl);
-        const yangPaths = await resp.json();
-
-        let payload = {
-          model: model,
-          modelTitle: modelTitle,
-          release: release,
-          other: other,
-          search: decodeURIComponent(search),
-          paths: await yangPaths,
-          features: {}
-        }
-
-        if(model === "nokia" && allReleases[release].features) {
-          const featureUrl = `${pathUrl}/releases/${release}/features.txt`;
-          const featureResp = await fetch(featureUrl);
-          const featureRaw = await featureResp.text();
-          payload["features"] = await yaml.load(featureRaw);
-        }
-        return payload
-      } catch(e) {
-        throw error(404, "Error fetching yang tree");
+      let payload = {
+        model: model,
+        modelTitle: modelTitle,
+        release: release,
+        other: other,
+        search: decodeURIComponent(search),
+        paths: [],
+        features: {}
       }
+
+      let yangPathUrl = `${pathUrl}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`;
+      let yangPaths = fetch(yangPathUrl).then(response => response.json())
+      .catch(error => {throw error(404, "Error fetching yang tree")})
+      
+      payload["paths"] = await yangPaths
+
+      if(model === "nokia" && allReleases[release].features) {
+        let features = fetch(`${pathUrl}/releases/${release}/features.txt`)
+        .then(response => response.text())
+        .then(response => yaml.load(response))
+        .catch(error => {throw error(404, "Error fetching platform features")})
+        
+        payload["features"] = features
+      }
+      
+      return payload
     }
   } else {
     throw error(404, "Unsupported Release");
