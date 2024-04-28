@@ -14,7 +14,6 @@
 
   // DEFAULTS
   let count = 40;
-  let showPathPrefix = false;
   let showMoreFilters = false;
 
   let searchInput = search;
@@ -24,6 +23,10 @@
   let stateInput = "";
   let stateStore = writable("");
   $: stateStore.set(stateInput);
+
+  let showPathPrefix = false;
+  let prefixStore = writable(false);
+  $: prefixStore.set(showPathPrefix);
 
   let platformSearch = "";
   let platFind = writable("");
@@ -38,7 +41,7 @@
   const spaceSplit = (str: string) => str.split(/\s+/);
 
   const getState = (x: PathDef) => ("is-state" in x ? "true" : "false");
-  const getPath = (x: PathDef) => (showPathPrefix ? x["path-with-prefix"] : x["path"])
+  const getPath = (x: PathDef) => ($prefixStore ? x["path-with-prefix"] : x["path"])
   const getEnumValues = (x: PathDef) => ("enum-values" in x ? x["enum-values"].join(", ") : '')
   const getSearchKeys = (str: string) => spaceSplit(str).join("|")
 
@@ -70,7 +73,7 @@
   let featFilter = derived([featSelect, featDeviate, featExtra], ([$featSelect, $featDeviate, $featExtra]) => featFilterAction($featSelect, $featDeviate, $featExtra));
   
   let stateFilter = derived([stateStore, yangPaths], ([$stateStore, $yangPaths]) => $yangPaths.filter((x: any) => $stateStore == "" ? true : getState(x) == $stateStore));
-  let yangFilter = derived([searchStore, stateFilter], ([$searchStore, $stateFilter]) => $stateFilter.filter((x: any) => searchBasedYangFilter(x, $searchStore, showPathPrefix)));
+  let yangFilter = derived([searchStore, prefixStore, stateFilter], ([$searchStore, $prefixStore, $stateFilter]) => $stateFilter.filter((x: any) => searchBasedYangFilter(x, $searchStore, $prefixStore)));
 
   let platFeatYangFilter = derived([featFilter, yangFilter],  ([$featFilter, $yangFilter]) => $featFilter?.length ? $yangFilter.filter((x: any) => featureBasedYangFilter(x, $featFilter)) : $yangFilter);
 
@@ -109,7 +112,7 @@
 </svelte:head>
 
 <Header model={model} modelTitle={modelTitle} release={release} other={other} home={true} />
-<div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 {model === "nokia" ? 'pt-[60px] lg:pt-[65px]' : 'pt-[75px] lg:pt-[85px]'}">
+<div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[85px]">
   <div class="p-6 container mx-auto">
     <p class="text-gray-800 dark:text-gray-300 font-nokia-headline">Path Browser</p>
     <div class="my-2">
@@ -150,7 +153,7 @@
     </div>
     <div class="flex items-center">
       <div class="flex items-center px-3 py-1 w-fit border hover:border-gray-300 dark:border-gray-500 dark:hover:border-gray-400 rounded-full cursor-pointer">
-        <input id="prefix-checkbox" type="checkbox" class="w-3 h-3 cursor-pointer" checked={showPathPrefix} on:change={() => showPathPrefix = !showPathPrefix}>
+        <input id="prefix-checkbox" type="checkbox" class="w-3 h-3 cursor-pointer" bind:checked={showPathPrefix}>
         <label for="prefix-checkbox" class="ms-2 text-xs text-gray-900 dark:text-gray-300 select-none cursor-pointer">Show prefix</label>
       </div>
       {#if uniqueFeatures?.length}

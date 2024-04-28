@@ -17,16 +17,17 @@ export function extractFeatures (data: Platforms): [PlatformFeatures, string[]] 
   return [platforms, uniqueFeatures]
 }
 
-export function searchBasedYangFilter (x: PathDef, term: string, showPathPrefix: boolean): boolean {
+export function searchBasedYangFilter (x: PathDef, term: string, showPrefix: boolean): boolean {
   const keys = term.split(/\s+/)
-  const pathChosen = showPathPrefix ? x["path-with-prefix"] : x["path"]
+  const pathChosen = showPrefix ? x["path-with-prefix"] : x["path"]
   const searchStr = `${pathChosen};${x["type"]}`
   return keys.every(x => searchStr.includes(x))
 }
 
 // do not change defintion
 export function highlight (node: HTMLDivElement, [rawRex, text]: [string, string]) {
-  let marker = (txt: string, rex: RegExp) => txt.replace(rex, (term) => `<mark class="text-nokia-blue dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold">${term}</mark>`);
+  const markClass = "text-nokia-blue dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold";
+  let marker = (txt: string, rex: RegExp) => txt.replace(rex, (term) => `<mark class="${markClass}">${term}</mark>`);
   let action = () => node.innerHTML = marker(text, new RegExp(rawRex, "g"));
   action();
   return {
