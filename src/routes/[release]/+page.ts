@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit'
 
-import type { Releases } from '$lib/structure'
+import type { PayLoad, Platforms, Releases } from '$lib/structure'
 
 import yaml from 'js-yaml'
 import rel from '$lib/releases.yaml?raw'
@@ -58,12 +58,17 @@ export async function load({ url, fetch, params }) {
       payload["paths"] = await yangPaths
 
       if(model === "nokia" && allReleases[release].features) {
-        let features = fetch(`${pathUrl}/releases/${release}/features.txt`)
-        .then(response => response.text())
-        .then(response => yaml.load(response))
-        .catch(error => {throw error(404, "Error fetching platform features")})
-        
-        payload["features"] = features
+        let features: Platforms = {}
+
+        const response = await fetch(`${pathUrl}/releases/${release}/features.txt`);
+        const respText: string | undefined = await response.text();
+        if (response.ok || respText != "") {
+          features = yaml.load(respText);
+        } else {
+          throw new Error("Error fetching platform features");
+        }
+
+        payload["features"] = features;
       }
       
       return payload
