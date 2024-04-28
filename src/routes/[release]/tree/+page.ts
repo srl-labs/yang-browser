@@ -19,11 +19,11 @@ export async function load({ url, fetch, params }) {
     let model = "nokia"
 
     if (url.searchParams.has("path")) {
-      urlPath = url.searchParams.get("path").trim();
+      urlPath = url.searchParams.get("path")!.trim();
     }
 
     if (url.searchParams.has("model")) {
-      model = url.searchParams.get("model").trim()
+      model = url.searchParams.get("model")!.trim()
     }
     
     if(model != "openconfig" && model != "nokia") {
@@ -43,25 +43,21 @@ export async function load({ url, fetch, params }) {
         }
       }
 
-      try {
-        let fetchUrl = `${pathUrl}/releases/${release}/paths.json`
-        if (model !== "nokia") {
-          fetchUrl = `${pathUrl}/releases/${release}/${model}/paths.json`
-        }
-        const resp = await fetch(fetchUrl);
-        const yangPaths = await resp.json();
-
-        return {
-          urlPath: urlPath,
-          model: model,
-          modelTitle: modelTitle,
-          release: release,
-          other: other,
-          paths: await yangPaths
-        }
-      } catch(e) {
-        throw error(404, "Error fetching yang tree");
+      let payload = {
+        urlPath: urlPath,
+        model: model,
+        modelTitle: modelTitle,
+        release: release,
+        other: other,
+        paths: []
       }
+
+      let yangPathUrl = `${pathUrl}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`;
+      let yangPaths = fetch(yangPathUrl).then(response => response.json())
+      .catch(error => {throw error(404, "Error fetching yang tree")})
+      
+      payload["paths"] = await yangPaths
+      return payload
     }
   } else {
     throw error(404, "Unsupported Release");
