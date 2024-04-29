@@ -105,9 +105,62 @@ export function featureBasedYangFilter (x: PathDef, f: string[]): boolean {
       let result = expResult.join(" ")
       result = result.replaceAll("+", "1").replaceAll("=", "0")
 
-      return Function("return Boolean(" + result + ")")()
+      //eturn Function("return Boolean(" + result + ")")()
+      return evalBoolString(result)
     }
   }
 
   return true
+}
+
+
+// cloudfare pages dont support eval() or Function()
+function evalBoolString(expression: string): boolean {
+  const tokens = expression.split(/([()&|!])/).filter(token => token.trim() !== '');
+  let index = 0;
+
+  const consume = (expected: string) => {
+    if (tokens[index] === expected) {
+      index++;
+    } else {
+      throw new Error(`Feature Evaluation: Expected '${expected}' but found '${tokens[index]}'`);
+    }
+  }
+
+  const parseFactor = () => {
+    const token = tokens[index++].trim();
+    if (token === '(') {
+      const result = parseExpression();
+      consume(')');
+      return result;
+    } else if (token === '1') {
+      return true;
+    } else if (token === '0') {
+      return false;
+    } else if (token === '!') {
+      return !parseFactor();
+    } else {
+      throw new Error(`Feature Evaluation: Invalid token '${token}'`);
+    }
+  }
+
+  const parseTerm = () => {
+    let result = parseFactor();
+    while (tokens[index] === '&') {
+      consume('&');
+      result = result & parseFactor();
+    }
+    return result;
+  }
+
+  const parseExpression = () => {
+    let result = parseTerm();
+    while (tokens[index] === '|') {
+      consume('|');
+      result = result | parseTerm();
+    }
+    return result;
+  }
+
+  return Boolean(parseExpression());
 }
