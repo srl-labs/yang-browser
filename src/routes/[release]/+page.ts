@@ -41,36 +41,26 @@ export async function load({ url, fetch, params }) {
         }
       }
 
-      const yangPathUrl = `${pathUrl}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`;
-      let yangPaths = fetch(yangPathUrl).then(response => response.json())
-      .catch(error => {throw error(404, "Error fetching yang tree")})
+      let payload = {
+        model: model, modelTitle: modelTitle,
+        search: decodeURIComponent(search),
+        release: release, other: other,
+        paths: [], features: {}
+      }
 
+      const yangPathUrl = `${pathUrl}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`;
+      const yangPaths = fetch(yangPathUrl).then(response => response.json())
+      .catch(error => {throw error(404, "Error fetching yang tree")})
+      
+      payload.paths = await yangPaths
+      
       if(model === "nokia" && allReleases[release].features) {
-        let platFeats = fetch(`${pathUrl}/releases/${release}/features.txt`)
+        const platFeats = fetch(`${pathUrl}/releases/${release}/features.txt`)
         .then(response => response.text())
         .then(response => yaml.load(response))
         .catch(error => {throw error(404, "Error fetching platform features")});
 
-        return {
-          model: model,
-          modelTitle: modelTitle,
-          release: release,
-          other: other,
-          search: decodeURIComponent(search),
-          paths: await yangPaths,
-          features: await platFeats
-        }
-      } 
-      else {
-        return {
-          model: model,
-          modelTitle: modelTitle,
-          release: release,
-          other: other,
-          search: decodeURIComponent(search),
-          paths: await yangPaths,
-          features: {}
-        }
+        payload.features = await platFeats
       }
       
       return payload
