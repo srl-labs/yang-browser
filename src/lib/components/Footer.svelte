@@ -3,20 +3,20 @@
 </script>
 
 <p
-	class="p-5 text-sm text-center {home ? 'text-gray-800' : ' text-gray-500 dark:text-gray-400 dark:bg-gray-800'}">
+	class="p-5 text-sm text-center {home ? 'text-gray-200' : ' text-gray-800 dark:text-gray-300 dark:bg-gray-800'}">
 	Created by
 	<a
-		class="hover:underline text-blue-600 {home ? '' : 'dark:text-blue-500'}"
+		class="hover:underline {home ? 'text-blue-400' : 'text-blue-600 dark:text-blue-500'}"
 		href="https://www.linkedin.com/in/siva19susi"
 		target="_blank">Siva Sivakumar</a>
 	/
 	<a
-		class="hover:underline text-blue-600 {home ? '' : 'dark:text-blue-500'}"
+		class="hover:underline {home ? 'text-blue-400' : 'text-blue-600 dark:text-blue-500'}"
 		href="https://www.linkedin.com/in/rdodin"
 		target="_blank">Roman Dodin</a>
 	/
 	<a
-		class="hover:underline text-blue-600 {home ? '' : 'dark:text-blue-500'}"
+		class="hover:underline {home ? 'text-blue-400' : 'text-blue-600 dark:text-blue-500'}"
 		href="https://github.com/srl-labs/gnxi-browser"
 		target="_blank">
 		<svg

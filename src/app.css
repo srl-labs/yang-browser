@@ -22,11 +22,6 @@
     background-size: cover;
   }
 
-  .has-header-img-inverted {
-    background: url(/images/inverted.jpg)center center;
-    background-size: cover;
-  }
-
   .dropdown:hover .dropdown-content {display: block;}
 
   :global(html) {
