@@ -2,6 +2,7 @@
   import { writable, derived } from 'svelte/store';
 
   import type { TreePayLoad } from '$lib/structure';
+  import { closeSidebar } from '$lib/components/functions'
 
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
@@ -79,11 +80,13 @@
 </script>
 
 <svelte:head>
-	<title>SR Linux {release} Tree Browser</title>
+	<title>SR Linux {release} {model !== "nokia" ? modelTitle : ""} Tree Browser</title>
 </svelte:head>
 
 <Header model={model} modelTitle={modelTitle} release={release} other={other} home={false} />
-<div class="min-w-[280px] overflow-x-auto dark:bg-gray-800 font-nokia-headline-light pt-[80px] lg:pt-[90px]">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="min-w-[280px] overflow-x-auto dark:bg-gray-800 font-nokia-headline-light pt-[80px] lg:pt-[90px]" on:click={closeSidebar}>
   <div class="p-6 overflow-x-auto text-sm container mx-auto">
     <div class="font-fira text-xs tracking-tight">
       <YangTree modelName="{release}" name={$yangTarget.name} children={$yangTarget.children} details={$yangTarget.details} urlPath={urlPath} />

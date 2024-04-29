@@ -2,21 +2,16 @@
   import Theme from '$lib/components/Theme.svelte';
   import type { Other } from '$lib/structure';
 
+  import { toggleSidebar, closeSidebar } from '$lib/components/functions'
+
   export let model: string;
   export let modelTitle: string;
   export let release: string;
   export let other: Other[];
   export let home: boolean;
-
-  export const toggleSidebar = () => {
-		document.getElementById('sidebar')?.classList.toggle('-translate-x-0');
-		document.getElementById('sidebar')?.classList.toggle('-translate-x-full');
-		document.getElementById('open-sidebar')?.classList.toggle('hidden');
-		document.getElementById('close-sidebar')?.classList.toggle('hidden');
-	};
-
-  // has-header-img dark:has-header-img-inverted
 </script>
+
+<svelte:window on:keyup={({key}) => key === "Escape" ? closeSidebar(): ""} />
 
 <!-- NAVBAR -->
 <nav class="fixed top-0 z-20 px-3 py-4 w-screen select-none font-nokia-headline-light bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -31,7 +26,7 @@
           <path d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
-			<a href="../" class="flex px-2"><img src="/images/navbar-logo.png" alt="Logo" width="25" /></a>
+			<a href="../" class="flex px-2"><img src="/images/navbar-logo.png" alt="Logo" width="25"/></a>
 		</div>
 		<!-- navbar centre item -->
 		<div class="text-center">

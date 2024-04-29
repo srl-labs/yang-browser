@@ -2,8 +2,7 @@
   import { writable, derived } from 'svelte/store'
   
   import type { PayLoad, PathDef } from '$lib/structure'
-
-  import { extractFeatures, searchBasedYangFilter, highlight, featureBasedYangFilter } from './functions'
+  import { closeSidebar, extractFeatures, searchBasedYangFilter, highlight, featureBasedYangFilter } from '$lib/components/functions'
 
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
@@ -49,7 +48,7 @@
   let start = writable(0);
   let yangPaths = writable(paths);
 
-  let platStore = writable({});
+  let platStore = writable([]);
   let featStore = writable([]);
   let featDeviate = writable([]);
   let featExtra = writable([]);
@@ -108,11 +107,13 @@
 </script>
 
 <svelte:head>
-	<title>Nokia SR Linux {release} Yang Model</title>
+	<title>Nokia SR Linux {release} {model !== "nokia" ? modelTitle : ""} Yang Model</title>
 </svelte:head>
 
 <Header model={model} modelTitle={modelTitle} release={release} other={other} home={true} />
-<div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[85px]">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[85px]" on:click={closeSidebar}>
   <div class="p-6 container mx-auto">
     <p class="text-gray-800 dark:text-gray-300 font-nokia-headline">Path Browser</p>
     <div class="my-2">

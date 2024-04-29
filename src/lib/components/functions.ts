@@ -1,5 +1,18 @@
 import type { Platforms, PlatformFeatures, PathDef } from '$lib/structure'
 
+export function toggleSidebar() {
+  document.getElementById('sidebar')?.classList.toggle('-translate-x-0');
+  document.getElementById('sidebar')?.classList.toggle('-translate-x-full');
+  document.getElementById('open-sidebar')?.classList.toggle('hidden');
+  document.getElementById('close-sidebar')?.classList.toggle('hidden');
+}
+
+export function closeSidebar() {
+  if (document.getElementById('open-sidebar')?.classList.contains("hidden")) {
+    toggleSidebar();
+  }
+};
+
 export function extractFeatures (data: Platforms): [PlatformFeatures, string[]] {
   let platforms: PlatformFeatures = {}
   let allFeatures: string[] = []
@@ -112,7 +125,6 @@ export function featureBasedYangFilter (x: PathDef, f: string[]): boolean {
 
   return true
 }
-
 
 // cloudfare pages dont support eval() or Function()
 function evalBoolString(expression: string): boolean {
