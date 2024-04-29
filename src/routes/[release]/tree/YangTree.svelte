@@ -6,12 +6,9 @@
 	export let name: string;
 	export let children: any[];
 	export let details: string;
-	export let urlPath: string;
+	export let urlPath: string[];
 	const dump = details;
 
-	// EXPAND OVERRIDE IF PATH PARAM IN URL
-	if(modelName != name) expanded = urlPath.split("/").includes(name) ? true : false;
-	
 	// LOCAL FUNCTIONS
 	const toggle = () => expanded = !expanded;
 
@@ -19,6 +16,24 @@
 		const nonEmptyListObjects = arr.filter((obj: { children: any[]; }) => Array.isArray(obj.children) && obj.children.length > 0);
 		const emptyListObjects = arr.filter((obj: { children: any[]; }) => Array.isArray(obj.children) && obj.children.length === 0);
 		return emptyListObjects.concat(nonEmptyListObjects);
+	}
+
+	// EXPAND OVERRIDE IF PATH PARAM IN URL
+	function openContainer(target: { name: string; }) {
+		if(target.name === urlPath[0]) {
+			urlPath.shift();
+			return true
+		} else {
+			return false
+		}
+	}
+
+	function test(target: { name: string, details: {} }) {
+		if(target.name === urlPath[0]) {
+			urlPath.shift();
+			pathFocus.set(target.details)
+		}
+		return true
 	}
 </script>
 
@@ -45,8 +60,9 @@
 		{#each pushNonEmptyChildrenToLast(children) as entry}
 			<li class="pt-1">
 				{#if entry.children.length > 0}
-					<svelte:self {modelName} {...entry} expanded={false} urlPath={urlPath} />
+					<svelte:self {modelName} {...entry} expanded={openContainer(entry)} urlPath={urlPath} />
 				{:else}
+					{@const setPathFocus = test(entry)}
 					<button class="ml-2.5 px-2 py-0.5 text-blue-600 dark:text-blue-500 hover:underline" on:click={() => pathFocus.set(entry.details)}>
 						<div title="{entry.details.path}">{entry.name}</div>
 					</button>

@@ -12,12 +12,14 @@
 
 	export let data: TreePayLoad;
   let {urlPath, model, modelTitle, release, other, paths} = data;
+  let yangTreeUrlPath = urlPath != "" ? (urlPath.split("/").filter(x => x != "")) : []
 
   // DEFAULTS
 	let pathDetail: any;
 	pathFocus.subscribe((value) => {
     pathDetail = value;
   });
+  pathFocus.set({});
 
   // TREE BUILDER
   class TreeNode {
@@ -101,7 +103,7 @@
 <div class="min-w-[280px] overflow-x-auto dark:bg-gray-800 font-nokia-headline-light pt-[80px] lg:pt-[90px]">
   <div class="p-6 overflow-x-auto text-sm container mx-auto">
     <div class="font-fira text-xs tracking-tight">
-      <YangTree modelName="{release}" name={$yangTarget.name} children={$yangTarget.children} details={$yangTarget.details} urlPath={urlPath}} />
+      <YangTree modelName="{release}" name={$yangTarget.name} children={$yangTarget.children} details={$yangTarget.details} urlPath={yangTreeUrlPath} />
     </div>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
