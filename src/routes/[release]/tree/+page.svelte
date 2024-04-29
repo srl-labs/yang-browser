@@ -77,21 +77,35 @@
   // WRITABLE STORES
   let yangPaths = writable(paths);
   let yangTarget = derived(yangPaths, ($yangPaths) => buildTreeFromPaths(release, $yangPaths));
+
+  // Page functions
+  function closePopup() {
+    if(Object.keys(pathDetail).length !== 0) {
+      pathFocus.set({});
+    }
+  }
+  
+  function closeSidebarPopup() {
+    closeSidebar();
+    closePopup();
+  }
 </script>
 
 <svelte:head>
 	<title>SR Linux {release} {model !== "nokia" ? modelTitle : ""} Tree Browser</title>
 </svelte:head>
 
+<svelte:window on:keyup={({key}) => key === "Escape" ? closePopup() : ""}/>
+
 <Header model={model} modelTitle={modelTitle} release={release} other={other} home={false} />
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="min-w-[280px] overflow-x-auto dark:bg-gray-800 font-nokia-headline-light pt-[80px] lg:pt-[90px]" on:click={closeSidebar}>
+<div class="min-w-[280px] overflow-x-auto dark:bg-gray-800 font-nokia-headline-light pt-[80px] lg:pt-[90px]">
   <div class="p-6 overflow-x-auto text-sm container mx-auto">
     <div class="font-fira text-xs tracking-tight">
-      <YangTree modelName="{release}" name={$yangTarget.name} children={$yangTarget.children} details={$yangTarget.details} urlPath={urlPath} />
+      <YangTree modelName="{release}" name={$yangTarget.name} children={$yangTarget.children} details={$yangTarget.details} urlPath={urlPath}} />
     </div>
-    <div class="relative z-10 { Object.keys(pathDetail).length != 0  ? '' : 'hidden'}" aria-labelledby="modal-title">
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div id="popup" class="relative z-20 { Object.keys(pathDetail).length !== 0  ? '' : 'hidden'}" on:click|stopPropagation={closeSidebarPopup}>
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
       <div class="fixed inset-0 z-10 overflow-y-auto">
         <div class="flex min-h-full justify-center p-4 items-center sm:p-0">
@@ -128,7 +142,9 @@
                     </tr>
                     <tr class="border-t border-gray-200 dark:border-gray-600">
                       <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">Description:</th>
-                      <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight  align-top">{pathDetail["description"]}</td>
+                      <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight align-top">
+                        <div class="overflow-y-auto max-h-40 scroll-light dark:scroll-dark">{pathDetail["description"]}</div>
+                      </td>
                     </tr>
                   </tbody>
                 </table>

@@ -11,7 +11,7 @@
   export let home: boolean;
 </script>
 
-<svelte:window on:keyup={({key}) => key === "Escape" ? closeSidebar(): ""} />
+<svelte:window on:keyup={({key}) => key === "Escape" ? closeSidebar() : ""} />
 
 <!-- NAVBAR -->
 <nav class="fixed top-0 z-20 px-3 py-4 w-screen select-none font-nokia-headline-light bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
