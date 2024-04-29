@@ -32,8 +32,9 @@
 		if(target.name === urlPath[0]) {
 			urlPath.shift();
 			pathFocus.set(target.details)
+			return true
 		}
-		return true
+		return false
 	}
 </script>
 
@@ -63,7 +64,7 @@
 					<svelte:self {modelName} {...entry} expanded={openContainer(entry)} urlPath={urlPath} />
 				{:else}
 					{@const setPathFocus = test(entry)}
-					<button class="ml-2.5 px-2 py-0.5 text-blue-600 dark:text-blue-500 hover:underline" on:click={() => pathFocus.set(entry.details)}>
+					<button class="ml-2.5 px-2 py-0.5 hover:underline {setPathFocus ? 'bg-gray-200 dark:bg-gray-600 dark:text-gray-200' : 'text-blue-600 dark:text-blue-500'}" on:click={() => pathFocus.set(entry.details)}>
 						<div title="{entry.details.path}">{entry.name}</div>
 					</button>
 				{/if}
