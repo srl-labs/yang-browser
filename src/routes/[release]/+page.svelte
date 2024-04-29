@@ -43,6 +43,7 @@
   const getPath = (x: PathDef) => ($prefixStore ? x["path-with-prefix"] : x["path"])
   const getEnumValues = (x: PathDef) => ("enum-values" in x ? x["enum-values"].join(", ") : '')
   const getSearchKeys = (str: string) => spaceSplit(str).join("|")
+  const pathClearToTree = (str: string) => str.replaceAll("=*", "");
 
   // WRITABLE STORES
   let start = writable(0);
@@ -238,7 +239,7 @@
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div title="{getEnumValues(item)}" use:highlight={[getSearchKeys($searchStore), item.type]}></div></td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
                   <div title="Show path in tree">
-                    <a data-sveltekit-preload-data="tap" href="/{release}/tree?path={item.path}">
+                    <a data-sveltekit-preload-data="tap" href="/{release}/tree?path={pathClearToTree(item.path)}">
                       <svg class="w-3 h-3 hover:text-gray-500 dark:hover:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
                       </svg>
