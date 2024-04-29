@@ -8,7 +8,7 @@
   import Footer from '$lib/components/Footer.svelte';
 
 	export let data: PayLoad;
-  let {model, modelTitle, release, other, paths, search, features} = data;
+  let {model, modelTitle, release, allModels, paths, search, features} = data;
   let [platforms, uniqueFeatures] = extractFeatures(features);
 
   // DEFAULTS
@@ -111,7 +111,7 @@
 	<title>Nokia SR Linux {release} {model !== "nokia" ? modelTitle : ""} Yang Model</title>
 </svelte:head>
 
-<Header model={model} modelTitle={modelTitle} release={release} other={other} home={true} />
+<Header model={model} modelTitle={modelTitle} release={release} allModels={allModels} home={true} />
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[85px]" on:click={closeSidebar}>

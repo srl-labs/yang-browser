@@ -17,8 +17,8 @@ export interface HomeGroup {
   }
 }
 
-export interface Other {
-  name: string, 
+export interface Model {
+  title: string, 
   path: string
 }
 
@@ -26,7 +26,7 @@ export interface PayLoad {
   model: string,
   modelTitle: string, 
   release: string,
-  other: Other[],
+  allModels: Model[],
   paths: string[],
   search: string,
   features: Platforms
@@ -45,7 +45,7 @@ export interface TreePayLoad {
   model: string,
   modelTitle: string, 
   release: string,
-  other: Other[],
+  allModels: Model[],
   paths: string[],
 }
 

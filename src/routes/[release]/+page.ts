@@ -27,24 +27,23 @@ export async function load({ url, fetch, params }) {
     if(model != "openconfig" && model != "nokia") {
       throw error(404, "Unsupported model")
     } else {
-      let other = []
-      if(model == "openconfig") {
+      let allModels = [{title: "Nokia", path: `/${release}`}]
+      if(allReleases[release].openconfig) {
+        allModels.push({title: "OpenConfig", path: `/${release}/?model=openconfig`})
+      }
+
+      if(model === "openconfig") {
         if(allReleases[release].openconfig) {
           modelTitle = "OpenConfig"
-          other.push({name: "Nokia", path: `/${release}`})
         } else {
           throw error(404, "Unsupported model")
-        }
-      } else {
-        if(allReleases[release].openconfig) {
-          other.push({name: "OpenConfig", path: `/${release}/?model=openconfig`})
         }
       }
 
       let payload = {
         model: model, modelTitle: modelTitle,
         search: decodeURIComponent(search),
-        release: release, other: other,
+        release: release, allModels: allModels,
         paths: [], features: {}
       }
 

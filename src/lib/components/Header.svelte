@@ -1,20 +1,20 @@
 <script lang="ts">
   import Theme from '$lib/components/Theme.svelte';
-  import type { Other } from '$lib/structure';
+  import type { Model } from '$lib/structure';
 
   import { toggleSidebar, closeSidebar } from '$lib/components/functions'
 
   export let model: string;
   export let modelTitle: string;
   export let release: string;
-  export let other: Other[];
+  export let allModels: Model[];
   export let home: boolean;
 </script>
 
 <svelte:window on:keyup={({key}) => key === "Escape" ? closeSidebar() : ""} />
 
 <!-- NAVBAR -->
-<nav class="fixed top-0 z-20 px-3 py-4 w-screen select-none font-nokia-headline-light bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+<nav class="fixed top-0 z-20 p-4 w-screen select-none font-nokia-headline-light bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
 	<div class="flex justify-between">
 		<!-- navbar left item -->
 		<div class="flex items-center space-x-2">
@@ -31,7 +31,7 @@
 		<!-- navbar centre item -->
 		<div class="text-center">
 			<p class="text-nokia-old-blue dark:text-white font-light text-lg lg:text-2xl">SR Linux <span class="font-nokia-headline">{release}</span></p>
-      <p class="text-gray-800 text-xs lg:text-sm dark:text-white">{model !== "nokia" ? modelTitle : ""} YANG Model</p>
+      <p class="text-gray-800 text-xs lg:text-sm dark:text-white">{modelTitle} YANG Model</p>
 		</div>
 		<!-- navbar right item -->
     <div class="flex items-center">
@@ -44,6 +44,16 @@
 <div id="sidebar" class="fixed h-screen overflow-hidden transform transition ease-in-out duration-300 -translate-x-full">
   <aside class="text-sm font-nokia-headline-light pb-4 overflow-y-auto scroll-light dark:scroll-dark z-20 w-[220px] h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
     <div class="px-4 space-y-4 pt-[95px] lg:pt-[100px]">
+
+      {#if allModels.length === 2}
+        {@const nokiaModel = allModels.filter(x => x.title === "Nokia")[0]}
+        {@const ocModel = allModels.filter(x => x.title === "OpenConfig")[0]}
+        <div class="flex flex-row justify-between items-center text-center rounded-lg border dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+          <a data-sveltekit-reload href="{nokiaModel.path}" class="basis-1/2 rounded-s-lg px-2 py-1 {model === "nokia" ? 'bg-blue-700 dark:bg-blue-700 text-white' : 'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white'}">{nokiaModel.title}</a>
+          <a data-sveltekit-reload href="{ocModel.path}" class="basis-1/2 rounded-r-lg px-2 py-1 {model === "openconfig" ? 'bg-blue-700 dark:bg-blue-700 text-white' : 'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white'}">{ocModel.title}</a>
+        </div>
+      {/if}
+      
       <ul class="space-y-2 text-gray-800 dark:text-gray-300">
         <li>
           <a data-sveltekit-reload class="flex items-center px-2 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 hover:rounded-lg" href="/{release}{home ? '/tree' : ''}{model !== "nokia" ? "/?model=" + model : ""}">
@@ -77,18 +87,6 @@
             Pyang Tree
           </a>
         </li>
-        {#if other?.length}
-          {#each other as entry}
-            <li>
-              <a data-sveltekit-reload class="flex items-center px-2 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 hover:rounded-lg whitespace" href="{entry.path}">
-                <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 1v4a1 1 0 0 1-1 1H1m5 8.514L4 12.5l2-2m4 4.014 2-2.014-2-2m5 7.5a.97.97 0 0 1-.933 1H1.933A.97.97 0 0 1 1 18V5.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 5.828 1h8.239A.97.97 0 0 1 15 2v16Z"/>
-                </svg>
-                {entry.name} Model
-              </a>
-            </li>
-          {/each}
-        {/if}
         <li>
           <a data-sveltekit-reload class="flex items-center px-2 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 hover:rounded-lg" href="https://github.com/nokia/srlinux-yang-models/tree/{release}" target="_blank">
             <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">

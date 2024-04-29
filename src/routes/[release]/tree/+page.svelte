@@ -11,7 +11,7 @@
   import { pathFocus } from '$lib/components/sharedStore';
 
 	export let data: TreePayLoad;
-  let {urlPath, model, modelTitle, release, other, paths} = data;
+  let {urlPath, model, modelTitle, release, allModels, paths} = data;
   let yangTreeUrlPath = urlPath != "" ? (urlPath.split("/").filter(x => x != "")) : []
 
   // DEFAULTS
@@ -99,7 +99,7 @@
 
 <svelte:window on:keyup={({key}) => key === "Escape" ? closePopup() : ""}/>
 
-<Header model={model} modelTitle={modelTitle} release={release} other={other} home={false} />
+<Header model={model} modelTitle={modelTitle} release={release} allModels={allModels} home={false} />
 <div class="min-w-[280px] overflow-x-auto dark:bg-gray-800 font-nokia-headline-light pt-[80px] lg:pt-[90px]">
   <div class="p-6 overflow-x-auto text-sm container mx-auto">
     <div class="font-fira text-xs tracking-tight">
