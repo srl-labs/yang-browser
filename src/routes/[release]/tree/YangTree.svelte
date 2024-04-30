@@ -28,7 +28,7 @@
 		}
 	}
 
-	function test(target: { name: string, details: {} }) {
+	function isUrlPathLeaf(target: { name: string, details: {} }) {
 		if(target.name === urlPath[0]) {
 			urlPath.shift();
 			pathFocus.set(target.details)
@@ -63,8 +63,10 @@
 				{#if entry.children.length > 0}
 					<svelte:self {modelName} {...entry} expanded={openContainer(entry)} urlPath={urlPath} />
 				{:else}
-					{@const setPathFocus = test(entry)}
-					<button class="ml-2.5 px-2 py-0.5 hover:underline {setPathFocus ? 'bg-gray-200 dark:bg-gray-600 dark:text-gray-200' : 'text-blue-600 dark:text-blue-500'}" on:click={() => pathFocus.set(entry.details)}>
+					{@const setPathFocus = isUrlPathLeaf(entry)}
+					<button class="ml-2.5 px-2 py-0.5 
+						hover:underline hover:bg-gray-200 hover:text-black hover:dark:bg-gray-600 hover:dark:text-gray-200 
+						{setPathFocus ? 'bg-gray-200 dark:bg-gray-600 dark:text-gray-200' : 'text-blue-600 dark:text-blue-500'}" on:click={() => pathFocus.set(entry.details)}>
 						<div title="{entry.details.path}">{entry.name}</div>
 					</button>
 				{/if}

@@ -75,7 +75,7 @@
               <p class="mr-4 text-xl text-white">{major}</p>
               <div class="flex items-center flex-wrap gap-2 text-base/7">
                 {#each rs[major].top as minor}
-                  <a class="px-3 py-1.5 border border-gray-700 text-white bg-gray-800 hover:bg-gray-700 rounded text-center w-20" href="{minor}">{minor.slice(1)}</a>
+                  <a class="px-3 py-1.5 border border-gray-700 text-white bg-gray-800 hover:bg-gray-700 hover:cursor-pointer rounded text-center w-20" href="{minor}">{minor.slice(1)}</a>
                 {/each}
                 {#if rs[major].others?.length }
                   <div class="dropdown">

@@ -87,9 +87,11 @@
     }
   }
   
-  function closeSidebarPopup() {
-    closeSidebar();
-    closePopup();
+  function closeSidebarPopup(event: { target: Node | null; }) {
+    if(!document.getElementById("popupContent")?.contains(event.target)) {
+      closeSidebar();
+      closePopup();
+    }
   }
 </script>
 
@@ -107,55 +109,55 @@
     </div>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div id="popup" class="relative z-20 { Object.keys(pathDetail).length !== 0  ? '' : 'hidden'}" on:click|stopPropagation={closeSidebarPopup}>
+    <div id="popup" class="fixed inset-0 z-50 items-center { Object.keys(pathDetail).length !== 0  ? '' : 'hidden'}" on:click|stopPropagation={closeSidebarPopup}>
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-      <div class="fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex min-h-full justify-center p-4 items-center sm:p-0">
-          <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 max-w-xl">
-            <div class="flex px-4 py-2 items-center justify-between bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">
-              <p class="flex text-lg text-gray-900 dark:text-gray-300">Path Details</p>
-              <button class="flex text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-500" on:click={() => pathFocus.set({})}>
-                <svg class="w-5 h-5" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-              </button>
-            </div>
-            <div class="bg-gray-50 dark:bg-gray-700 p-5">
-              <div class="overflow-x-auto max-w-full">
-                <table>
-                  <tbody>
-                    <tr>
-                      <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">State:</th>
-                      <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{"is-state" in pathDetail ? pathDetail["is-state"] : false}</td>
-                    </tr>
+      <div id="popupContent" class="flex min-h-full justify-center items-center">
+        <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-700 text-left shadow-xl transition-all sm:my-8 max-w-xl">
+          <div id="popupHeader" class="flex items-center justify-between px-4 py-2 rounded-t bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+            <p class="flex text-lg text-gray-900 dark:text-gray-300">Path Details</p>
+            <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" on:click={() => pathFocus.set({})}>
+              <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+              </svg>
+              <span class="sr-only">Close modal</span>
+            </button>
+          </div>
+          <div id="popupBody" class="p-4 text-left">
+            <div class="overflow-x-auto max-w-full">
+              <table>
+                <tbody>
+                  <tr>
+                    <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">State:</th>
+                    <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{"is-state" in pathDetail ? pathDetail["is-state"] : false}</td>
+                  </tr>
+                  <tr class="border-t border-gray-200 dark:border-gray-600">
+                    <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">Type:</th>
+                    <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{pathDetail["type"]}</td>
+                  </tr>
+                  {#if pathDetail["type"] === "enumeration" && "enum-values" in pathDetail}
                     <tr class="border-t border-gray-200 dark:border-gray-600">
-                      <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">Type:</th>
-                      <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{pathDetail["type"]}</td>
+                      <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">Enum Values:</th>
+                      <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{pathDetail["enum-values"].join(", ")}</td>
                     </tr>
-                    {#if pathDetail["type"] === "enumeration" && "enum-values" in pathDetail}
-                      <tr class="border-t border-gray-200 dark:border-gray-600">
-                        <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">Enum Values:</th>
-                        <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{pathDetail["enum-values"].join(", ")}</td>
-                      </tr>
-                    {/if}
-                    <tr class="border-t border-gray-200 dark:border-gray-600">
-                      <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">Path:</th>
-                      <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{pathDetail["path"]}</td>
-                    </tr>
-                    <tr class="border-t border-gray-200 dark:border-gray-600">
-                      <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">Description:</th>
-                      <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight align-top">
-                        <div class="overflow-y-auto max-h-40 scroll-light dark:scroll-dark">{pathDetail["description"]}</div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                  {/if}
+                  <tr class="border-t border-gray-200 dark:border-gray-600">
+                    <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">Path:</th>
+                    <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{pathDetail["path"]}</td>
+                  </tr>
+                  <tr class="border-t border-gray-200 dark:border-gray-600">
+                    <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">Description:</th>
+                    <td class="py-1 pl-2 dark:text-gray-300 font-fira text-[13px] tracking-tight align-top">
+                      <div class="overflow-y-auto max-h-40 scroll-light dark:scroll-dark">{pathDetail["description"]}</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
     </div>
+    
     <Footer home={false}/>
   </div>
 </div>
