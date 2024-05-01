@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import { goto, invalidateAll } from "$app/navigation";
+	import { goto } from "$app/navigation";
 	
 	import { pathFocus } from '$lib/components/sharedStore';
 
@@ -31,14 +31,14 @@
 		}
 	}
 
-	/*function isUrlPathLeaf(target) {
+	function isUrlPathLeaf(target: { name: string; details: {}; }) {
 		if(target.name === urlPath[0]) {
 			urlPath.shift();
 			pathFocus.set(target.details)
 			return true
 		}
 		return false
-	}*/
+	}
 
 	function highlight(node: HTMLButtonElement, target: { name: string; details: {}; }) {
 		console.log(node.classList)
@@ -85,7 +85,10 @@
 				{#if entry.children.length > 0}
 					<svelte:self {modelName} {...entry} expanded={openContainer(entry)} urlPath={urlPath} />
 				{:else}
-					<button class="ml-2.5 px-2 py-0.5 hover:underline hover:bg-gray-200 hover:text-black hover:dark:bg-gray-600 hover:dark:text-gray-200 text-blue-600 dark:text-blue-500" on:click={() => leafClick(entry.details)}>
+					{@const trigger = isUrlPathLeaf(entry)}
+					<button class="ml-2.5 px-2 py-0.5 hover:underline 
+						hover:bg-gray-200 hover:text-black hover:dark:bg-gray-600 hover:dark:text-gray-200 
+						text-blue-600 dark:text-blue-500" on:click={() => leafClick(entry.details)}>
 						<div title="{entry.details.path}">{entry.name}</div>
 					</button>
 				{/if}
