@@ -80,20 +80,11 @@
   // WRITABLE STORES
   let yangPaths = writable(paths);
   let yangTarget = derived(yangPaths, ($yangPaths) => buildTreeFromPaths(release, $yangPaths));
-
-  // Page functions
-  function closePopup() {
-    if(Object.keys(pathDetail).length !== 0) {
-      pathFocus.set({});
-    }
-  }
 </script>
 
 <svelte:head>
 	<title>SR Linux {release} {model !== "nokia" ? modelTitle : ""} Tree Browser</title>
 </svelte:head>
-
-<svelte:window on:keyup={({key}) => key === "Escape" ? closePopup() : ""}/>
 
 <Header model={model} modelTitle={modelTitle} release={release} allModels={allModels} home={false} />
 <!-- svelte-ignore a11y-click-events-have-key-events -->

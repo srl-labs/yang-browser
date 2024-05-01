@@ -11,12 +11,16 @@
   });
   pathFocus.set({});
 
+  function closePopup() {
+    if(Object.keys(pathDetail).length !== 0) {
+      pathFocus.set({});
+    }
+  }
+
   function closeSidebarPopup(event: any) {
     if(!document.getElementById("popupContent")?.contains(event.target)) {
       closeSidebar();
-      if(Object.keys(pathDetail).length !== 0) {
-        pathFocus.set({});
-      }
+      closePopup();
     }
   }
 
@@ -39,6 +43,8 @@
     toggle();
   }
 </script>
+
+<svelte:window on:keyup={({key}) => key === "Escape" ? closePopup() : ""}/>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -71,26 +77,26 @@
             <table>
               <tbody>
                 <tr>
-                  <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">State:</th>
+                  <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">State:</th>
                   <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{"is-state" in pathDetail ? pathDetail["is-state"] : false}</td>
                 </tr>
                 <tr class="border-t border-gray-200 dark:border-gray-600">
-                  <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">Type:</th>
+                  <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Type:</th>
                   <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{pathDetail.type}</td>
                 </tr>
                 {#if pathDetail["type"] === "enumeration" && "enum-values" in pathDetail}
                   <tr class="border-t border-gray-200 dark:border-gray-600">
-                    <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">Enum Values:</th>
+                    <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Enum Values:</th>
                     <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{pathDetail["enum-values"].join(", ")}</td>
                   </tr>
                 {/if}
                 <tr class="border-t border-gray-200 dark:border-gray-600">
-                  <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">Path:</th>
+                  <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Path:</th>
                   <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{pathDetail.path}</td>
                 </tr>
                 <tr class="border-t border-gray-200 dark:border-gray-600">
-                  <th scope="row" class="py-1 whitespace-nowrap uppercase text-xs dark:text-gray-400">Description:</th>
-                  <td class="py-1 pl-2 dark:text-gray-300 font-fira text-[13px] tracking-tight align-top">
+                  <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Description:</th>
+                  <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">
                     <div class="overflow-y-auto max-h-40 scroll-light dark:scroll-dark">{pathDetail.description}</div>
                   </td>
                 </tr>
