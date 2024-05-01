@@ -2,23 +2,23 @@
   import { writable, derived } from 'svelte/store'
   
   import type { PayLoad, PathDef } from '$lib/structure'
+  
+  import { pathFocus } from '$lib/components/sharedStore';
   import { closeSidebar, extractFeatures, searchBasedYangFilter, highlight, featureBasedYangFilter } from '$lib/components/functions'
 
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
-	import { copy } from 'svelte-copy';
-	import { page } from '$app/stores';
+  import Popup from '$lib/components/Popup.svelte';
 
 	export let data: PayLoad;
-  let {model, modelTitle, release, allModels, paths, search, features} = data;
+  let {model, modelTitle, release, allModels, paths, urlPath, features} = data;
   let [platforms, uniqueFeatures] = extractFeatures(features);
-  const modelParam = (model !== "nokia" ? `&model=${model}` : "")
 
   // DEFAULTS
   let count = 40;
   let showMoreFilters = false;
 
-  let searchInput = search;
+  let searchInput = urlPath;
   let searchStore = writable("");
   $: searchStore.set(searchInput.trim());
 
@@ -44,9 +44,7 @@
 
   const getState = (x: PathDef) => ("is-state" in x ? "true" : "false");
   const getPath = (x: PathDef) => ($prefixStore ? x["path-with-prefix"] : x["path"])
-  const getEnumValues = (x: PathDef) => ("enum-values" in x ? x["enum-values"].join(", ") : '')
   const getSearchKeys = (str: string) => spaceSplit(str).join("|")
-  const clearPathToTree = (str: string) => encodeURIComponent(str.replaceAll("=*", ""));
 
   // WRITABLE STORES
   let start = writable(0);
@@ -107,21 +105,6 @@
       fe = fe.filter(item => item !== feat)
       featExtra.set(fe)
     }
-  }
-
-  function copyContent(path: string) {
-    const pageUrl = $page.url
-    const clearPath = clearPathToTree(path)
-    return `${pageUrl.origin}${pageUrl.pathname}/tree?path=${clearPath}${modelParam}`
-  }
-
-  function copyEvent(event: { target: any; }) {
-    const toggle = () => {
-      event.target.querySelector(".clip").classList.toggle("hidden")
-      event.target.querySelector(".copied").classList.toggle("hidden")
-    }
-    setTimeout(toggle, 1000);
-    toggle();
   }
 </script>
 
@@ -237,44 +220,25 @@
         <colgroup>
           <col span="1" class="w-[5%]">
           <col span="1" class="w-[80%]">
-          <col span="1" class="w-[13%]">
-          <col span="1" class="w-[2%]">
+          <col span="1" class="w-[15%]">
         </colgroup>
-        <thead class="text-xs uppercase text-gray-800 dark:text-gray-300 bg-gray-100 dark:bg-gray-700">
+        <thead class="text-sm font-nokia-headline text-gray-800 dark:text-gray-300 bg-gray-300 dark:bg-gray-700">
           <tr>
-            <th scope="col" class="p-3">State</th>
-            <th scope="col" class="p-3">Path</th>
-            <th scope="col" class="p-3">Type</th>
-            <th scope="col" class="p-3"></th>
+            <th scope="col" class="px-3 py-2">State</th>
+            <th scope="col" class="px-3 py-2">Path</th>
+            <th scope="col" class="px-3 py-2">Type</th>
           </tr>
         </thead>
         <tbody>
           {#if $total > 0}
             {#each $paginated as item}
-              <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300">
+              <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" on:click={() => pathFocus.set(item)}>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{getState(item)}</td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight group">
-                  <div class="flex justify-between items-center">
-                    <span class="text-gray-900 dark:text-gray-300" use:highlight={[getSearchKeys($searchStore), getPath(item)]}></span>
-                    <button class="ml-1 p-0.5 rounded-lg text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white hover:cursor-pointer hidden group-hover:block" use:copy={copyContent(item.path)} on:svelte-copy={copyEvent}>
-                      <svg class="clip w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linejoin="round" stroke-width="2" d="M9 8v3a1 1 0 0 1-1 1H5m11 4h2a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v1m4 3v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7.13a1 1 0 0 1 .24-.65L7.7 8.35A1 1 0 0 1 8.46 8H13a1 1 0 0 1 1 1Z"/>
-                      </svg>
-                      <svg class="copied w-4 h-4 hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
-                      </svg>
-                    </button>
-                  </div>
+                  <div class="text-gray-900 dark:text-gray-300" use:highlight={[getSearchKeys($searchStore), getPath(item)]}></div>
                 </td>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div use:highlight={[getSearchKeys($searchStore), item.type]}></div></td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
-                  <div title="Show path in tree">
-                    <a data-sveltekit-preload-data="tap" href="/{release}/tree?path={clearPathToTree(item.path)}{modelParam}">
-                      <svg class="w-3 h-3 hover:text-gray-500 dark:hover:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-                      </svg>
-                    </a>
-                  </div>
+                  <div use:highlight={[getSearchKeys($searchStore), item.type]}></div>
                 </td>
               </tr>
             {/each}
@@ -285,6 +249,7 @@
           {/if}
         </tbody>
       </table>
+      <Popup/>
     </div>
   </div>
   <Footer home={false}/>

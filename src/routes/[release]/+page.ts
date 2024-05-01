@@ -12,7 +12,7 @@ export async function load({ url, fetch, params }) {
   const validReleases = Object.keys(allReleases)
 
   if(validReleases.includes(release)) {
-    let search = ""
+    let urlPath = ""
     let modelTitle = "Nokia"
     let model = "nokia"
 
@@ -20,8 +20,8 @@ export async function load({ url, fetch, params }) {
       model = url.searchParams.get("model")!.trim()
     }
 
-    if (url.searchParams.has("search")) {
-      search = url.searchParams.get("search")!.trim();
+    if (url.searchParams.has("path")) {
+      urlPath = url.searchParams.get("path")!.trim();
     }
     
     if(model != "openconfig" && model != "nokia") {
@@ -42,7 +42,7 @@ export async function load({ url, fetch, params }) {
 
       let payload = {
         model: model, modelTitle: modelTitle,
-        search: decodeURIComponent(search),
+        urlPath: decodeURIComponent(urlPath),
         release: release, allModels: allModels,
         paths: [], features: {}
       }
