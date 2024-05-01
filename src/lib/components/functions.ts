@@ -13,15 +13,6 @@ export function closeSidebar() {
   }
 }
 
-export function copyEffect() {
-  const toggle = () => {
-    document.getElementById("clip")?.classList.toggle("hidden")
-    document.getElementById("copied")?.classList.toggle("hidden")
-  }
-  setTimeout(toggle, 1000);
-  toggle();
-}
-
 export function extractFeatures (data: Platforms): [PlatformFeatures, string[]] {
   let platforms: PlatformFeatures = {}
   let allFeatures: string[] = []
