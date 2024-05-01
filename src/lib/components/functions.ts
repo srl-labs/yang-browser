@@ -118,7 +118,6 @@ export function featureBasedYangFilter (x: PathDef, f: string[]): boolean {
       let result = expResult.join(" ")
       result = result.replaceAll("+", "1").replaceAll("=", "0")
 
-      //eturn Function("return Boolean(" + result + ")")()
       return evalBoolString(result)
     }
   }

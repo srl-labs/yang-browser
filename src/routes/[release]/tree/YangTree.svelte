@@ -40,8 +40,9 @@
 		return false
 	}
 
+	// test phase
 	function highlight(node: HTMLButtonElement, target: { name: string; details: {}; }) {
-		console.log(node.classList)
+		//console.log(node.classList)
 		let highlight = () => node.classList.add("bg-gray-200", "dark:bg-gray-600", "dark:text-gray-200")
 		let unhighlight = () => node.classList.add("text-blue-600", "dark:text-blue-500")
 		if(target.name === urlPath[0]) {
