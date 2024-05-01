@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { page } from "$app/stores";
+	import { goto, invalidateAll } from "$app/navigation";
+	
 	import { pathFocus } from '$lib/components/sharedStore';
 
 	export let expanded = true;
@@ -28,13 +31,32 @@
 		}
 	}
 
-	function isUrlPathLeaf(target: { name: string, details: {} }) {
+	/*function isUrlPathLeaf(target) {
 		if(target.name === urlPath[0]) {
 			urlPath.shift();
 			pathFocus.set(target.details)
 			return true
 		}
 		return false
+	}*/
+
+	function highlight(node: HTMLButtonElement, target: { name: string; details: {}; }) {
+		console.log(node.classList)
+		let highlight = () => node.classList.add("bg-gray-200", "dark:bg-gray-600", "dark:text-gray-200")
+		let unhighlight = () => node.classList.add("text-blue-600", "dark:text-blue-500")
+		if(target.name === urlPath[0]) {
+			urlPath.shift();
+			pathFocus.set(target.details)
+			return highlight()
+		} else {
+			return unhighlight()
+		}
+	}
+
+	function leafClick(details: any) {
+		pathFocus.set(details);
+		$page.url.searchParams.set("path", details.path);
+		goto(`?${$page.url.searchParams.toString()}`, {replaceState: true});
 	}
 </script>
 
@@ -63,10 +85,7 @@
 				{#if entry.children.length > 0}
 					<svelte:self {modelName} {...entry} expanded={openContainer(entry)} urlPath={urlPath} />
 				{:else}
-					{@const setPathFocus = isUrlPathLeaf(entry)}
-					<button class="ml-2.5 px-2 py-0.5 
-						hover:underline hover:bg-gray-200 hover:text-black hover:dark:bg-gray-600 hover:dark:text-gray-200 
-						{setPathFocus ? 'bg-gray-200 dark:bg-gray-600 dark:text-gray-200' : 'text-blue-600 dark:text-blue-500'}" on:click={() => pathFocus.set(entry.details)}>
+					<button class="ml-2.5 px-2 py-0.5 hover:underline hover:bg-gray-200 hover:text-black hover:dark:bg-gray-600 hover:dark:text-gray-200 text-blue-600 dark:text-blue-500" on:click={() => leafClick(entry.details)}>
 						<div title="{entry.details.path}">{entry.name}</div>
 					</button>
 				{/if}

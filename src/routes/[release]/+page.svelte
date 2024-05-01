@@ -43,7 +43,7 @@
   const getPath = (x: PathDef) => ($prefixStore ? x["path-with-prefix"] : x["path"])
   const getEnumValues = (x: PathDef) => ("enum-values" in x ? x["enum-values"].join(", ") : '')
   const getSearchKeys = (str: string) => spaceSplit(str).join("|")
-  const pathClearToTree = (str: string) => str.replaceAll("=*", "");
+  const pathClearToTree = (str: string) => encodeURIComponent(str.replaceAll("=*", ""));
 
   // WRITABLE STORES
   let start = writable(0);

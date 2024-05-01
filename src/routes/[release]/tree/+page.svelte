@@ -1,5 +1,7 @@
 <script lang="ts">
   import { writable, derived } from 'svelte/store';
+  import { page } from "$app/stores";
+  import { copy } from 'svelte-copy';
 
   import type { TreePayLoad } from '$lib/structure';
   import { closeSidebar } from '$lib/components/functions'
@@ -87,11 +89,20 @@
     }
   }
   
-  function closeSidebarPopup(event: { target: Node | null; }) {
+  function closeSidebarPopup(event: any) {
     if(!document.getElementById("popupContent")?.contains(event.target)) {
       closeSidebar();
       closePopup();
     }
+  }
+
+  function copyEffect() {
+    const toggle = () => {
+      document.getElementById("clip")?.classList.toggle("hidden")
+      document.getElementById("copied")?.classList.toggle("hidden")
+    }
+    setTimeout(toggle, 1000);
+    toggle();
   }
 </script>
 
@@ -102,20 +113,30 @@
 <svelte:window on:keyup={({key}) => key === "Escape" ? closePopup() : ""}/>
 
 <Header model={model} modelTitle={modelTitle} release={release} allModels={allModels} home={false} />
-<div class="min-w-[280px] overflow-x-auto dark:bg-gray-800 font-nokia-headline-light pt-[80px] lg:pt-[90px]">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="min-w-[280px] overflow-x-auto dark:bg-gray-800 font-nokia-headline-light pt-[80px] lg:pt-[90px]" on:click={closeSidebar}>
   <div class="p-6 overflow-x-auto text-sm container mx-auto">
     <div class="font-fira text-xs tracking-tight">
       <YangTree modelName="{release}" name={$yangTarget.name} children={$yangTarget.children} details={$yangTarget.details} urlPath={yangTreeUrlPath} />
     </div>
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div id="popup" class="fixed inset-0 z-50 items-center { Object.keys(pathDetail).length !== 0  ? '' : 'hidden'}" on:click|stopPropagation={closeSidebarPopup}>
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
       <div id="popupContent" class="flex min-h-full justify-center items-center">
         <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-700 text-left shadow-xl transition-all sm:my-8 max-w-xl">
           <div id="popupHeader" class="flex items-center justify-between px-4 py-2 rounded-t bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-            <p class="flex text-lg text-gray-900 dark:text-gray-300">Path Details</p>
-            <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" on:click={() => pathFocus.set({})}>
+            <div class="flex items-center">
+              <span class="text-lg text-gray-900 dark:text-gray-300">Path Details</span>
+              <button class="ml-3 p-0.5 rounded-lg text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white hover:cursor-pointer" use:copy={$page.url.toString()} on:svelte-copy={copyEffect}>
+                <svg id="clip" class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linejoin="round" stroke-width="2" d="M9 8v3a1 1 0 0 1-1 1H5m11 4h2a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v1m4 3v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7.13a1 1 0 0 1 .24-.65L7.7 8.35A1 1 0 0 1 8.46 8H13a1 1 0 0 1 1 1Z"/>
+                </svg>
+                <svg id="copied" class="w-5 h-5 hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
+                </svg>
+              </button>
+            </div>
+            <button type="button" class="text-gray-500 hover:bg-gray-300 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" on:click={() => pathFocus.set({})}>
               <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
               </svg>
