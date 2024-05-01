@@ -120,7 +120,7 @@
     <div class="font-fira text-xs tracking-tight">
       <YangTree modelName="{release}" name={$yangTarget.name} children={$yangTarget.children} details={$yangTarget.details} urlPath={yangTreeUrlPath} />
     </div>
-    <div id="popup" class="fixed inset-0 z-50 items-center { Object.keys(pathDetail).length !== 0  ? '' : 'hidden'}" on:click|stopPropagation={closeSidebarPopup}>
+    <div id="popup" class="fixed p-4 inset-0 z-50 items-center { Object.keys(pathDetail).length !== 0  ? '' : 'hidden'}" on:click|stopPropagation={closeSidebarPopup}>
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
       <div id="popupContent" class="flex min-h-full justify-center items-center">
         <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-700 text-left shadow-xl transition-all sm:my-8 max-w-xl">
