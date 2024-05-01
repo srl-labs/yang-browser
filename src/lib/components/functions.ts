@@ -11,7 +11,16 @@ export function closeSidebar() {
   if (document.getElementById('open-sidebar')?.classList.contains("hidden")) {
     toggleSidebar();
   }
-};
+}
+
+export function copyEffect() {
+  const toggle = () => {
+    document.getElementById("clip")?.classList.toggle("hidden")
+    document.getElementById("copied")?.classList.toggle("hidden")
+  }
+  setTimeout(toggle, 1000);
+  toggle();
+}
 
 export function extractFeatures (data: Platforms): [PlatformFeatures, string[]] {
   let platforms: PlatformFeatures = {}
@@ -38,7 +47,7 @@ export function searchBasedYangFilter (x: PathDef, term: string, showPrefix: boo
 }
 
 // do not change defintion
-export function highlight (node: HTMLDivElement, [rawRex, text]: [string, string]) {
+export function highlight (node: HTMLSpanElement, [rawRex, text]: [string, string]) {
   const markClass = "text-nokia-blue dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold";
   let marker = (txt: string, rex: RegExp) => txt.replace(rex, (term) => `<mark class="${markClass}">${term}</mark>`);
   let action = () => node.innerHTML = marker(text, new RegExp(rawRex, "g"));

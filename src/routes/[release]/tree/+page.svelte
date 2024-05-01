@@ -4,7 +4,7 @@
   import { copy } from 'svelte-copy';
 
   import type { TreePayLoad } from '$lib/structure';
-  import { closeSidebar } from '$lib/components/functions'
+  import { closeSidebar, copyEffect } from '$lib/components/functions'
 
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
@@ -94,15 +94,6 @@
       closeSidebar();
       closePopup();
     }
-  }
-
-  function copyEffect() {
-    const toggle = () => {
-      document.getElementById("clip")?.classList.toggle("hidden")
-      document.getElementById("copied")?.classList.toggle("hidden")
-    }
-    setTimeout(toggle, 1000);
-    toggle();
   }
 </script>
 
