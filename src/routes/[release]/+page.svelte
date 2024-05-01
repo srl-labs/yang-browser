@@ -20,7 +20,7 @@
 
   let searchInput = urlPath;
   let searchStore = writable("");
-  $: searchStore.set(searchInput.trim());
+  $: searchStore.set(searchInput.trim().toLowerCase());
 
   let stateInput = "";
   let stateStore = writable("");
@@ -32,11 +32,11 @@
 
   let platformSearch = "";
   let platFind = writable("");
-  $: platFind.set(platformSearch.trim());
+  $: platFind.set(platformSearch.trim().toUpperCase());
 
   let featureSearch = "";
   let featFind = writable("");
-  $: featFind.set(featureSearch.trim());
+  $: featFind.set(featureSearch.trim().toLowerCase());
 
   // INTERNAL FUNCTIONS
   const scopeChange = (val: string) => stateInput = val;
@@ -116,10 +116,10 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[85px]" on:click={closeSidebar}>
-  <div class="p-6 container mx-auto">
+  <div class="px-6 pt-6 container mx-auto">
     <p class="text-gray-800 dark:text-gray-300 font-nokia-headline">Path Browser</p>
     <div class="my-2 font-fira">
-      <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full lowercase text-[13px] px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
+      <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full text-[13px] px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
     </div>  
     <div class="flex justify-between flex-wrap">
       <div class="flex py-3">
@@ -249,8 +249,23 @@
           {/if}
         </tbody>
       </table>
-      <Popup/>
     </div>
+    <div class="flex items-center justify-end py-3 text-sm mt-2">
+      {#if $total > 0}
+        <p class="mr-2 text-gray-800 dark:text-gray-200">{$start + 1} - {$end > 1 ? $end : 0} of {$total}</p>
+        <button class="ml-2 {$start == 0 ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$start == 0}" on:click={() => updateTable($start - count)}>
+          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+        <button class="ml-2 {$end == $total ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$end == $total}" on:click={() => updateTable($end)}>
+          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      {/if}
+    </div>
+    <Popup/>
   </div>
   <Footer home={false}/>
 </div>

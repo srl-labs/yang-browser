@@ -17,7 +17,7 @@
 	/
 	<a
 		class="hover:underline {home ? 'text-blue-400' : 'text-blue-600 dark:text-blue-500'}"
-		href="https://github.com/srl-labs"
+		href="https://github.com/srl-labs/yang-browser"
 		target="_blank">
 		<svg
 			class="w-5 h-5 inline-flex"
