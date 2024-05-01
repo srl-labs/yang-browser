@@ -119,7 +119,7 @@
   <div class="p-6 container mx-auto">
     <p class="text-gray-800 dark:text-gray-300 font-nokia-headline">Path Browser</p>
     <div class="my-2 font-fira">
-      <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full text-[13px] px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
+      <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full lowercase text-[13px] px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
     </div>  
     <div class="flex justify-between flex-wrap">
       <div class="flex py-3">

@@ -19,7 +19,7 @@ export async function load({ url, fetch, params }) {
     let model = "nokia"
 
     if (url.searchParams.has("path")) {
-      urlPath = url.searchParams.get("path")!.trim();
+      urlPath = url.searchParams.get("path")!.trim().replaceAll("=*", "");
     }
 
     if (url.searchParams.has("model")) {
@@ -43,7 +43,7 @@ export async function load({ url, fetch, params }) {
       }
 
       let payload = {
-        urlPath: urlPath,
+        urlPath: decodeURIComponent(urlPath),
         model: model,
         modelTitle: modelTitle,
         release: release,
