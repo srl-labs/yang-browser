@@ -9,6 +9,11 @@
   const releases = yaml.load(rel) as Releases;
   const all = Object.keys(releases).sort().reverse();
   const relGroup = [...new Set(all.map(r => r.split(".")[0]))].slice(0, show);
+  const reverseSortVersions = (versions: string[])  => {
+    return versions.sort((a, b) => {
+        return b.localeCompare(a, undefined, { numeric: true });
+    });
+  }
 
   let rs: HomeGroup = {};
   let archive: string[] = [];
@@ -88,7 +93,7 @@
                     <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-gray-800 text-white rounded-lg shadow">
                       <div class="my-2 w-24 md:w-32 max-h-[160px] overflow-y-auto scroll-dark">
                         <ul>
-                          {#each rs[major].others.reverse() as entry}
+                          {#each reverseSortVersions(rs[major].others) as entry}
                             <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-700">{entry.slice(1)}</a></li>
                           {/each}
                         </ul>
@@ -111,7 +116,7 @@
                 <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-gray-800 text-white rounded-lg shadow">
                   <div class="my-2 w-40 max-h-[160px] overflow-y-auto scroll-dark">
                     <ul>
-                      {#each archive as entry}
+                      {#each reverseSortVersions(archive) as entry}
                         <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-700">{entry.slice(1)}</a></li>
                       {/each}
                     </ul>
