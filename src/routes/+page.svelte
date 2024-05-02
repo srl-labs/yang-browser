@@ -88,7 +88,7 @@
                     <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-gray-800 text-white rounded-lg shadow">
                       <div class="my-2 w-24 md:w-32 max-h-[160px] overflow-y-auto scroll-dark">
                         <ul>
-                          {#each rs[major].others as entry}
+                          {#each rs[major].others.reverse() as entry}
                             <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-700">{entry.slice(1)}</a></li>
                           {/each}
                         </ul>
