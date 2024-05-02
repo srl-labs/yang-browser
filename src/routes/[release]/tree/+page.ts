@@ -17,6 +17,7 @@ export async function load({ url, fetch, params }) {
     let urlPath = "";
     let modelTitle = "Nokia"
     let model = "nokia"
+    let crossLaunched = false
 
     if (url.searchParams.has("path")) {
       urlPath = url.searchParams.get("path")!.trim().replaceAll("=*", "");
@@ -24,6 +25,10 @@ export async function load({ url, fetch, params }) {
 
     if (url.searchParams.has("model")) {
       model = url.searchParams.get("model")!.trim()
+    }
+
+    if (url.searchParams.has("from")) {
+      crossLaunched = url.searchParams.get("from")!.trim() === "pb" ? true : false
     }
     
     if(model != "openconfig" && model != "nokia") {
@@ -44,6 +49,7 @@ export async function load({ url, fetch, params }) {
 
       let payload = {
         urlPath: decodeURIComponent(urlPath),
+        crossLaunched: crossLaunched, 
         model: model,
         modelTitle: modelTitle,
         release: release,

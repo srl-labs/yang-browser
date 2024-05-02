@@ -3,7 +3,6 @@
   
   import type { PayLoad, PathDef } from '$lib/structure'
   
-  import { pathFocus } from '$lib/components/sharedStore';
   import { closeSidebar, extractFeatures, searchBasedYangFilter, highlight, featureBasedYangFilter } from '$lib/components/functions'
 
   import Header from '$lib/components/Header.svelte';
@@ -16,6 +15,7 @@
 
   // DEFAULTS
   let count = 40;
+  let pathDetail = {};
   let showMoreFilters = false;
 
   let searchInput = urlPath;
@@ -232,7 +232,7 @@
         <tbody>
           {#if $total > 0}
             {#each $paginated as item}
-              <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" on:click={() => pathFocus.set(item)}>
+              <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" on:click={() => pathDetail = item}>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{getState(item)}</td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight group">
                   <div class="text-gray-900 dark:text-gray-300" use:highlight={[getSearchKeys($searchStore), getPath(item)]}></div>
@@ -265,7 +265,7 @@
         </button>
       {/if}
     </div>
-    <Popup/>
+    <Popup pathDetail={pathDetail}/>
   </div>
   <Footer home={false}/>
 </div>

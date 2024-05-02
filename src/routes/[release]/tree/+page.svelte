@@ -16,11 +16,12 @@
   let yangTreeUrlPath = urlPath != "" ? (urlPath.split("/").filter(x => x != "")) : []
 
   // DEFAULTS
-	let pathDetail: any;
+  pathFocus.set({});
+	let pathDetail = {};
 	pathFocus.subscribe((value) => {
     pathDetail = value;
   });
-  pathFocus.set({});
+  
 
   // TREE BUILDER
   class TreeNode {
@@ -94,7 +95,7 @@
     <div class="font-fira text-xs tracking-tight">
       <YangTree modelName="{release}" name={$yangTarget.name} children={$yangTarget.children} details={$yangTarget.details} urlPath={yangTreeUrlPath} />
     </div>
-    <Popup/>
+    <Popup pathDetail={pathDetail}/>
     <Footer home={false}/>
   </div>
 </div>

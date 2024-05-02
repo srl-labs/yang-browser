@@ -42,6 +42,7 @@ export interface PlatformFeatures {
 
 export interface TreePayLoad {
   urlPath: string,
+  crossLaunched: boolean,
   model: string,
   modelTitle: string, 
   release: string,

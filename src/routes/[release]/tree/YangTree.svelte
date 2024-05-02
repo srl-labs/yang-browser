@@ -13,8 +13,10 @@
 	const dump = details;
 
 	// LOCAL FUNCTIONS
-	const toggle = () => expanded = !expanded;
-
+	const toggle = () => expanded = !expanded
+	const isCrossLaunched = () => $page.data.crossLaunched
+	const getPageUrlPath = () => $page.url.searchParams.get("path")?.trim()
+	
 	const pushNonEmptyChildrenToLast = (arr: any[]) => {
 		const nonEmptyListObjects = arr.filter((obj: { children: any[]; }) => Array.isArray(obj.children) && obj.children.length > 0);
 		const emptyListObjects = arr.filter((obj: { children: any[]; }) => Array.isArray(obj.children) && obj.children.length === 0);
@@ -22,7 +24,7 @@
 	}
 
 	// EXPAND OVERRIDE IF PATH PARAM IN URL
-	function openContainer(target: { name: string; }) {
+	function openContainer(target: any) {
 		if(target.name === urlPath[0]) {
 			urlPath.shift();
 			return true
@@ -31,33 +33,20 @@
 		}
 	}
 
-	function isUrlPathLeaf(target: { name: string; details: {}; }) {
+	function isUrlPathLeaf(target: any) {
 		if(target.name === urlPath[0]) {
-			urlPath.shift();
-			pathFocus.set(target.details)
+			urlPath.shift()
+			if(!isCrossLaunched()) pathFocus.set(target.details)
 			return true
 		}
 		return false
 	}
 
-	// test phase
-	function highlight(node: HTMLButtonElement, target: { name: string; details: {}; }) {
-		//console.log(node.classList)
-		let highlight = () => node.classList.add("bg-gray-200", "dark:bg-gray-600", "dark:text-gray-200")
-		let unhighlight = () => node.classList.add("text-blue-600", "dark:text-blue-500")
-		if(target.name === urlPath[0]) {
-			urlPath.shift();
-			pathFocus.set(target.details)
-			return highlight()
-		} else {
-			return unhighlight()
-		}
-	}
-
 	function leafClick(details: any) {
 		pathFocus.set(details);
+		$page.url.searchParams.delete("from");
 		$page.url.searchParams.set("path", details.path);
-		goto(`?${$page.url.searchParams.toString()}`, {replaceState: true});
+		goto(`?${$page.url.searchParams.toString()}`);
 	}
 </script>
 
@@ -87,9 +76,10 @@
 					<svelte:self {modelName} {...entry} expanded={openContainer(entry)} urlPath={urlPath} />
 				{:else}
 					{@const trigger = isUrlPathLeaf(entry)}
-					<button class="ml-2.5 px-2 py-0.5 hover:underline 
+					{@const currentFocus = ($pathFocus.path === undefined ? getPageUrlPath() : $pathFocus.path)}
+					<button class="ml-2.5 px-2 py-0.5 rounded hover:underline 
 						hover:bg-gray-200 hover:text-black hover:dark:bg-gray-600 hover:dark:text-gray-200 
-						text-blue-600 dark:text-blue-500" on:click={() => leafClick(entry.details)}>
+						{currentFocus === entry.details.path ? 'bg-gray-200 dark:bg-gray-600 dark:text-gray-200' : 'text-blue-600 dark:text-blue-500'}" on:click={() => leafClick(entry.details)}>
 						<div title="{entry.details.path}">{entry.name}</div>
 					</button>
 				{/if}
