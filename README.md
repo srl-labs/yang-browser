@@ -1,38 +1,15 @@
-# create-svelte
+# Nokia SR Linux YANG Browser
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+Documentation: https://learn.srlinux.dev/yang/browser/
 
-## Creating a project
+Nokia SR Linux makes extensive use of structured data models. Each application, provided by Nokia or written by a user against the NDK, has a YANG model that defines its configuration and state.
 
-If you're seeing this, you've probably already done this step. Congrats!
+With this design, the YANG data model is defined first, then the CLI, APIs, and show output formats are derived from it.
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+A central role that is given to YANG in SR Linux Network OS demands a convenient interface to browse, search through and process these data models.
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+To answer these requirements, this portal provides:
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+* Fast Path Browser to effectively search through thousands of available YANG paths
+* Beautiful Tree browser to traverse the tree representation of the entire YANG data model of SR Linux
+* Source .yang files neatly stored in a nokia/srlinux-yang-models repository for programmatic access and code generation

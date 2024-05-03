@@ -1,0 +1,161 @@
+<html>
+  <head></head>
+  <body></body>
+  <script>
+    function groupVersionsByMajor(input) {
+      let top = 3
+      let result = {}
+      let archive = []
+      let majorGroup = {}
+
+      const reverseSortVersions = (versions)  => {
+        return versions.sort((a, b) => {
+          return b.localeCompare(a, undefined, { numeric: true });
+        });
+      }
+      
+      const targets = reverseSortVersions(input)
+      for(const version of targets) {
+        const target = version.substring(1)
+        const [major, minor, patch] = target.split('.')
+        const key = `v${major}`
+
+        if (!majorGroup[key]) {
+          majorGroup[key] = {};
+        }
+        if(!majorGroup[key][minor]) {
+          majorGroup[key][minor] = [target]
+        } else {
+          majorGroup[key][minor].push(target)
+        }
+      }
+
+      for(const majorKey in majorGroup) {
+        if(top > 0) result[majorKey] = { focus: [], others: [] }
+        for(const minorKey in majorGroup[majorKey]) {
+          if(top > 0) {
+            const versions = majorGroup[majorKey][minorKey];
+            majorGroup[majorKey][minorKey] = reverseSortVersions(versions)
+            result[majorKey].focus.push(majorGroup[majorKey][minorKey][0])
+            majorGroup[majorKey][minorKey].shift()
+            result[majorKey].others = [...majorGroup[majorKey][minorKey], ...result[majorKey].others]
+          } else {
+            archive = [...majorGroup[majorKey][minorKey], ...archive]
+          }
+        }
+        if(top > 0) result[majorKey].focus = reverseSortVersions(result[majorKey].focus)
+        top--
+      }
+
+      return {current: result, earlier: archive}
+    }
+  
+    
+    // Example usage:
+    const versions = {
+      "v21.11.3": {
+        "openconfig": true,
+        "features": false
+      },
+      "v21.11.2": {
+        "openconfig": true,
+        "features": false
+      },
+      "v21.11.1": {
+        "openconfig": true,
+        "features": false
+      },
+      "v21.6.4": {
+        "openconfig": false,
+        "features": false
+      },
+      "v21.6.3": {
+        "openconfig": false,
+        "features": false
+      },
+      "v21.6.2": {
+        "openconfig": false,
+        "features": false
+      },
+      "v21.6.1": {
+        "openconfig": false,
+        "features": false
+      },
+      "v21.3.2": {
+        "openconfig": false,
+        "features": false
+      },
+      "v21.3.1": {
+        "openconfig": false,
+        "features": false
+      },
+      "v24.3.1": {
+        "openconfig": true,
+        "features": true
+      },
+      
+      "v23.10.1": {
+        "openconfig": true,
+        "features": true
+      },
+      "v23.7.2": {
+        "openconfig": true,
+        "features": true
+      },
+      "v23.10.2": {
+        "openconfig": true,
+        "features": true
+      },
+      "v22.6.3": {
+        "openconfig": true,
+        "features": false
+      },
+      "v23.3.3": {
+        "openconfig": true,
+        "features": true
+      },
+      "v23.3.2": {
+        "openconfig": true,
+        "features": true
+      },
+      "v23.3.1": {
+        "openconfig": true,
+        "features": true
+      },
+      "v22.11.2": {
+        "openconfig": true,
+        "features": true
+      },
+      "v22.11.1": {
+        "openconfig": true,
+        "features": true
+      },
+      "v23.7.1": {
+        "openconfig": true,
+        "features": true
+      },
+      "v22.6.4": {
+        "openconfig": true,
+        "features": false
+      },
+      
+      "v22.6.2": {
+        "openconfig": true,
+        "features": false
+      },
+      "v22.6.1": {
+        "openconfig": true,
+        "features": false
+      },
+      "v22.3.2": {
+        "openconfig": true,
+        "features": false
+      }
+    }
+
+    const keys = Object.keys(versions);
+    const majorGroup = groupVersionsByMajor(keys);
+    console.log(JSON.stringify(majorGroup, null, 2));
+  
+  </script>
+</html>

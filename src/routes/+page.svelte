@@ -1,51 +1,73 @@
 <script lang="ts">
   import yaml from 'js-yaml';
-  import rel from '$lib/releases.yaml?raw';
-  import type { Releases, HomeGroup } from '$lib/structure';
-
   import Footer from '$lib/components/Footer.svelte';
 
-  const show = 3
+  import rel from '$lib/releases.yaml?raw';
+  import type { Releases } from '$lib/structure';
   const releases = yaml.load(rel) as Releases;
-  const all = Object.keys(releases).sort().reverse();
-  const relGroup = [...new Set(all.map(r => r.split(".")[0]))].slice(0, show);
-  const reverseSortVersions = (versions: string[])  => {
-    return versions.sort((a, b) => {
-        return b.localeCompare(a, undefined, { numeric: true });
-    });
+  const validVersions = [...new Set(Object.keys(releases))]
+
+  interface MajorGroup {
+    [key: string]: {
+      [key: string]: string[]
+    }
+  }
+  interface GroupResult {
+    [key: string]: {
+      focus: string[],
+      others: string[]
+    }
   }
 
-  let rs: HomeGroup = {};
-  let archive: string[] = [];
-  relGroup.map(x => rs[x] = {"top": [], "all": {}, "others": []})
-  
-  all.reverse().map(function(r) {
-    let m1 = r.split(".")[0];
-    let m2 = r.split(".")[1];
-    if(relGroup.includes(m1)) {
-      if(rs[m1]["all"][m2] == undefined) {
-        rs[m1]["all"][m2] = []
-      }
-      rs[m1]["all"][m2].push(r)
-    } else {
-      archive.push(r);
+  function groupVersionsByMajor(input: string[]) {
+    let top = 3
+    let result: GroupResult = {}
+    let archive: string[] = []
+    let group: MajorGroup = {}
+
+    const reverseSortVersions = (versions: string[])  => {
+      return versions.sort((a, b) => {
+        return b.localeCompare(a, undefined, { numeric: true });
+      });
     }
-  });
+    
+    const targets = reverseSortVersions(input)
+    for(const version of targets) {
+      const target = version.substring(1)
+      const [major, minor, _] = target.split('.')
+      const key = `v${major}`
 
-  Object.keys(rs).map(function(x) {
-    let tmp = rs[x]["all"];
-    Object.keys(tmp).reverse().map(function(y) {
-      rs[x]["top"].push(tmp[y][tmp[y].length - 1])
-      if(tmp[y].length > 1) {
-        tmp[y].pop();
-      } else {
-        delete tmp[y];
+      if (!group[key]) {
+        group[key] = {};
       }
-    })
+      if(!group[key][minor]) {
+        group[key][minor] = [target]
+      } else {
+        group[key][minor].push(target)
+      }
+    }
 
-    rs[x]["others"] = Object.values(rs[x]["all"]).flat();
-    rs[x]["all"] = {};
-  })
+    for(const majorKey in group) {
+      if(top > 0) result[majorKey] = { focus: [], others: [] }
+      for(const minorKey in group[majorKey]) {
+        if(top > 0) {
+          const versions = group[majorKey][minorKey];
+          group[majorKey][minorKey] = reverseSortVersions(versions)
+          result[majorKey].focus.push(group[majorKey][minorKey][0])
+          group[majorKey][minorKey].shift()
+          result[majorKey].others = [...group[majorKey][minorKey], ...result[majorKey].others]
+        } else {
+          archive = [...group[majorKey][minorKey], ...archive]
+        }
+      }
+      if(top > 0) result[majorKey].focus = reverseSortVersions(result[majorKey].focus)
+      top--
+    }
+
+    return [result, archive]
+  }
+
+  const [current, earlier] = groupVersionsByMajor(validVersions)
 </script>
   
 <svelte:head>
@@ -75,14 +97,14 @@
         <div class="py-5 space-y-6">
           <p><img src="/images/wnokia.png" width="85" alt="Logo"/></p>
           <h3 class="text-3xl text-nokia-yellow">SR Linux YANG Models</h3>
-          {#each relGroup as major}
+          {#each Object.entries(current) as [major, versions] }
             <div class="flex items-center">
               <p class="mr-4 text-xl text-white">{major}</p>
               <div class="flex items-center flex-wrap gap-2 text-base/7">
-                {#each rs[major].top as minor}
-                  <a class="px-3 py-1.5 border border-gray-700 text-white bg-gray-800 hover:bg-gray-700 hover:cursor-pointer rounded text-center w-20" href="{minor}">{minor.slice(1)}</a>
+                {#each versions.focus as minor}
+                  <a class="px-3 py-1.5 border border-gray-700 text-white bg-gray-800 hover:bg-gray-700 hover:cursor-pointer rounded text-center w-20" href="v{minor}">{minor}</a>
                 {/each}
-                {#if rs[major].others?.length }
+                {#if versions.others?.length }
                   <div class="dropdown">
                     <button class="dropdown-button px-3 py-1.5 border border-gray-700 text-white bg-gray-800 hover:bg-gray-700 rounded text-center w-20 inline-flex items-center">
                       More
@@ -93,8 +115,8 @@
                     <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-gray-800 text-white rounded-lg shadow">
                       <div class="my-2 w-24 md:w-32 max-h-[160px] overflow-y-auto scroll-dark">
                         <ul>
-                          {#each reverseSortVersions(rs[major].others) as entry}
-                            <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-700">{entry.slice(1)}</a></li>
+                          {#each versions.others as entry}
+                            <li><a href="v{entry}" class="block px-4 py-2 hover:bg-gray-700">{entry}</a></li>
                           {/each}
                         </ul>
                       </div>
@@ -104,7 +126,7 @@
               </div>
             </div>
           {/each}
-          {#if archive?.length}
+          {#if earlier?.length}
             <div class="flex items-center ml-11 flex-wrap gap-2 text-base/7">
               <div class="dropdown">
                 <button class="dropdown-button px-3 py-2 text-sm border border-gray-700 text-white bg-gray-800 hover:bg-gray-700 rounded text-center inline-flex items-center">
@@ -116,8 +138,8 @@
                 <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-gray-800 text-white rounded-lg shadow">
                   <div class="my-2 w-40 max-h-[160px] overflow-y-auto scroll-dark">
                     <ul>
-                      {#each reverseSortVersions(archive) as entry}
-                        <li><a href="{entry}" class="block px-4 py-2 hover:bg-gray-700">{entry.slice(1)}</a></li>
+                      {#each earlier as entry}
+                        <li><a href="v{entry}" class="block px-4 py-2 hover:bg-gray-700">{entry}</a></li>
                       {/each}
                     </ul>
                   </div>
