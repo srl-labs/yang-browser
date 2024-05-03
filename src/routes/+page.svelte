@@ -95,7 +95,7 @@
     <div class="md:flex md:gap-x-10 lg:gap-x-20 items-center justify-between">
       <div class="flex">
         <div class="py-5 space-y-6">
-          <p><img src="/images/wnokia.png" width="85" alt="Logo"/></p>
+          <p><img src="/images/nwhite.svg" width="85" alt="Logo"/></p>
           <h3 class="text-3xl text-nokia-yellow">SR Linux YANG Models</h3>
           {#each Object.entries(current) as [major, versions] }
             <div class="flex items-center">
