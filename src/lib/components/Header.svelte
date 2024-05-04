@@ -1,13 +1,12 @@
 <script lang="ts">
   import Theme from '$lib/components/Theme.svelte';
-  import type { Model } from '$lib/structure';
 
   import { toggleSidebar, closeSidebar } from '$lib/components/functions'
 
   export let model: string;
   export let modelTitle: string;
   export let release: string;
-  export let allModels: Model[];
+  export let allModels: any = [];
   export let home: boolean;
 </script>
 
@@ -29,10 +28,18 @@
 			<a href="../" class="flex px-2"><img src="/images/navbar-logo.png" alt="Logo" width="25"/></a>
 		</div>
 		<!-- navbar centre item -->
-		<div class="text-center">
-			<p class="text-nokia-old-blue dark:text-white font-light text-lg lg:text-2xl">SR Linux <span class="font-nokia-headline">{release}</span></p>
-      <p class="text-gray-800 text-xs lg:text-sm dark:text-white">{modelTitle} YANG Model</p>
-		</div>
+    <div class="text-center">
+      {#if modelTitle === "compare"}
+        {@const [x, y] = release.split(";")}
+        <p class="text-nokia-old-blue dark:text-white font-light text-lg lg:text-2xl">Yang Compare</p>
+        <p class="text-gray-800 text-xs lg:text-sm dark:text-white">
+          SR Linux <span class="font-nokia-headline">{x}</span> with <span class="font-nokia-headline">{y}</span>
+        </p>
+      {:else}
+        <p class="text-nokia-old-blue dark:text-white font-light text-lg lg:text-2xl">SR Linux <span class="font-nokia-headline">{release}</span></p>
+        <p class="text-gray-800 text-xs lg:text-sm dark:text-white">{modelTitle} YANG Model</p>
+      {/if}
+    </div>
 		<!-- navbar right item -->
     <div class="flex items-center">
 		  <Theme/>
