@@ -41,7 +41,8 @@ export function searchBasedYangFilter (x: PathDef, term: string, showPrefix: boo
 export function highlight (node: HTMLSpanElement, [rawRex, text]: [string, string]) {
   const markClass = "text-nokia-blue dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold";
   let marker = (txt: string, rex: RegExp) => txt.replace(rex, (term) => `<mark class="${markClass}">${term}</mark>`);
-  let action = () => node.innerHTML = marker(text, new RegExp(rawRex, "g"));
+  const escape = (text) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+  let action = () => node.innerHTML = marker(text, new RegExp(escape(rawRex), "g"));
   action();
   return {
     update(obj: [string, string]) {
