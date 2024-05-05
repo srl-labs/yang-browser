@@ -1,17 +1,50 @@
 <script lang="ts">
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
-  import Popup from '$lib/components/Popup.svelte';
 	import { closeSidebar, highlight } from '$lib/components/functions.js';
 	import { writable, derived } from 'svelte/store';
 
+  interface ComparePaths {
+    state: string, path: string,
+    type: string, compare: string,
+    version: string
+  }
+
   export let data
-  const {urlPath, x, y, model, commonXY, newInY, removedFromX} = data
+  const {x, y, model, diff} = data
+  
+  const frameObj = (pathEntry: string, kind: string, version: string) => {
+    const [state, path, type] = pathEntry.split(";")
+    return {
+      state: state, path: path,
+      type: type, compare: kind,
+      version: version
+    }
+  }
+
+  const sortByKey = (list: ComparePaths[]) => {
+    return list.sort((a, b) => {
+      const keyA = a["path"];
+      const keyB = b["path"];
+      
+      if (keyA < keyB) {
+          return -1;
+      }
+      if (keyA > keyB) {
+          return 1;
+      }
+      return 0;
+    });
+  }
 
   let count = 40;
-  let pathDetail = {};
-  
-  let searchInput = urlPath
+  let paths: ComparePaths[] = []
+  paths = [...paths, ...diff["commonXY"].map(x => frameObj(x, "=", y))]
+  paths = [...paths, ...diff["newInY"].map(x => frameObj(x, "+", y))]
+  paths = [...paths, ...diff["removedFromX"].map(x => frameObj(x, "-", x))]
+  paths = sortByKey(paths)
+
+  let searchInput = ""
   let searchStore = writable("")
   $: searchStore.set(searchInput.trim().toLowerCase())
 
@@ -27,7 +60,7 @@
   const compareChange = (val: string) => compareInput = val
   const scopeChange = (val: string) => stateInput = val
   const getSearchKeys = (str: string) => str.split(/\s+/).join("|")
-  const searchBasedFilter = (x: any, searchTerm: string) => {
+  const searchBasedFilter = (x: ComparePaths, searchTerm: string) => {
     const keys = searchTerm.split(/\s+/)
     const searchStr = `${x.path};${x.type}`
     return keys.every(x => searchStr.includes(x))
@@ -35,7 +68,7 @@
 
   // WRITABLE STORES
   let start = writable(0);
-  let allPaths = writable([...commonXY, ...newInY, ...removedFromX]);
+  let allPaths = writable(paths);
 
   // DERIVED STORES
   let compareFilter = derived([compareStore, allPaths], ([$compareStore, $allPaths]) => $allPaths.filter(x => $compareStore === "" ? true : x.compare === $compareStore));
@@ -68,7 +101,7 @@
         </div>
         <div class="flex items-center mr-4">
           <input id="common-compare-radio" type="radio" name="is-compare-group" class="w-4 h-4" checked={compareInput === "="} on:change={() => compareChange("=")}>
-          <label for="common-compare-radio" class="ml-2 cursor-pointer">No Change</label>
+          <label for="common-compare-radio" class="ml-2 cursor-pointer">Common</label>
         </div>
         <div class="flex items-center mr-4">
           <input id="newInY-compare-radio" type="radio" name="is-compare-group" class="w-4 h-4" checked={compareInput === "+"} on:change={() => compareChange("+")}>
@@ -119,31 +152,41 @@
     <div class="overflow-x-auto rounded-t-lg max-w-full mt-5">
       <table class="text-left w-full">
         <colgroup>
-          <col span="1" class="w-[1%]">
           <col span="1" class="w-[5%]">
           <col span="1" class="w-[80%]">
-          <col span="1" class="w-[14%]">
+          <col span="1" class="w-[13%]">
+          <col span="1" class="w-[2%]">
         </colgroup>
         <thead class="text-sm font-nokia-headline text-gray-800 dark:text-gray-300 bg-gray-300 dark:bg-gray-700">
           <tr>
-            <th scope="col" class="px-3 py-2"></th>
             <th scope="col" class="px-3 py-2">State</th>
             <th scope="col" class="px-3 py-2">Path</th>
             <th scope="col" class="px-3 py-2">Type</th>
+            <th scope="col" class="px-3 py-2"></th>
           </tr>
         </thead>
         <tbody>
           {#if $total > 0}
             {#each $paginated as item}
               <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 
-                text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:cursor-pointer" on:click={() => pathDetail = item}>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item.compare === '=' ? '' : item.compare}</td>
+                text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:cursor-pointer 
+                {item.compare === "-" ? 'bg-red-500 text-white hover:bg-red-400 dark:bg-red-800 hover:dark:bg-red-700' : 
+                (item.compare === "+" ? 'bg-green-400 hover:bg-green-500 hover:text-white dark:bg-green-800 hover:dark:bg-green-700' : '') }">
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item.state}</td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
                   <div use:highlight={[getSearchKeys($searchStore), item.path]}></div>
                 </td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
                   <div use:highlight={[getSearchKeys($searchStore), item.type]}></div>
+                </td>
+                <td class="px-3 py-1.5 text-[13px]">
+                  <div title="Show path details">
+                    <a data-sveltekit-preload-data="tap" target="_blank" href="/v{item.version}?path={encodeURIComponent(item.path)}{model !== "nokia" ? `&model=${model}` : ''}">
+                      <svg class="w-3 h-3 hover:text-gray-500 dark:hover:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                      </svg>
+                    </a>
+                  </div>
                 </td>
               </tr>
             {/each}
@@ -170,7 +213,6 @@
         </button>
       {/if}
     </div>
-    <Popup pathDetail={pathDetail}/>
   </div>
   <Footer home={false}/>
 </div>

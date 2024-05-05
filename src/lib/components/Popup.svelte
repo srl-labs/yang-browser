@@ -25,16 +25,17 @@
     const pageUrl = $page.url
     const model = $page.data.model
     const modelParam = (model !== "nokia" ? `&model=${model}` : "")
-    return `${pageUrl.origin}${pageUrl.pathname}?path=${encodeURIComponent(path)}${modelParam}`
+    const compareParam = (pageUrl.pathname === "/compare" ? `&${pageUrl.search.substring(1)}` : '')
+    return `${pageUrl.origin}${pageUrl.pathname}?path=${encodeURIComponent(path)}${modelParam}${compareParam}`
   }
 
-  function crossLaunch(path: string) {
+  function crossLaunch(path: any) {
     const model = $page.data.model
-    const release = $page.data.release
     const toTree = (treePopup() ? "" : "/tree")
     const fromParam = (treePopup() ? "" : "&from=pb")
     const modelParam = (model !== "nokia" ? `&model=${model}` : "")
-    return `/${release}${toTree}?path=${encodeURIComponent(path)}${fromParam}${modelParam}`
+    const release = "release" in path ? `v${path.release}` : $page.data.release
+    return `/${release}${toTree}?path=${encodeURIComponent(path.path)}${fromParam}${modelParam}`
   }
 
   function copyEffect() {
@@ -79,6 +80,17 @@
           <div class="overflow-x-auto max-w-full">
             <table>
               <tbody>
+                {#if "compare" in pathDetail}
+                  <tr>
+                    {#if pathDetail.compare === "="}
+                      <td colspan="2" class="pt-1 pb-3 text-sm text-gray-400 dark:text-gray-400">NO CHANGE</td>
+                    {:else if pathDetail.compare === "+"}
+                      <td colspan="2" class="pt-1 pb-3 text-sm text-green-600 dark:text-green-300">ADDED in {pathDetail.release}</td>
+                    {:else if pathDetail.compare === "-"}
+                      <td colspan="2" class="pt-1 pb-3 text-sm text-red-600 dark:text-red-300">REMOVED from {pathDetail.release}</td>
+                    {/if}
+                  </tr>
+                {/if}
                 <tr>
                   <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">State:</th>
                   <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{"is-state" in pathDetail ? pathDetail["is-state"] : false}</td>
@@ -108,7 +120,7 @@
           </div>
         </div>
         <div id="popupFooter" class="text-right p-4 border-t border-gray-200 rounded-b dark:border-gray-600">
-          <a href="{crossLaunch(pathDetail.path)}" target="_blank" class="text-sm px-3 py-1 rounded text-white bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">Show in {treePopup() ? 'Path' : 'Tree'} Browser</a>
+          <a href="{crossLaunch(pathDetail)}" target="_blank" class="text-sm px-3 py-1 rounded text-white bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">Show in {treePopup() ? 'Path' : 'Tree'} Browser</a>
         </div>
       </div>
     </div>

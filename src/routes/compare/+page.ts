@@ -9,6 +9,7 @@ const validVersions = [...new Set(Object.keys(releases))]
 export async function load({ url, fetch }) {
   let x: string = ""
   let y: string = ""
+  let urlPath: string = ""
   let model: string = "nokia"
 
   if(url.searchParams.has("x")) {
@@ -19,6 +20,9 @@ export async function load({ url, fetch }) {
   }
   if(url.searchParams.has("model")) {
     model = url.searchParams.get("model")!.trim()
+  }
+  if (url.searchParams.has("path")) {
+    urlPath = url.searchParams.get("path")!.trim();
   }
 
   if(!validVersions.includes(`v${x}`)) {
@@ -42,7 +46,8 @@ export async function load({ url, fetch }) {
     const versionUrl = `${url.origin}/releases/v${version}/${model !== "nokia" ? model + "/" : ""}paths.json`
     return fetch(versionUrl)
     .then(response => response.json())
-    .then(response => response.map((k: any) => `${"is-state" in k ? "true" : "false"};${k.path};${k.type}`))
+    //.then(response => response.map((k: any) => [("is-state" in k ? "true" : "false"), k.path, k.type]))
+    //.then(response => response.map((k: any) => `${"is-state" in k ? "true" : "false"};${k.path};${k.type}`))
     .catch(error => { throw error(404, `Error fetching ${version} yang tree`) })
   }
 
@@ -71,11 +76,23 @@ export async function load({ url, fetch }) {
     return { commonXY, newInY, removedFromX }
   }
 
-  let xpaths = await fetchPaths(x)
-  let ypaths = await fetchPaths(y)
+  const xpaths = await fetchPaths(x)
+  const ypaths = await fetchPaths(y)
+
+  const xOnlyPath = xpaths.map((k :any) => k.path)
+  const yOnlyPath = ypaths.map((k :any) => k.path)
+
+  const {commonXY, newInY, removedFromX} = await pathDiff(xOnlyPath, yOnlyPath)
+  
+  const diffNoChange = ypaths.filter((k: any) => commonXY.includes(k.path)).map((k: any) => ({...k, compare: "=", release: y, state: ("is-state" in k ? "true" : "false")}))
+  const diffNewY = ypaths.filter((k: any) => newInY.includes(k.path)).map((k: any) => ({...k, compare: "+", release: y, state: ("is-state" in k ? "true" : "false")}))
+  const diffRemovedX = xpaths.filter((k: any) => removedFromX.includes(k.path)).map((k: any) => ({...k, compare: "-", release: x, state: ("is-state" in k ? "true" : "false")}))
 
   return {
+    urlPath: urlPath,
     x: x, y: y, model: model,
-    diff: await pathDiff(xpaths, ypaths)
+    commonXY: diffNoChange, 
+    newInY: diffNewY, 
+    removedFromX: diffRemovedX
   }
 }
