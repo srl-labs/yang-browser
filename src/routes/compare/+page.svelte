@@ -6,7 +6,7 @@
 	import { writable, derived } from 'svelte/store';
 
   export let data
-  const {urlPath, x, y, model, diff} = data
+  const {urlPath, x, y, model, typeChange, newInY, removedFromX} = data
 
   let count = 40;
   let pathDetail = {};
@@ -31,10 +31,19 @@
     const searchStr = `${x.path};${x.type}`
     return keys.every(x => searchStr.includes(x))
   }
+  const sortByKey = (list: any) => {
+    return list.sort((a: any, b: any) => {
+      const keyA = a["path"]
+      const keyB = b["path"]
+      if (keyA < keyB) return -1
+      if (keyA > keyB) return 1
+      return 0
+    })
+  }
 
   // WRITABLE STORES
   let start = writable(0);
-  let allPaths = writable(diff);
+  let allPaths = writable(sortByKey([...newInY, ...removedFromX, ...typeChange]));
 
   // DERIVED STORES
   let compareFilter = derived([compareStore, allPaths], ([$compareStore, $allPaths]) => $allPaths.filter(x => $compareStore === "" ? true : x.compare === $compareStore));
