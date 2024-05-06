@@ -84,9 +84,9 @@ export async function load({ url, fetch }) {
 
   const {commonXY, newInY, removedFromX} = await pathDiff(xOnlyPath, yOnlyPath)
   
-  const diffNoChange = ypaths.filter((k: any) => commonXY.includes(k.path)).map((k: any) => ({...k, compare: "=", release: y, state: ("is-state" in k ? "true" : "false")}))
-  const diffNewY = ypaths.filter((k: any) => newInY.includes(k.path)).map((k: any) => ({...k, compare: "+", release: y, state: ("is-state" in k ? "true" : "false")}))
-  const diffRemovedX = xpaths.filter((k: any) => removedFromX.includes(k.path)).map((k: any) => ({...k, compare: "-", release: x, state: ("is-state" in k ? "true" : "false")}))
+  const diffNoChange = ypaths.filter((k: any) => commonXY.includes(k.path)).map((k: any) => ({...k, compare: "=", release: y, "is-state": ("is-state" in k ? "true" : "false")}))
+  const diffNewY = ypaths.filter((k: any) => newInY.includes(k.path)).map((k: any) => ({...k, compare: "+", release: y, "is-state": ("is-state" in k ? "true" : "false")}))
+  const diffRemovedX = xpaths.filter((k: any) => removedFromX.includes(k.path)).map((k: any) => ({...k, compare: "-", release: x, "is-state": ("is-state" in k ? "true" : "false")}))
 
   return {
     urlPath: urlPath,

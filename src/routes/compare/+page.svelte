@@ -39,7 +39,7 @@
 
   // DERIVED STORES
   let compareFilter = derived([compareStore, allPaths], ([$compareStore, $allPaths]) => $allPaths.filter(x => $compareStore === "" ? true : x.compare === $compareStore));
-  let stateFilter = derived([stateStore, compareFilter], ([$stateStore, $compareFilter]) => $compareFilter.filter(x => $stateStore === "" ? true : x.state === $stateStore));
+  let stateFilter = derived([stateStore, compareFilter], ([$stateStore, $compareFilter]) => $compareFilter.filter(x => $stateStore === "" ? true : x["is-state"] === $stateStore));
   let searchFilter = derived([searchStore, stateFilter], ([$searchStore, $stateFilter]) => $stateFilter.filter(x => searchBasedFilter(x, $searchStore)));
 
   let total = derived(searchFilter, ($searchFilter) => {start.set(0); return $searchFilter.length});
@@ -138,7 +138,7 @@
               <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 
                 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:cursor-pointer" on:click={() => pathDetail = item}>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item.compare === '=' ? '' : item.compare}</td>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item.state}</td>
+                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item["is-state"]}</td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
                   <div use:highlight={[getSearchKeys($searchStore), item.path]}></div>
                 </td>
