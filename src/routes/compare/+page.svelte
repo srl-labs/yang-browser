@@ -10,23 +10,12 @@
 
   // WORKER POST <- START
 	import type { PathDef } from '$lib/structure.js';
-
-  interface PostMessage {
-    x: PathDef[]
-    y: PathDef[]
-  }
-
-  interface ResponseMessage extends PathDef {
-    fromType?: string
-    fromRel?: string
-    compare: string
-  }
+  import type { PostMessage, ResponseMessage } from "$lib/workers/structure";
 
   let diff: ResponseMessage[] = [] // IMPORTANT
 
   const onWorkerMessage = (event: MessageEvent<ResponseMessage[]>) => {
     diff = event.data;
-    //console.log(diff)
     //console.log('Worker response received');
   };
 

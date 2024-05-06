@@ -1,15 +1,5 @@
 import type { PathDef } from "$lib/structure";
-
-interface PostMessage {
-  x: PathDef[]
-  y: PathDef[]
-}
-
-interface ResponseMessage extends PathDef {
-  fromType?: string
-  fromRel?: string
-  compare: string
-}
+import type { PostMessage, ResponseMessage } from "$lib/workers/structure";
 
 onmessage = (event: MessageEvent<PostMessage>) => {
   const { x, y } = event.data;
