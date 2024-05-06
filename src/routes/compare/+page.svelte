@@ -6,7 +6,7 @@
 	import { writable, derived } from 'svelte/store';
 
   export let data
-  const {urlPath, x, y, model, typeChange, newInY, removedFromX} = data
+  const {urlPath, x, y, model, diff} = data
 
   let count = 40;
   let pathDetail = {};
@@ -25,7 +25,6 @@
 
   // INTERNAL FUNCTIONS
   const compareChange = (val: string) => compareInput = val
-  const scopeChange = (val: string) => stateInput = val
   const getSearchKeys = (str: string) => str.split(/\s+/).join("|")
   const searchBasedFilter = (x: any, searchTerm: string) => {
     const keys = searchTerm.split(/\s+/)
@@ -35,7 +34,7 @@
 
   // WRITABLE STORES
   let start = writable(0);
-  let allPaths = writable([...newInY, ...removedFromX, ...typeChange]);
+  let allPaths = writable(diff);
 
   // DERIVED STORES
   let compareFilter = derived([compareStore, allPaths], ([$compareStore, $allPaths]) => $allPaths.filter(x => $compareStore === "" ? true : x.compare === $compareStore));

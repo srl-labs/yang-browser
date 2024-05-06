@@ -59,4 +59,5 @@ export interface PathDef {
   default?: string,
   namespace?: string,
   "if-features": string[]
+  release?: string
 }

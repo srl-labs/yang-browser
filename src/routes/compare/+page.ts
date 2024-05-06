@@ -77,19 +77,23 @@ export async function load({ url, fetch }) {
       }
     }
 
-    return { typeChange, newInY, removedFromX }
+    // Sort by paths
+    return [...typeChange, ...newInY, ...removedFromX].sort((a: any, b: any) => {
+      const keyA = a["path"]
+      const keyB = b["path"]
+      if (keyA < keyB) return -1
+      if (keyA > keyB) return 1
+      return 0
+    })
   }
 
   const xpaths = await fetchPaths(x)
   const ypaths = await fetchPaths(y)
-
-  const {typeChange, newInY, removedFromX} = await pathDiff(xpaths, ypaths)
+  const diff = await pathDiff(xpaths, ypaths)
 
   return {
     urlPath: urlPath,
     x: x, y: y, model: model,
-    typeChange: typeChange, 
-    newInY: newInY, 
-    removedFromX: removedFromX
+    diff: diff
   }
 }
