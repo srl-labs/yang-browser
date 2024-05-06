@@ -1,46 +1,52 @@
+
 <script lang="ts">
+  import { onMount } from 'svelte';
+	import { derived, writable } from 'svelte/store';
+
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
-  import Popup from '$lib/components/Popup.svelte';
-	import { closeSidebar, highlight } from '$lib/components/functions.js';
-	import { writable, derived } from 'svelte/store';
+	import Popup from '$lib/components/Popup.svelte';
+  import { highlight } from '$lib/components/functions';
+
+  // WORKER POST <- START
 	import type { PathDef } from '$lib/structure.js';
+
+  interface PostMessage {
+    x: PathDef[]
+    y: PathDef[]
+  }
+
+  interface ResponseMessage extends PathDef {
+    fromType?: string
+    fromRel?: string
+    compare: string
+  }
+
+  let diff: ResponseMessage[] = [] // IMPORTANT
+
+  const onWorkerMessage = (event: MessageEvent<ResponseMessage[]>) => {
+    diff = event.data;
+    //console.log(diff)
+    //console.log('Worker response received');
+  };
+
+  let compareWorker: Worker | undefined = undefined;
+
+  const loadWorker = async (x: PathDef[], y: PathDef[]) => {
+    const CompareWorker = await import('$lib/workers/compare.worker?worker');
+    compareWorker = new CompareWorker.default();
+
+    const message: PostMessage = { x, y }
+    compareWorker.postMessage(message);
+
+    compareWorker.onmessage = onWorkerMessage;
+  }
+  // WORKER POST <- END
 
   export let data
   const {urlPath, x, y, model, xpaths, ypaths} = data
-  
-  function pathDiff(x: PathDef[], y: PathDef[]) {
-    const typeChange = []
-    const removedFromX = []
-    const newInY = []
 
-    for (const itemX of x) {
-      const yFilter = y.filter((itemY: PathDef) => itemX.path === itemY.path)
-      if(yFilter.length === 0) {
-        removedFromX.push({...itemX, compare: "DEL"})
-      }
-      else if(yFilter.length === 1) {
-        if(itemX.type !== yFilter[0].type) {
-          typeChange.push({...yFilter[0], fromType: itemX.type, fromRel: itemX.release, compare: "MOD"})
-        }
-      }
-    }
-
-    for (const itemY of y) {
-      const xFilter = x.filter((itemX: PathDef) => itemX.path === itemY.path)
-      if(xFilter.length === 0) {
-        newInY.push({...itemY, compare: "ADD"})
-      }
-    }
-
-    return [...newInY, ...removedFromX, ...typeChange].sort((a, b) => {
-      const keyA = a["path"]
-      const keyB = b["path"]
-      if (keyA < keyB) return -1
-      if (keyA > keyB) return 1
-      return 0
-    })
-  }
+  onMount(() => loadWorker(xpaths, ypaths))
 
   let count = 40;
   let pathDetail = {};
@@ -65,20 +71,11 @@
     const searchStr = `${x.path};${x.type}`
     return keys.every(x => searchStr.includes(x))
   }
-  const sortByKey = (list: any) => {
-    return list.sort((a: any, b: any) => {
-      const keyA = a["path"]
-      const keyB = b["path"]
-      if (keyA < keyB) return -1
-      if (keyA > keyB) return 1
-      return 0
-    })
-  }
 
   // WRITABLE STORES
   let start = writable(0);
-  const diff = pathDiff(xpaths, ypaths)
-  let allPaths = writable(diff);
+  let allPaths = writable<ResponseMessage[]>([]);
+  $: allPaths.set(diff)
 
   // DERIVED STORES
   let compareFilter = derived([compareStore, allPaths], ([$compareStore, $allPaths]) => $allPaths.filter(x => $compareStore === "" ? true : x.compare === $compareStore));
@@ -92,6 +89,7 @@
   const updateTable = (s: number) => {if(s >= 0 && s < $total) start.set(s)}
 </script>
 
+
 <svelte:head>
 	<title>Nokia SR Linux Compare {x} with {y} Yang Model</title>
 </svelte:head>
@@ -100,7 +98,7 @@
 <Header model={model} modelTitle={"compare"} release={`${x};${y}`} home={true} />
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[80px]" on:click={closeSidebar}>
+<div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[80px]">
   <div class="px-6 pt-6 container mx-auto">
     <p class="text-gray-800 dark:text-gray-300 font-nokia-headline">Changes with respect to v{y}</p>
     <div class="py-2 font-fira">
