@@ -82,12 +82,12 @@
               <tbody>
                 {#if "compare" in pathDetail}
                   <tr>
-                    {#if pathDetail.compare === "="}
-                      <td colspan="2" class="pt-1 pb-3 text-sm text-gray-400 dark:text-gray-400">NO CHANGE</td>
-                    {:else if pathDetail.compare === "+"}
-                      <td colspan="2" class="pt-1 pb-3 text-sm text-green-600 dark:text-green-300">ADDED in {pathDetail.release}</td>
-                    {:else if pathDetail.compare === "-"}
-                      <td colspan="2" class="pt-1 pb-3 text-sm text-red-600 dark:text-red-300">REMOVED from {pathDetail.release}</td>
+                    {#if pathDetail.compare === "MOD"}
+                      <td colspan="2" class="pt-1 pb-3 text-sm text-gray-400 dark:text-gray-400">MODIFIED in v{pathDetail.compareTo}</td>
+                    {:else if pathDetail.compare === "ADD"}
+                      <td colspan="2" class="pt-1 pb-3 text-sm text-green-600 dark:text-green-300">ADDED in v{pathDetail.compareTo}</td>
+                    {:else if pathDetail.compare === "DEL"}
+                      <td colspan="2" class="pt-1 pb-3 text-sm text-red-600 dark:text-red-300">DELETED in v{pathDetail.compareTo}</td>
                     {/if}
                   </tr>
                 {/if}
@@ -97,7 +97,12 @@
                 </tr>
                 <tr class="border-t border-gray-200 dark:border-gray-600">
                   <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Type:</th>
-                  <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{pathDetail.type}</td>
+                  <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">
+                    {#if "fromType" in pathDetail}
+                      <p class="text-gray-400">from (v{pathDetail.fromRel}): {pathDetail.fromType}</p>
+                    {/if}
+                    <p>{pathDetail.type}</p>
+                  </td>
                 </tr>
                 {#if pathDetail["type"] === "enumeration" && "enum-values" in pathDetail}
                   <tr class="border-t border-gray-200 dark:border-gray-600">
@@ -112,7 +117,7 @@
                 <tr class="border-t border-gray-200 dark:border-gray-600">
                   <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Description:</th>
                   <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">
-                    <div class="overflow-y-auto max-h-40 scroll-light dark:scroll-dark">{pathDetail.description}</div>
+                    <div class="overflow-y-auto max-h-40 scroll-light dark:scroll-dark">{"description" in pathDetail ? pathDetail.description : ''}</div>
                   </td>
                 </tr>
               </tbody>

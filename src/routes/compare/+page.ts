@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit'
 
 import yaml from 'js-yaml'
 import rel from '$lib/releases.yaml?raw'
-import type { Releases } from '$lib/structure'
+import type { PathDef, Releases } from '$lib/structure'
 const releases = yaml.load(rel) as Releases
 const validVersions = [...new Set(Object.keys(releases))]
 
@@ -49,53 +49,47 @@ export async function load({ url, fetch }) {
     const versionUrl = `${url.origin}/releases/v${version}/${model !== "nokia" ? model + "/" : ""}paths.json`
     return fetch(versionUrl)
     .then(response => response.json())
-    //.then(response => response.map((k: any) => [("is-state" in k ? "true" : "false"), k.path, k.type]))
-    //.then(response => response.map((k: any) => `${"is-state" in k ? "true" : "false"};${k.path};${k.type}`))
+    .then(response => response.map((k: any) => ({...k, release: version, compareTo: y, "is-state": ("is-state" in k ? "true" : "false")})))
     .catch(error => { throw error(404, `Error fetching ${version} yang tree`) })
   }
 
-  async function pathDiff(x: string[], y: string[]) {
-    const commonXY = []
-    const newInY = []
+  async function pathDiff(x: PathDef[], y: PathDef[]) {
+    const typeChange = []
     const removedFromX = []
+    const newInY = []
 
-    const setX = new Set(x)
-    const setY = new Set(y)
-
-    for (const item of setX) {
-      if (setY.has(item)) {
-        commonXY.push(item)
-      } else {
-        removedFromX.push(item)
+    for (const itemX of x) {
+      const yFilter = y.filter((itemY: PathDef) => itemX.path === itemY.path)
+      if(yFilter.length === 0) {
+        removedFromX.push({...itemX, compare: "DEL"})
+      }
+      else if(yFilter.length === 1) {
+        if(itemX.type !== yFilter[0].type) {
+          typeChange.push({...yFilter[0], fromType: itemX.type, fromRel: itemX.release, compare: "MOD"})
+        }
       }
     }
 
-    for (const item of setY) {
-      if (!setX.has(item)) {
-        newInY.push(item)
+    for (const itemY of y) {
+      const xFilter = x.filter((itemX: PathDef) => itemX.path === itemY.path)
+      if(xFilter.length === 0) {
+        newInY.push({...itemY, compare: "ADD"})
       }
     }
 
-    return { commonXY, newInY, removedFromX }
+    return { typeChange, newInY, removedFromX }
   }
 
   const xpaths = await fetchPaths(x)
   const ypaths = await fetchPaths(y)
 
-  const xOnlyPath = xpaths.map((k :any) => k.path)
-  const yOnlyPath = ypaths.map((k :any) => k.path)
-
-  const {commonXY, newInY, removedFromX} = await pathDiff(xOnlyPath, yOnlyPath)
-  
-  const diffNoChange = ypaths.filter((k: any) => commonXY.includes(k.path)).map((k: any) => ({...k, compare: "=", release: y, "is-state": ("is-state" in k ? "true" : "false")}))
-  const diffNewY = ypaths.filter((k: any) => newInY.includes(k.path)).map((k: any) => ({...k, compare: "+", release: y, "is-state": ("is-state" in k ? "true" : "false")}))
-  const diffRemovedX = xpaths.filter((k: any) => removedFromX.includes(k.path)).map((k: any) => ({...k, compare: "-", release: x, "is-state": ("is-state" in k ? "true" : "false")}))
+  const {typeChange, newInY, removedFromX} = await pathDiff(xpaths, ypaths)
 
   return {
     urlPath: urlPath,
     x: x, y: y, model: model,
-    commonXY: diffNoChange, 
-    newInY: diffNewY, 
-    removedFromX: diffRemovedX
+    typeChange: typeChange, 
+    newInY: newInY, 
+    removedFromX: removedFromX
   }
 }

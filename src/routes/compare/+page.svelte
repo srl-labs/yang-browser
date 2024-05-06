@@ -6,7 +6,7 @@
 	import { writable, derived } from 'svelte/store';
 
   export let data
-  const {urlPath, x, y, model, commonXY, newInY, removedFromX} = data
+  const {urlPath, x, y, model, typeChange, newInY, removedFromX} = data
 
   let count = 40;
   let pathDetail = {};
@@ -35,12 +35,11 @@
 
   // WRITABLE STORES
   let start = writable(0);
-  let allPaths = writable([...commonXY, ...newInY, ...removedFromX]);
+  let allPaths = writable([...newInY, ...removedFromX, ...typeChange]);
 
   // DERIVED STORES
   let compareFilter = derived([compareStore, allPaths], ([$compareStore, $allPaths]) => $allPaths.filter(x => $compareStore === "" ? true : x.compare === $compareStore));
-  let stateFilter = derived([stateStore, compareFilter], ([$stateStore, $compareFilter]) => $compareFilter.filter(x => $stateStore === "" ? true : x["is-state"] === $stateStore));
-  let searchFilter = derived([searchStore, stateFilter], ([$searchStore, $stateFilter]) => $stateFilter.filter(x => searchBasedFilter(x, $searchStore)));
+  let searchFilter = derived([searchStore, compareFilter], ([$searchStore, $compareFilter]) => $compareFilter.filter(x => searchBasedFilter(x, $searchStore)));
 
   let total = derived(searchFilter, ($searchFilter) => {start.set(0); return $searchFilter.length});
   let end = derived([start, total], ([$start, $total]) => ($start + count) <= $total ? ($start + count) : $total);
@@ -60,43 +59,28 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[80px]" on:click={closeSidebar}>
   <div class="px-6 pt-6 container mx-auto">
-    <div class="pt-4 pb-2 text-center">
-      <div class="flex items-center text-center text-gray-800 dark:text-gray-300 text-sm">
-        <div class="flex items-center mr-4">
-          <input id="all-compare-radio" type="radio" name="is-compare-group" class="w-4 h-4" checked={compareInput === ""} on:change={() => compareChange("")}>
-          <label for="all-compare-radio" class="ml-2 cursor-pointer">All</label>
-        </div>
-        <div class="flex items-center mr-4">
-          <input id="common-compare-radio" type="radio" name="is-compare-group" class="w-4 h-4" checked={compareInput === "="} on:change={() => compareChange("=")}>
-          <label for="common-compare-radio" class="ml-2 cursor-pointer">No Change</label>
-        </div>
-        <div class="flex items-center mr-4">
-          <input id="newInY-compare-radio" type="radio" name="is-compare-group" class="w-4 h-4" checked={compareInput === "+"} on:change={() => compareChange("+")}>
-          <label for="newInY-compare-radio" class="ml-2 cursor-pointer">New in {y}</label>
-        </div>
-        <div class="flex items-center mr-4">
-          <input id="removedFromX-compare-radio" type="radio" name="is-compare-group" class="w-4 h-4" checked={compareInput === "-"} on:change={() => compareChange("-")}>
-          <label for="removedFromX-compare-radio" class="ml-2 cursor-pointer">Removed from {x}</label>
-        </div>
-      </div>
-    </div>
+    <p class="text-gray-800 dark:text-gray-300 font-nokia-headline">Changes with respect to v{y}</p>
     <div class="py-2 font-fira">
       <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full text-[13px] px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
     </div>
     <div class="flex justify-between flex-wrap">
       <div class="flex py-3">
-        <div class="flex items-center text-gray-800 dark:text-gray-300 text-sm">
+        <div class="flex items-center text-center text-gray-800 dark:text-gray-300 text-sm">
           <div class="flex items-center mr-4">
-            <input id="all-radio" type="radio" name="is-state-group" class="w-4 h-4" checked={stateInput === ""} on:change={() => scopeChange("")}>
-            <label for="all-radio" class="ml-2 cursor-pointer">All</label>
+            <input id="all-compare-radio" type="radio" name="is-compare-group" class="w-4 h-4" checked={compareInput === ""} on:change={() => compareChange("")}>
+            <label for="all-compare-radio" class="ml-2 cursor-pointer">All</label>
           </div>
           <div class="flex items-center mr-4">
-            <input id="state-radio" type="radio" name="is-state-group" class="w-4 h-4" checked={stateInput === "true"} on:change={() => scopeChange("true")}>
-            <label for="state-radio" class="ml-2 cursor-pointer">State</label>
+            <input id="newInY-compare-radio" type="radio" name="is-compare-group" class="w-4 h-4" checked={compareInput === "ADD"} on:change={() => compareChange("ADD")}>
+            <label for="newInY-compare-radio" class="ml-2 cursor-pointer">Added</label>
           </div>
           <div class="flex items-center mr-4">
-            <input id="config-radio" type="radio" name="is-state-group" class="w-4 h-4" checked={stateInput === "false"} on:change={() => scopeChange("false")}>
-            <label for="config-radio" class="ml-2 cursor-pointer">Config</label>
+            <input id="removedFromX-compare-radio" type="radio" name="is-compare-group" class="w-4 h-4" checked={compareInput === "DEL"} on:change={() => compareChange("DEL")}>
+            <label for="removedFromX-compare-radio" class="ml-2 cursor-pointer">Deleted</label>
+          </div>
+          <div class="flex items-center mr-4">
+            <input id="common-compare-radio" type="radio" name="is-compare-group" class="w-4 h-4" checked={compareInput === "MOD"} on:change={() => compareChange("MOD")}>
+            <label for="common-compare-radio" class="ml-2 cursor-pointer">Modified</label>
           </div>
         </div>
       </div>
@@ -117,12 +101,12 @@
       </div>
     </div>
     <div class="overflow-x-auto rounded-t-lg max-w-full mt-5">
-      <table class="text-left w-full">
+      <table class="text-left w-full text-xs">
         <colgroup>
-          <col span="1" class="w-[1%]">
+          <col span="1" class="w-[3%]">
           <col span="1" class="w-[5%]">
-          <col span="1" class="w-[80%]">
-          <col span="1" class="w-[14%]">
+          <col span="1" class="w-[72%]">
+          <col span="1" class="w-[20%]">
         </colgroup>
         <thead class="text-sm font-nokia-headline text-gray-800 dark:text-gray-300 bg-gray-300 dark:bg-gray-700">
           <tr>
@@ -135,15 +119,19 @@
         <tbody>
           {#if $total > 0}
             {#each $paginated as item}
-              <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 
-                text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:cursor-pointer" on:click={() => pathDetail = item}>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item.compare === '=' ? '' : item.compare}</td>
+              <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:cursor-pointer" on:click={() => pathDetail = item}>
+                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item.compare}</td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item["is-state"]}</td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
-                  <div use:highlight={[getSearchKeys($searchStore), item.path]}></div>
+                  <div use:highlight={[getSearchKeys($searchStore), (item.path)]}></div>
                 </td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
-                  <div use:highlight={[getSearchKeys($searchStore), item.type]}></div>
+                  {#if item.compare === "MOD"}
+                    <div class="inline-flex text-gray-400">from: <div class="ml-1" use:highlight={[getSearchKeys($searchStore), item.fromType]}></div></div>
+                    <div use:highlight={[getSearchKeys($searchStore), item.type]}></div>
+                  {:else}
+                    <div use:highlight={[getSearchKeys($searchStore), item.type]}></div>
+                  {/if}
                 </td>
               </tr>
             {/each}
