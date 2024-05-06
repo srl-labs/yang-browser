@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit'
 
 import yaml from 'js-yaml'
 import rel from '$lib/releases.yaml?raw'
-import type { PathDef, Releases } from '$lib/structure'
+import type { Releases } from '$lib/structure'
 const releases = yaml.load(rel) as Releases
 const validVersions = [...new Set(Object.keys(releases))]
 
@@ -53,43 +53,13 @@ export async function load({ url, fetch }) {
     .catch(error => { throw error(404, `Error fetching ${version} yang tree`) })
   }
 
-  async function pathDiff(x: PathDef[], y: PathDef[]) {
-    const typeChange = []
-    const removedFromX = []
-    const newInY = []
-
-    for (const itemX of x) {
-      const yFilter = y.filter((itemY: PathDef) => itemX.path === itemY.path)
-      if(yFilter.length === 0) {
-        removedFromX.push({...itemX, compare: "DEL"})
-      }
-      else if(yFilter.length === 1) {
-        if(itemX.type !== yFilter[0].type) {
-          typeChange.push({...yFilter[0], fromType: itemX.type, fromRel: itemX.release, compare: "MOD"})
-        }
-      }
-    }
-
-    for (const itemY of y) {
-      const xFilter = x.filter((itemX: PathDef) => itemX.path === itemY.path)
-      if(xFilter.length === 0) {
-        newInY.push({...itemY, compare: "ADD"})
-      }
-    }
-
-    return { typeChange, newInY, removedFromX }
-  }
-
   const xpaths = await fetchPaths(x)
   const ypaths = await fetchPaths(y)
-
-  const {typeChange, newInY, removedFromX} = await pathDiff(xpaths, ypaths)
 
   return {
     urlPath: urlPath,
     x: x, y: y, model: model,
-    typeChange: typeChange, 
-    newInY: newInY, 
-    removedFromX: removedFromX
+    xpaths: xpaths, 
+    ypaths: ypaths
   }
 }

@@ -4,9 +4,43 @@
   import Popup from '$lib/components/Popup.svelte';
 	import { closeSidebar, highlight } from '$lib/components/functions.js';
 	import { writable, derived } from 'svelte/store';
+	import type { PathDef } from '$lib/structure.js';
 
   export let data
-  const {urlPath, x, y, model, typeChange, newInY, removedFromX} = data
+  const {urlPath, x, y, model, xpaths, ypaths} = data
+  
+  function pathDiff(x: PathDef[], y: PathDef[]) {
+    const typeChange = []
+    const removedFromX = []
+    const newInY = []
+
+    for (const itemX of x) {
+      const yFilter = y.filter((itemY: PathDef) => itemX.path === itemY.path)
+      if(yFilter.length === 0) {
+        removedFromX.push({...itemX, compare: "DEL"})
+      }
+      else if(yFilter.length === 1) {
+        if(itemX.type !== yFilter[0].type) {
+          typeChange.push({...yFilter[0], fromType: itemX.type, fromRel: itemX.release, compare: "MOD"})
+        }
+      }
+    }
+
+    for (const itemY of y) {
+      const xFilter = x.filter((itemX: PathDef) => itemX.path === itemY.path)
+      if(xFilter.length === 0) {
+        newInY.push({...itemY, compare: "ADD"})
+      }
+    }
+
+    return [...newInY, ...removedFromX, ...typeChange].sort((a, b) => {
+      const keyA = a["path"]
+      const keyB = b["path"]
+      if (keyA < keyB) return -1
+      if (keyA > keyB) return 1
+      return 0
+    })
+  }
 
   let count = 40;
   let pathDetail = {};
@@ -43,7 +77,8 @@
 
   // WRITABLE STORES
   let start = writable(0);
-  let allPaths = writable(sortByKey([...newInY, ...removedFromX, ...typeChange]));
+  const diff = pathDiff(xpaths, ypaths)
+  let allPaths = writable(diff);
 
   // DERIVED STORES
   let compareFilter = derived([compareStore, allPaths], ([$compareStore, $allPaths]) => $allPaths.filter(x => $compareStore === "" ? true : x.compare === $compareStore));
