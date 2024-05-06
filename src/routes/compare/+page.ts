@@ -31,6 +31,9 @@ export async function load({ url, fetch }) {
   if(!validVersions.includes(`v${y}`)) {
     throw error(404, "Unsupported Y release")
   }
+  if(x === y) {
+    throw error(404, "X & Y releases cannot be the same")
+  }
   if(model !== "openconfig" && model !== "nokia") {
     throw error(404, "Unsupported model")
   }

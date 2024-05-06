@@ -120,7 +120,7 @@
           </div>
         </div>
         <div id="popupFooter" class="text-right p-4 border-t border-gray-200 rounded-b dark:border-gray-600">
-          <a href="{crossLaunch(pathDetail)}" target="_blank" class="text-sm px-3 py-1 rounded text-white bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">Show in {treePopup() ? 'Path' : 'Tree'} Browser</a>
+          <a href="{crossLaunch(pathDetail)}" target="_blank" class="text-sm px-3 py-1 rounded text-white bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">Show in {"release" in pathDetail ? pathDetail.release : ''} {treePopup() ? 'Path' : 'Tree'} Browser</a>
         </div>
       </div>
     </div>
