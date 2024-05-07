@@ -16,6 +16,7 @@
   // DEFAULTS
   let count = 40;
   let pathDetail = {};
+  let showPathPrefix = false;
   let showMoreFilters = false;
 
   let searchInput = urlPath;
@@ -25,10 +26,6 @@
   let stateInput = "";
   let stateStore = writable("");
   $: stateStore.set(stateInput);
-
-  let showPathPrefix = false;
-  let prefixStore = writable(false);
-  $: prefixStore.set(showPathPrefix);
 
   let platformSearch = "";
   let platFind = writable("");
@@ -43,8 +40,11 @@
   const spaceSplit = (str: string) => str.split(/\s+/);
 
   const getState = (x: PathDef) => ("is-state" in x ? "true" : "false");
-  const getPath = (x: PathDef) => ($prefixStore ? x["path-with-prefix"] : x["path"])
   const getSearchKeys = (str: string) => spaceSplit(str).join("|")
+  const getPath = (showPrefix: boolean, x: PathDef) => {
+    const pathKey = showPrefix ? "path-with-prefix" : "path"
+    return x[pathKey] ?? ""
+  };
 
   // WRITABLE STORES
   let start = writable(0);
@@ -74,7 +74,7 @@
   let featFilter = derived([featSelect, featDeviate, featExtra], ([$featSelect, $featDeviate, $featExtra]) => featFilterAction($featSelect, $featDeviate, $featExtra));
   
   let stateFilter = derived([stateStore, yangPaths], ([$stateStore, $yangPaths]) => $yangPaths.filter((x: any) => $stateStore == "" ? true : getState(x) == $stateStore));
-  let yangFilter = derived([searchStore, prefixStore, stateFilter], ([$searchStore, $prefixStore, $stateFilter]) => $stateFilter.filter((x: any) => searchBasedYangFilter(x, $searchStore, $prefixStore)));
+  let yangFilter = derived([searchStore, stateFilter], ([$searchStore, $stateFilter]) => $stateFilter.filter((x: any) => searchBasedYangFilter(getPath(showPathPrefix, x), x.type, $searchStore)));
 
   let platFeatYangFilter = derived([featFilter, yangFilter],  ([$featFilter, $yangFilter]) => $featFilter?.length ? $yangFilter.filter((x: any) => featureBasedYangFilter(x, $featFilter)) : $yangFilter);
 
@@ -235,7 +235,7 @@
               <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" on:click={() => pathDetail = item}>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{getState(item)}</td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight group">
-                  <div class="text-gray-900 dark:text-gray-300" use:highlight={[getSearchKeys($searchStore), getPath(item)]}></div>
+                  <div class="text-gray-900 dark:text-gray-300" use:highlight={[getSearchKeys($searchStore), getPath(showPathPrefix, item)]}></div>
                 </td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
                   <div use:highlight={[getSearchKeys($searchStore), item.type]}></div>

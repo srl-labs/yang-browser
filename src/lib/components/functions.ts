@@ -30,10 +30,9 @@ export function extractFeatures (data: Platforms): [PlatformFeatures, string[]] 
   return [platforms, uniqueFeatures]
 }
 
-export function searchBasedYangFilter (x: PathDef, term: string, showPrefix: boolean): boolean {
+export function searchBasedYangFilter (path: string, pathType: string, term: string): boolean {
   const keys = term.split(/\s+/)
-  const pathChosen = showPrefix ? x["path-with-prefix"] : x["path"]
-  const searchStr = `${pathChosen};${x["type"]}`
+  const searchStr = `${path};${pathType}`
   return keys.every(x => searchStr.includes(x))
 }
 
