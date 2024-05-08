@@ -48,10 +48,18 @@
 
   onMount(() => loadWorker(xpaths, ypaths))
 
+  // Defaults
   let count = 40;
   let pathDetail = {};
   let showMoreFilters = false;
+  const compareValues = [
+		{ label: "All", value: "" },
+		{ label: "Added", value: "+" },
+		{ label: "Deleted", value: "-" },
+		{ label: "Modified", value: "~" }
+	]
   
+  // Writable Stores
   let searchInput = urlPath
   let searchStore = writable("")
   $: searchStore.set(searchInput.trim().toLowerCase())
@@ -68,11 +76,6 @@
   let platSelect = writable("");
   $: platSelect.set(platformValue);
 
-  // INTERNAL FUNCTIONS
-  const compareChange = (val: string) => compareInput = val
-  const getSearchKeys = (str: string) => str.split(/\s+/).join("|")
-
-  // WRITABLE STORES
   let start = writable(0);
   let yangPaths = writable<ResponseMessage[]>([]);
   $: yangPaths.set(diff)
@@ -82,11 +85,10 @@
     platStore.set(Object.keys(platforms));
   }
 
-  // DERIVED STORES
+  // Derived Stores
   let platList = derived([platFind, platStore], ([$platFind, $platStore]) => $platStore?.length ? $platStore.filter((x: string) => x.includes($platFind)) : []);
   let featSelect = derived(platSelect, ($platSelect) => $platSelect != "" && Object.keys(platforms)?.length ? platforms[$platSelect]: []);
 
-  // DERIVED STORES
   let compareFilter = derived([compareStore, yangPaths], ([$compareStore, $yangPaths]) => $yangPaths.filter(x => $compareStore === "" ? true : x.compare === $compareStore));
   let searchFilter = derived([searchStore, compareFilter], ([$searchStore, $compareFilter]) => $compareFilter.filter(x => searchBasedFilter(x, $searchStore)));
   let platformFilter = derived([featSelect, searchFilter],  ([$featSelect, $searchFilter]) => $featSelect?.length ? $searchFilter.filter(x => featureBasedFilter(x, $featSelect)) : $searchFilter);
@@ -98,12 +100,9 @@
   // UPDATE TABLE PAGINATION
   const updateTable = (s: number) => {if(s >= 0 && s < $total) start.set(s)}
 
-  const compareValues = [
-		{ label: "All", value: "" },
-		{ label: "Added", value: "+" },
-		{ label: "Deleted", value: "-" },
-		{ label: "Modified", value: "~" }
-	]
+  function getSearchKeys(str: string) {
+    return str.split(/\s+/).join("|")
+  }
 </script>
 
 
@@ -145,7 +144,7 @@
     <div class="mt-4 {showMoreFilters ? 'block' : 'hidden'}">
       <div class="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-4">
         {#each $platList as entry}
-          <div class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 hover:text-black dark:hover:bg-gray-600 dark:hover:text-white rounded-lg text-center {entry === $platSelect ? 'text-black dark:text-white bg-gray-300 dark:bg-gray-900' : 'text-gray-400 dark:text-gray-400'}">
+          <div class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 hover:text-black dark:hover:bg-gray-900 dark:hover:text-white rounded-lg text-center {entry === $platSelect ? 'text-black dark:text-white bg-gray-300 dark:bg-gray-900' : 'text-gray-400 dark:text-gray-400'}">
             <input id="radio-{entry}" type="radio" class="sr-only cursor-pointer text-blue-600" bind:group={platformValue} value="{entry}">
             <label for="radio-{entry}" class="cursor-pointer">{entry}</label>
           </div>
