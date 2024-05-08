@@ -1,7 +1,7 @@
 <script lang="ts">
-  import yaml from 'js-yaml';
   import Footer from '$lib/components/Footer.svelte';
-
+  
+  import yaml from 'js-yaml';
   import rel from '$lib/releases.yaml?raw';
   import type { Releases } from '$lib/structure';
   const releases = yaml.load(rel) as Releases;

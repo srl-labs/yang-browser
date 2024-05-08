@@ -21,18 +21,18 @@ onmessage = (event: MessageEvent<PostMessage>) => {
       const xObj = getPathObj(x, item)[0]
       const yObj = getPathObj(y, item)[0]
       if(xObj.type !== yObj.type) {
-        typeChange.push({...yObj, fromType: xObj.type, fromRel: xObj.release, compare: "MOD"})
+        typeChange.push({...yObj, fromType: xObj.type, fromRel: xObj.release, compare: "~"})
       }
     } else {
       const xObj = getPathObj(x, item)[0]
-      removedFromX.push({...xObj, compare: "DEL"})
+      removedFromX.push({...xObj, compare: "-"})
     }
   }
 
   for (const item of setY) {
     if (!setX.has(item)) {
       const yObj = getPathObj(y, item)[0]
-      newInY.push({...yObj, compare: "ADD"})
+      newInY.push({...yObj, compare: "+"})
     }
   }
 

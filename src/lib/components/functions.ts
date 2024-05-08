@@ -1,10 +1,15 @@
 import type { Platforms, PlatformFeatures, PathDef } from '$lib/structure'
 
+interface pathType {
+  path: string
+  type: string
+}
+
 export function toggleSidebar() {
-  document.getElementById('sidebar')?.classList.toggle('-translate-x-0');
-  document.getElementById('sidebar')?.classList.toggle('-translate-x-full');
-  document.getElementById('open-sidebar')?.classList.toggle('hidden');
-  document.getElementById('close-sidebar')?.classList.toggle('hidden');
+  document.getElementById('sidebar')?.classList.toggle('-translate-x-0')
+  document.getElementById('sidebar')?.classList.toggle('-translate-x-full')
+  document.getElementById('open-sidebar')?.classList.toggle('hidden')
+  document.getElementById('close-sidebar')?.classList.toggle('hidden')
 }
 
 export function closeSidebar() {
@@ -30,6 +35,12 @@ export function extractFeatures (data: Platforms): [PlatformFeatures, string[]] 
   return [platforms, uniqueFeatures]
 }
 
+export function searchBasedFilter({path, type}: pathType, searchTerm: string) {
+  const keys = searchTerm.split(/\s+/)
+  const searchStr = `${path};${type}`
+  return keys.every(x => searchStr.includes(x))
+}
+
 export function searchBasedYangFilter (path: string, pathType: string, term: string): boolean {
   const keys = term.split(/\s+/)
   const searchStr = `${path};${pathType}`
@@ -38,21 +49,21 @@ export function searchBasedYangFilter (path: string, pathType: string, term: str
 
 // do not change defintion
 export function highlight (node: HTMLSpanElement, [rawRex, text]: [string, string]) {
-  const markClass = "text-nokia-blue dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold";
-  let marker = (txt: string, rex: RegExp) => txt.replace(rex, (term) => `<mark class="${markClass}">${term}</mark>`);
-  const escape = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-  let action = () => node.innerHTML = marker(text, new RegExp(escape(rawRex), "g"));
-  action();
+  const markClass = "text-nokia-blue dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold"
+  let marker = (txt: string, rex: RegExp) => txt.replace(rex, (term) => `<mark class="${markClass}">${term}</mark>`)
+  const escape = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+  let action = () => node.innerHTML = marker(text, new RegExp(escape(rawRex), "g"))
+  action()
   return {
     update(obj: [string, string]) {
-      [rawRex, text] = obj;
-      action();
+      [rawRex, text] = obj
+      action()
     },
   }
 }
 
 // do not alter the flow in any means
-export function featureBasedYangFilter (x: PathDef, f: string[]): boolean {
+export function featureBasedFilter (x: PathDef, f: string[]): boolean {
   const isOperator = (arg: string): boolean => (arg === "|" || arg === "&")
   
   const featureFilter = (data: string[]): string => {

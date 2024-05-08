@@ -2,13 +2,20 @@ import { error } from '@sveltejs/kit'
 
 import yaml from 'js-yaml'
 import rel from '$lib/releases.yaml?raw'
-import type { Releases } from '$lib/structure'
+import type { PathDef, Releases } from '$lib/structure'
 const releases = yaml.load(rel) as Releases
 const validVersions = [...new Set(Object.keys(releases))]
 
-export async function load({ url, fetch }) {
-  let x: string = ""
-  let y: string = ""
+export async function load({ url, params, fetch }) {
+  const xy = params.xy
+
+  const sep = xy.split("..")
+  if(sep.length !== 2) {
+    throw error(404, "Unsupported X..Y compare parameter")
+  }
+
+  let x: string = sep[0]
+  let y: string = sep[1]
   let urlPath: string = ""
   let model: string = "nokia"
 
@@ -38,28 +45,40 @@ export async function load({ url, fetch }) {
     throw error(404, "Unsupported model")
   }
   
-  if(model === "openconfig" && !releases[x].openconfig) {
+  if(model === "openconfig" && !releases[`v${x}`].openconfig) {
     throw error(404, "OpenConfig not supported for X release")
   }
-  if(model === "openconfig" && !releases[y].openconfig) {
+  if(model === "openconfig" && !releases[`v${y}`].openconfig) {
     throw error(404, "OpenConfig not supported for Y release")
   }
 
   async function fetchPaths(version: string) {
     const versionUrl = `${url.origin}/releases/v${version}/${model !== "nokia" ? model + "/" : ""}paths.json`
     return fetch(versionUrl)
-    .then(response => response.json())
-    .then(response => response.map((k: any) => ({...k, release: version, compareTo: y, "is-state": ("is-state" in k ? "true" : "false")})))
-    .catch(error => { throw error(404, `Error fetching ${version} yang tree`) })
+    .then((response: { json: () => any }) => response.json())
+    .then((response: PathDef[]) => response.map((k: any) => ({...k, release: version, compareTo: y, "is-state": ("is-state" in k ? "true" : "false")})))
+    .catch((error: (arg0: number, arg1: string) => any) => { throw error(404, `Error fetching ${version} yang tree`) })
   }
 
+  async function getFeatures() {
+    if(model === "nokia" && releases[`v${y}`].features) {
+      return fetch(`${url.origin}/releases/v${y}/features.txt`)
+      .then(response => response.text())
+      .then(response => yaml.load(response))
+      .catch(error => {throw error(404, "Error fetching platform features")});
+    }
+    return {}
+  }
+  
   const xpaths = await fetchPaths(x)
   const ypaths = await fetchPaths(y)
+  const yfeatures = await getFeatures()
 
   return {
     urlPath: urlPath,
     x: x, y: y, model: model,
     xpaths: xpaths, 
-    ypaths: ypaths
+    ypaths: ypaths,
+    yfeatures: yfeatures
   }
 }

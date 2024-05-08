@@ -82,11 +82,11 @@
               <tbody>
                 {#if "compare" in pathDetail}
                   <tr>
-                    {#if pathDetail.compare === "MOD"}
+                    {#if pathDetail.compare === "~"}
                       <td colspan="2" class="pt-1 pb-3 text-sm text-gray-400 dark:text-gray-400">MODIFIED in v{pathDetail.compareTo}</td>
-                    {:else if pathDetail.compare === "ADD"}
+                    {:else if pathDetail.compare === "+"}
                       <td colspan="2" class="pt-1 pb-3 text-sm text-green-600 dark:text-green-300">ADDED in v{pathDetail.compareTo}</td>
-                    {:else if pathDetail.compare === "DEL"}
+                    {:else if pathDetail.compare === "-"}
                       <td colspan="2" class="pt-1 pb-3 text-sm text-red-600 dark:text-red-300">DELETED in v{pathDetail.compareTo}</td>
                     {/if}
                   </tr>

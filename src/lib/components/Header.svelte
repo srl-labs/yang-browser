@@ -1,6 +1,12 @@
 <script lang="ts">
   import Theme from '$lib/components/Theme.svelte';
 
+  import yaml from 'js-yaml';
+  import rel from '$lib/releases.yaml?raw';
+  import type { Releases } from '$lib/structure';
+  const releases = yaml.load(rel) as Releases;
+  const validVersions = [...new Set(Object.keys(releases))]
+
   import { toggleSidebar, closeSidebar } from '$lib/components/functions'
 
   export let model: string;
@@ -35,7 +41,7 @@
         {@const [x, y] = release.split(";")}
         <p class="text-nokia-old-blue dark:text-white font-light text-lg lg:text-2xl">Yang Compare</p>
         <p class="text-gray-800 text-xs lg:text-sm dark:text-white">
-          SR Linux <span class="font-nokia-headline">{x}</span> to <span class="font-nokia-headline">{y}</span>
+          SR Linux <span class="font-nokia-headline">v{x}</span> to <span class="font-nokia-headline underline">v{y}</span>
         </p>
       {:else}
         <p class="text-nokia-old-blue dark:text-white font-light text-lg lg:text-2xl">SR Linux <span class="font-nokia-headline">{release}</span></p>
@@ -103,6 +109,29 @@
               </svg>
               Source
             </a>
+          </li>
+          <li>
+            <div class="flex items-center px-2 py-3">
+              <p class="mr-3 dark:text-white text-sm">Compare with</p>
+              <div class="dropdown">
+                <button class="dropdown-button px-3 py-1 text-sm border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-center inline-flex items-center">
+                  X
+                  <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                  </svg>
+                </button>
+                <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+                  <div class="my-2 max-h-[160px] overflow-y-auto scroll-light dark:scroll-dark">
+                    <ul>
+                      {#each validVersions.filter(x => x !== release) as entry}
+                        {@const vTrim = entry.substring(1)}
+                        <li><a href="/compare/{vTrim}..{release.substring(1)}{model === 'openconfig' ? '?model=openconfig' : ''}" target="_blank" class="block text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600">{vTrim}</a></li>
+                      {/each}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           </li>
         </ul>
       </div>

@@ -9,4 +9,5 @@ export interface ResponseMessage extends PathDef {
   fromType?: string
   fromRel?: string
   compare: string
+  "is-state"?: boolean
 }

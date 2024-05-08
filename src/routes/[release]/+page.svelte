@@ -3,7 +3,7 @@
   
   import type { PayLoad, PathDef } from '$lib/structure'
   
-  import { closeSidebar, extractFeatures, searchBasedYangFilter, highlight, featureBasedYangFilter } from '$lib/components/functions'
+  import { closeSidebar, extractFeatures, searchBasedYangFilter, highlight, featureBasedFilter } from '$lib/components/functions'
 
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
@@ -76,7 +76,7 @@
   let stateFilter = derived([stateStore, yangPaths], ([$stateStore, $yangPaths]) => $yangPaths.filter((x: any) => $stateStore == "" ? true : getState(x) == $stateStore));
   let yangFilter = derived([searchStore, stateFilter], ([$searchStore, $stateFilter]) => $stateFilter.filter((x: any) => searchBasedYangFilter(getPath(showPathPrefix, x), x.type, $searchStore)));
 
-  let platFeatYangFilter = derived([featFilter, yangFilter],  ([$featFilter, $yangFilter]) => $featFilter?.length ? $yangFilter.filter((x: any) => featureBasedYangFilter(x, $featFilter)) : $yangFilter);
+  let platFeatYangFilter = derived([featFilter, yangFilter],  ([$featFilter, $yangFilter]) => $featFilter?.length ? $yangFilter.filter((x: any) => featureBasedFilter(x, $featFilter)) : $yangFilter);
 
   let total = derived(platFeatYangFilter, ($platFeatYangFilter) => {start.set(0); return $platFeatYangFilter.length});
   let end = derived([start, total], ([$start, $total]) => ($start + count) <= $total ? ($start + count) : $total);
