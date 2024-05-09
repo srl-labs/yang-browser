@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit'
 
-import type { PayLoad, Platforms, Releases } from '$lib/structure'
+import type { PathDef, Releases } from '$lib/structure'
 
 import yaml from 'js-yaml'
 import rel from '$lib/releases.yaml?raw'
@@ -49,6 +49,7 @@ export async function load({ url, fetch, params }) {
 
       const yangPathUrl = `${pathUrl}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`;
       const yangPaths = fetch(yangPathUrl).then(response => response.json())
+      .then((response: PathDef[]) => response.map((k: any) => ({...k, "is-state": ("is-state" in k ? "true" : "false")})))
       .catch(error => {throw error(404, "Error fetching yang tree")})
       
       payload.paths = await yangPaths

@@ -6,7 +6,7 @@
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import Popup from '$lib/components/Popup.svelte';
-  import { extractFeatures, featureBasedFilter, highlight, searchBasedFilter } from '$lib/components/functions';
+  import { extractFeatures, searchBasedFilter, markFilter, markRender, featureBasedFilter } from '$lib/components/functions';
 
   // WORKER POST <- START
 	import type { PathDef, Platforms } from '$lib/structure.js';
@@ -93,7 +93,9 @@
 
   let compareFilter = derived([compareStore, yangPaths], ([$compareStore, $yangPaths]) => $yangPaths.filter(x => $compareStore === "" ? true : x.compare === $compareStore));
   let searchFilter = derived([searchStore, compareFilter], ([$searchStore, $compareFilter]) => $compareFilter.filter(x => searchBasedFilter(x, $searchStore)));
-  let platformFilter = derived([featSelect, searchFilter],  ([$featSelect, $searchFilter]) => $featSelect?.length ? $searchFilter.filter(x => featureBasedFilter(x, $featSelect)) : $searchFilter);
+  let highlightFilter = derived([searchStore, searchFilter],  ([$searchStore, $searchFilter]) => $searchFilter.map((x: any) => $searchStore != "" ? markFilter(x, $searchStore) : x));
+
+  let platformFilter = derived([featSelect, highlightFilter],  ([$featSelect, $highlightFilter]) => $featSelect?.length ? $highlightFilter.filter(x => featureBasedFilter(x, $featSelect)) : $searchFilter);
 
   let total = derived(platformFilter, ($platformFilter) => {start.set(0); return $platformFilter.length});
   let end = derived([start, total], ([$start, $total]) => ($start + count) <= $total ? ($start + count) : $total);
@@ -101,10 +103,6 @@
 
   // UPDATE TABLE PAGINATION
   const updateTable = (s: number) => {if(s >= 0 && s < $total) start.set(s)}
-
-  function getSearchKeys(str: string) {
-    return str.split(/\s+/).join("|")
-  }
 </script>
 
 
@@ -189,15 +187,13 @@
               <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:cursor-pointer" on:click={() => pathDetail = item}>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item.compare}</td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item["is-state"]}</td>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
-                  <div use:highlight={[getSearchKeys($searchStore), (item.path)]}></div>
-                </td>
+                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div use:markRender={item.path}></div></td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
                   {#if item.compare === "~"}
-                    <div class="inline-flex text-gray-400 dark:text-gray-500">from: <div class="ml-1" use:highlight={[getSearchKeys($searchStore), item.fromType]}></div></div>
-                    <div use:highlight={[getSearchKeys($searchStore), item.type]}></div>
+                    <div class="inline-flex text-gray-400 dark:text-gray-500">from: <div class="ml-1" use:markRender={item.fromType}></div></div>
+                    <div use:markRender={item.type}></div>
                   {:else}
-                    <div use:highlight={[getSearchKeys($searchStore), item.type]}></div>
+                    <div use:markRender={item.type}></div>
                   {/if}
                 </td>
               </tr>

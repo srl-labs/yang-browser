@@ -1,10 +1,5 @@
 import type { Platforms, PlatformFeatures, PathDef } from '$lib/structure'
 
-interface pathType {
-  path: string
-  type: string
-}
-
 export function reverseSortVersions(versions: string[]) {
   return versions.sort((a, b) => {
     return b.localeCompare(a, undefined, { numeric: true });
@@ -41,28 +36,40 @@ export function extractFeatures (data: Platforms): [PlatformFeatures, string[]] 
   return [platforms, uniqueFeatures]
 }
 
-export function searchBasedFilter({path, type}: pathType, searchTerm: string) {
+export function searchBasedFilter(x: any, searchTerm: string, showPrefix: boolean = false) {
   const keys = searchTerm.split(/\s+/)
-  const searchStr = `${path};${type}`
+  const searchStr = `${showPrefix ? x["path-with-prefix"] : x.path};${x.type}`
   return keys.every(x => searchStr.includes(x))
 }
 
-export function searchBasedYangFilter (path: string, pathType: string, term: string): boolean {
+export function markFilter(x: any, term: string, showPrefix: boolean = false) {
   const keys = term.split(/\s+/)
-  const searchStr = `${path};${pathType}`
-  return keys.every(x => searchStr.includes(x))
+  const pattern = new RegExp(keys.join('|'), 'g')
+  const markClass = "text-nokia-blue dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold"
+  const markTerm = (str: string) => str.replace(pattern, (match: any) => `<mark class="${markClass}">${match}</mark>`)
+  const markedPath = markTerm(showPrefix ? x["path-with-prefix"] : x.path)
+  const markedType = markTerm(x.type)
+  if("fromType" in x) {
+    const markedFromType = markTerm(x.fromType)
+    if(showPrefix) {
+      return {...x, "path-with-prefix": markedPath, type: markedType, fromType: markedFromType}
+    } else {
+      return {...x, path: markedPath, type: markedType, fromType: markedFromType}
+    }
+  }
+  if(showPrefix) {
+    return {...x, "path-with-prefix": markedPath, type: markedType}
+  } else {
+    return {...x, path: markedPath, type: markedType}
+  }
 }
 
-// do not change defintion
-export function highlight (node: HTMLSpanElement, [rawRex, text]: [string, string]) {
-  const markClass = "text-nokia-blue dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold"
-  const marker = (txt: string, rex: RegExp) => txt.replace(rex, (term) => `<mark class="${markClass}">${term}</mark>`)
-  const escape = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
-  const action = () => node.innerHTML = marker(text, new RegExp(escape(rawRex), "g"))
+export function markRender (node: HTMLSpanElement, text:string) {
+  const action = () => node.innerHTML = text
   action()
   return {
-    update(obj: [string, string]) {
-      [rawRex, text] = obj
+    update(obj: string) {
+      text = obj
       action()
     },
   }
