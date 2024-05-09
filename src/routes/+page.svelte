@@ -146,27 +146,27 @@
         </div>
       </div>
       <div class="flex">
-        <div class="px-6 py-5 bg-gray-200 dark:bg-gray-800 dark:text-white rounded shadow-xl space-y-4 max-w-[650px] text-base/7">
+        <div class="px-6 py-5 bg-gray-800 text-white rounded shadow-xl space-y-4 max-w-[650px] text-base/7">
           <p>
-            <a class="text-blue-700 hover:text-blue-800 dark:text-blue-500 dark:hover:text-blue-400 hover:underline" href="https://www.nokia.com/networks/products/service-router-linux-NOS" target="_blank" rel="noreferrer">Nokia SR Linux</a> 
+            <a class="text-blue-400 hover:text-blue-500 hover:underline" href="https://www.nokia.com/networks/products/service-router-linux-NOS" target="_blank" rel="noreferrer">Nokia SR Linux</a> 
             makes extensive use of structured data models. Each application regardless if it's being provided by Nokia or written by a user against the NDK has a 
-            <a class="text-blue-700 hover:text-blue-800 dark:text-blue-500 dark:hover:text-blue-400 hover:underline" href="https://datatracker.ietf.org/doc/html/rfc6020" target="_blank" rel="noreferrer">YANG</a> model that defines its configuration and state.
+            <a class="text-blue-400 hover:text-blue-500 hover:underline" href="https://datatracker.ietf.org/doc/html/rfc6020" target="_blank" rel="noreferrer">YANG</a> model that defines its configuration and state.
           </p>
           <p>With this design, the YANG data model is defined first, then the CLI, APIs, and show output formats are derived from it.</p>
           <p>A central role that is given to YANG in SR Linux Network OS demands a convenient interface to browse, search through and process these data models.</p>
           <ul class="list-disc list-outside space-y-1">
             <p>To answer these demands this portal provides:</p>
             <li class="ml-8">
-              Fast <a class="text-blue-700 hover:text-blue-800 dark:text-blue-500 dark:hover:text-blue-400 hover:underline" href="https://learn.srlinux.dev/yang/browser/#path-browser" target="_blank" rel="noreferrer">Path Browser</a> to
+              Fast <a class="text-blue-400 hover:text-blue-500 hover:underline" href="https://learn.srlinux.dev/yang/browser/#path-browser" target="_blank" rel="noreferrer">Path Browser</a> to
               effectively search through thousands of available YANG paths
             </li>
             <li class="ml-8">
-              Beautiful <a class="text-blue-700 hover:text-blue-800 dark:text-blue-500 dark:hover:text-blue-400 hover:underline" href="https://learn.srlinux.dev/yang/browser/#tree-browser" target="_blank" rel="noreferrer">Tree browser</a>
+              Beautiful <a class="text-blue-400 hover:text-blue-500 hover:underline" href="https://learn.srlinux.dev/yang/browser/#tree-browser" target="_blank" rel="noreferrer">Tree browser</a>
               to traverse the tree representation of the entire YANG data model of SR Linux
             </li>
             <li class="ml-8">
               Source <code class="text-xs">.yang</code> files neatly stored in a 
-              <a class="text-blue-700 hover:text-blue-800 dark:text-blue-500 dark:hover:text-blue-400 hover:underline" href="https://github.com/nokia/srlinux-yang-models" target="_blank" rel="noreferrer">nokia/srlinux-yang-models</a>
+              <a class="text-blue-400 hover:text-blue-500 hover:underline" href="https://github.com/nokia/srlinux-yang-models" target="_blank" rel="noreferrer">nokia/srlinux-yang-models</a>
               repository for programmatic access and code generation
             </li>
           </ul>
