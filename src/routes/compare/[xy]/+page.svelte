@@ -144,13 +144,11 @@
     <div class="mt-4 {showMoreFilters ? 'block' : 'hidden'}">
       <div class="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-4">
         {#each $platList as entry}
-          <div class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 hover:text-black dark:hover:bg-gray-900 dark:hover:text-white rounded-lg text-center {entry === $platSelect ? 'text-black dark:text-white bg-gray-300 dark:bg-gray-900' : 'text-gray-400 dark:text-gray-400'}">
-            <input id="radio-{entry}" type="radio" class="sr-only cursor-pointer text-blue-600" bind:group={platformValue} value="{entry}">
-            <label for="radio-{entry}" class="cursor-pointer">{entry}</label>
-          </div>
+          <button class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 hover:text-black dark:hover:bg-gray-900 dark:hover:text-white rounded-lg text-center 
+            {entry === $platSelect ? 'text-black dark:text-white bg-gray-300 dark:bg-gray-900' : 'text-gray-400 dark:text-gray-400'}" on:click={() => { platformValue = entry }}>{entry}
+          </button>
         {/each}
       </div>
-      <p class="text-xs mt-3 dark:text-gray-300"><span class="font-nokia-headline">Note:</span> Platforms listed are with respect to v{y}</p>
     </div>
     <div class="flex items-center justify-end py-3 text-sm mt-2">
       {#if $total > 0}

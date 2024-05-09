@@ -5,6 +5,12 @@ interface pathType {
   type: string
 }
 
+export function reverseSortVersions(versions: string[]) {
+  return versions.sort((a, b) => {
+    return b.localeCompare(a, undefined, { numeric: true });
+  });
+}
+
 export function toggleSidebar() {
   document.getElementById('sidebar')?.classList.toggle('-translate-x-0')
   document.getElementById('sidebar')?.classList.toggle('-translate-x-full')
@@ -50,9 +56,9 @@ export function searchBasedYangFilter (path: string, pathType: string, term: str
 // do not change defintion
 export function highlight (node: HTMLSpanElement, [rawRex, text]: [string, string]) {
   const markClass = "text-nokia-blue dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold"
-  let marker = (txt: string, rex: RegExp) => txt.replace(rex, (term) => `<mark class="${markClass}">${term}</mark>`)
+  const marker = (txt: string, rex: RegExp) => txt.replace(rex, (term) => `<mark class="${markClass}">${term}</mark>`)
   const escape = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
-  let action = () => node.innerHTML = marker(text, new RegExp(escape(rawRex), "g"))
+  const action = () => node.innerHTML = marker(text, new RegExp(escape(rawRex), "g"))
   action()
   return {
     update(obj: [string, string]) {
