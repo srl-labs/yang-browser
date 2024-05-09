@@ -12,10 +12,12 @@
 	import type { PathDef, Platforms } from '$lib/structure.js';
   import type { PostMessage, ResponseMessage } from "$lib/workers/structure";
 
+  let mountComplete = false;
   let diff: ResponseMessage[] = [] // IMPORTANT
 
   const onWorkerMessage = (event: MessageEvent<ResponseMessage[]>) => {
     diff = event.data;
+    mountComplete = true
     //console.log('Worker response received');
   };
 
@@ -202,7 +204,7 @@
             {/each}
           {:else}
             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-              <td colspan="4" class="px-3 py-1.5 font-fira text-[13px] text-gray-400 dark:text-gray-500 text-center">Yang compare under process...</td>
+              <td colspan="4" class="px-3 py-1.5 font-fira text-[13px] text-gray-400 dark:text-gray-500 text-center">{mountComplete ? 'No results found' : 'Yang compare under process...'}</td>
             </tr>
           {/if}
         </tbody>
