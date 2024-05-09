@@ -154,7 +154,7 @@
         </button>
       {/if}
     </div>
-    <div class="{showMoreFilters ? 'block' : 'block'}">
+    <div class="{showMoreFilters ? 'block' : 'hidden'}">
       <div class="flex flex-wrap items-start mt-4 md:space-x-6">
         <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-40">
           <p class="px-4 py-2 font-nokia-headline text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">Platform</p>
