@@ -26,7 +26,11 @@
 				</a>
 			</div>
 			<div class="{custom.error.message_body}">
-				<p>{$page.error.message}</p>
+				{#if $page.error}
+					<p>{$page.error.message}</p>
+				{:else}
+					<p>Unknown Error</p>
+				{/if}
 			</div>
 		</article>
 	</div>

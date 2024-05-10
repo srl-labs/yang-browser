@@ -3,7 +3,7 @@
 
   import yaml from 'js-yaml';
   import rel from '$lib/releases.yaml?raw';
-  import type { Releases } from '$lib/structure';
+  import type { Model, Releases } from '$lib/structure';
   import { reverseSortVersions } from '$lib/components/functions';
 
   const releases = yaml.load(rel) as Releases;
@@ -14,7 +14,7 @@
   export let model: string;
   export let modelTitle: string;
   export let release: string;
-  export let allModels: any = [];
+  export let allModels: Model[] = [];
   export let home: boolean;
 </script>
 
@@ -41,6 +41,7 @@
     <div class="text-center">
       {#if modelTitle === "compare"}
         {@const [x, y] = release.split(";")}
+        {@const title = model === "openconfig" ? "OpenConfig" : ""}
         <p class="text-nokia-old-blue dark:text-white font-light text-lg lg:text-2xl">Yang Compare</p>
         <div class="inline-flex text-gray-800 text-xs lg:text-sm dark:text-white">
           <div class="mr-1">SR Linux <span class="font-nokia-headline">v{x}</span> to</div>
@@ -53,7 +54,6 @@
             </div>
           </div>
         </div>
-        
       {:else}
         <p class="text-nokia-old-blue dark:text-white font-light text-lg lg:text-2xl">SR Linux <span class="font-nokia-headline">{release}</span></p>
         <p class="text-gray-800 text-xs lg:text-sm dark:text-white">{modelTitle} YANG Model</p>

@@ -4,7 +4,7 @@
 
   import { closeSidebar } from '$lib/components/functions';
 
-  export let pathDetail = {}
+  export let pathDetail: any = {}
 
   const treePopup = () => $page.url.pathname.includes("tree") ? true : false
 

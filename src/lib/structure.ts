@@ -7,16 +7,6 @@ export interface Release {
   features: boolean
 }
 
-export interface HomeGroup {
-  [key: string]: {
-    top: string[],
-    others: string[],
-    all: {
-      [key: string]: string[]
-    }
-  }
-}
-
 export interface Model {
   title: string, 
   path: string
@@ -27,7 +17,7 @@ export interface PayLoad {
   modelTitle: string, 
   release: string,
   allModels: Model[],
-  paths: string[],
+  paths: PathDef[],
   urlPath: string,
   features: Platforms
 }
@@ -52,7 +42,8 @@ export interface TreePayLoad {
 
 export interface PathDef {
   path: string,
-  "path-with-prefix"?: string,
+  "is-state"?: string,
+  "path-with-prefix": string,
   type: string,
   "enum-values"?: string[],
   description: string,

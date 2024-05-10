@@ -9,9 +9,9 @@ onmessage = (event: MessageEvent<PostMessage>) => {
 
   const getPathObj = (list: PathDef[], path: string) => list.filter((k :PathDef) => k.path === path)
 
-  const typeChange = []
-  const removedFromX = []
-  const newInY = []
+  const typeChange: ResponseMessage[] = []
+  const removedFromX: ResponseMessage[] = []
+  const newInY: ResponseMessage[] = []
 
   const setX = new Set(xOnlyPath)
   const setY = new Set(yOnlyPath)
@@ -45,7 +45,7 @@ onmessage = (event: MessageEvent<PostMessage>) => {
   })
 
   //console.log('Worker request processed');
-  const message: ResponseMessage[] = sortedList;
+  const message = sortedList;
   postMessage(message);
 };
 

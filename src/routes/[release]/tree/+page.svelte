@@ -1,7 +1,7 @@
 <script lang="ts">
   import { writable, derived } from 'svelte/store';
 
-  import type { TreePayLoad } from '$lib/structure';
+  import type { PathDef, TreePayLoad } from '$lib/structure';
   import { pathFocus } from '$lib/components/sharedStore';
 
   import { closeSidebar } from '$lib/components/functions'

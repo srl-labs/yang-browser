@@ -1,19 +1,18 @@
 <script lang="ts">
   import { writable, derived } from 'svelte/store'
-  
-  import type { PayLoad } from '$lib/structure'
-  
-  import { closeSidebar, extractFeatures, searchBasedFilter, featureBasedFilter, markFilter, markRender } from '$lib/components/functions'
+  import { fade } from 'svelte/transition'
 
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
   import Popup from '$lib/components/Popup.svelte';
+  import { closeSidebar, extractFeatures, searchBasedFilter, featureBasedFilter, markFilter, markRender } from '$lib/components/functions'
+  import type { PayLoad } from '$lib/structure'
 
 	export let data: PayLoad;
   let {model, modelTitle, release, allModels, paths, urlPath, features} = data;
   let [platforms, uniqueFeatures] = extractFeatures(features);
 
-  // DEFAULTS
+  // Defaults
   let count = 40;
   let pathDetail = {};
   let showMoreFilters = false;
@@ -23,6 +22,7 @@
 		{ label: "Config", value: "false" }
 	]
 
+  // Writable Stores
   let searchInput = urlPath;
   let searchStore = writable("");
   $: searchStore.set(searchInput.trim().toLowerCase());
@@ -58,6 +58,7 @@
   if(Object.keys(platforms)?.length) platStore.set(Object.keys(platforms));
   if(uniqueFeatures?.length) featStore.set(uniqueFeatures);
 
+  // Feature based filter
   function featFilterAction (platFeatures: string[], deviation: string[], extras: string[]) {
     if(platFeatures?.length) {
       platFeatures = platFeatures.filter(f => !deviation.includes(f))
@@ -65,6 +66,7 @@
     } else return []
   }
 
+  // Derived Stores
   let platList = derived([platFind, platStore], ([$platFind, $platStore]) => $platStore?.length ? $platStore.filter((x: string) => x.includes($platFind)) : []);
   let featList = derived([featFind, featStore], ([$featFind, $featStore]) => $featStore?.length ? $featStore.filter((x: string) => x.includes($featFind)) : []);
 
@@ -73,24 +75,26 @@
   
   let stateFilter = derived([stateStore, yangPaths], ([$stateStore, $yangPaths]) => $yangPaths.filter((x: any) => $stateStore == "" ? true : x["is-state"] == $stateStore));
   let searchFilter = derived([searchStore, stateFilter, prefixStore], ([$searchStore, $stateFilter, $prefixStore]) => $stateFilter.filter((x: any) => searchBasedFilter(x, $searchStore, $prefixStore)));
-  let highlightFilter = derived([searchStore, searchFilter, prefixStore],  ([$searchStore, $searchFilter, $prefixStore]) => $searchFilter.map((x: any) => $searchStore != "" ? markFilter(x, $searchStore, $prefixStore) : x));
 
-  let platFeatFilter = derived([featFilter, highlightFilter],  ([$featFilter, $highlightFilter]) => $featFilter?.length ? $highlightFilter.filter((x: any) => featureBasedFilter(x, $featFilter)) : $highlightFilter);
+  let platFeatFilter = derived([featFilter, searchFilter],  ([$featFilter, $searchFilter]) => $featFilter?.length ? $searchFilter.filter((x: any) => featureBasedFilter(x, $featFilter)) : $searchFilter);
 
   let total = derived(platFeatFilter, ($platFeatFilter) => {start.set(0); return $platFeatFilter.length});
   let end = derived([start, total], ([$start, $total]) => ($start + count) <= $total ? ($start + count) : $total);
 
   let paginated = derived([start, end, platFeatFilter], ([$start, $end, $platFeatFilter]) => $platFeatFilter.slice($start, $end));
 
-  // UPDATE TABLE PAGINATION
+  // Update Table Pagination
   const updateTable = (s: number) => {if(s >= 0 && s < $total) start.set(s)}
 
+  // Reset feature deviations and extras
   function resetFeatSelect() {
     featDeviate.set([])
     featExtra.set([])
   }
 
-  function updateFeatDeviate (checked: boolean, feat: string) {
+  // Update feature deviations and extras
+  function updateFeatDeviate (event: any, feat: string) {
+    const checked = (event.target as HTMLInputElement)?.checked;
     let fd = $featDeviate
     let fe = $featExtra
     if(!checked && $featSelect.includes(feat) && !fd.includes(feat)) {
@@ -154,8 +158,8 @@
         </button>
       {/if}
     </div>
-    <div class="{showMoreFilters ? 'block' : 'hidden'}">
-      <div class="flex flex-wrap items-start mt-4 md:space-x-6">
+    {#if showMoreFilters}
+      <div transition:fade class="flex flex-wrap items-start mt-4 md:space-x-6">
         <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-40">
           <p class="px-4 py-2 font-nokia-headline text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">Platform</p>
           <div class="p-2 border-b border-gray-200 dark:border-gray-600">
@@ -184,7 +188,7 @@
               {#each $featList as entry, i}
                 <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
                   <div class="flex items-center px-3">
-                    <input id="checkbox-{entry}" type="checkbox" name="list-checkbox" class="w-3 h-3 cursor-pointer" on:click={(e) => updateFeatDeviate(e.target.checked, entry)} checked={$featFilter.includes(entry) ? true : false}>
+                    <input id="checkbox-{entry}" type="checkbox" name="list-checkbox" class="w-3 h-3 cursor-pointer" on:click={(e) => updateFeatDeviate(e, entry)} checked={$featFilter.includes(entry) ? true : false}>
                     <label for="checkbox-{entry}" class="w-full cursor-pointer py-2 ms-2 text-sm {$featSelect.includes(entry) ? 'text-gray-900 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}">{entry}</label>
                   </div>
                 </li>
@@ -193,7 +197,7 @@
           </div>
         </div>
       </div>
-    </div>
+    {/if}
     <div class="flex items-center justify-end py-3 text-sm mt-2">
       {#if $total > 0}
         <p class="mr-2 text-gray-800 dark:text-gray-200">{$start + 1} - {$end > 1 ? $end : 0} of {$total}</p>
@@ -226,10 +230,12 @@
         <tbody>
           {#if $total > 0}
             {#each $paginated as item}
+              {@const path = markFilter((showPathPrefix ? item["path-with-prefix"] : item.path), searchInput)}
+              {@const type = markFilter(item.type, searchInput)}
               <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" on:click={() => pathDetail = item}>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item["is-state"]}</td>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight group"><div use:markRender={showPathPrefix ? item["path-with-prefix"] : item.path}></div></td>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div use:markRender={item.type}></td>
+                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight group"><div use:markRender={path}></div></td>
+                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div use:markRender={type}></td>
               </tr>
             {/each}
           {:else}

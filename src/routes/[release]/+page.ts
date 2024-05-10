@@ -1,71 +1,64 @@
 import { error } from '@sveltejs/kit'
 
-import type { PathDef, Releases } from '$lib/structure'
-
 import yaml from 'js-yaml'
 import rel from '$lib/releases.yaml?raw'
-const allReleases = yaml.load(rel) as Releases
+import type { PathDef, PayLoad, Platforms, Releases } from '$lib/structure'
+const releases = yaml.load(rel) as Releases
+const validVersions = [...new Set(Object.keys(releases))]
 
 export async function load({ url, fetch, params }) {
-  const pathUrl = url.origin
   const release = params.release
-  const validReleases = Object.keys(allReleases)
 
-  if(validReleases.includes(release)) {
-    let urlPath = ""
-    let modelTitle = "Nokia"
-    let model = "nokia"
-
-    if (url.searchParams.has("model")) {
-      model = url.searchParams.get("model")!.trim()
-    }
-
-    if (url.searchParams.has("path")) {
-      urlPath = url.searchParams.get("path")!.trim();
-    }
-    
-    if(model != "openconfig" && model != "nokia") {
-      throw error(404, "Unsupported model")
-    } else {
-      let allModels = [{title: "Nokia", path: `/${release}`}]
-      if(allReleases[release].openconfig) {
-        allModels.push({title: "OpenConfig", path: `/${release}/?model=openconfig`})
-      }
-
-      if(model === "openconfig") {
-        if(allReleases[release].openconfig) {
-          modelTitle = "OpenConfig"
-        } else {
-          throw error(404, "Unsupported model")
-        }
-      }
-
-      let payload = {
-        model: model, modelTitle: modelTitle,
-        urlPath: decodeURIComponent(urlPath),
-        release: release, allModels: allModels,
-        paths: [], features: {}
-      }
-
-      const yangPathUrl = `${pathUrl}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`;
-      const yangPaths = fetch(yangPathUrl).then(response => response.json())
-      .then((response: PathDef[]) => response.map((k: any) => ({...k, "is-state": ("is-state" in k ? "true" : "false")})))
-      .catch(error => {throw error(404, "Error fetching yang tree")})
-      
-      payload.paths = await yangPaths
-      
-      if(model === "nokia" && allReleases[release].features) {
-        const platFeats = fetch(`${pathUrl}/releases/${release}/features.txt`)
-        .then(response => response.text())
-        .then(response => yaml.load(response))
-        .catch(error => {throw error(404, "Error fetching platform features")});
-
-        payload.features = await platFeats
-      }
-      
-      return payload
-    }
-  } else {
-    throw error(404, "Unsupported Release");
+  if(!validVersions.includes(release)) {
+    throw error(404, "Unsupported release")
   }
+
+  const model = url.searchParams.get("model")?.trim() ?? "nokia";
+  if(model != "openconfig" && model != "nokia") {
+    throw error(404, "Unsupported model")
+  }
+
+  let allModels = [{title: "Nokia", path: `/${release}`}]
+  if(releases[release].openconfig) {
+    allModels.push({title: "OpenConfig", path: `/${release}/?model=openconfig`})
+  }
+
+  let modelTitle = "Nokia"
+  if(model === "openconfig") {
+    if(releases[release].openconfig) {
+      modelTitle = "OpenConfig"
+    } else {
+      throw error(404, "Unsupported model")
+    }
+  }
+
+  const urlPath = url.searchParams.get("path")?.trim() ?? "";
+  let payload: PayLoad = {
+    model: model, modelTitle: modelTitle,
+    urlPath: decodeURIComponent(urlPath),
+    release: release, allModels: allModels,
+    paths: [], features: {}
+  }
+
+  async function fetchPaths(version: string) {
+    const versionUrl = `${url.origin}/releases/${version}/${model !== "nokia" ? model + "/" : ""}paths.json`
+    return fetch(versionUrl)
+    .then((response: { json: () => any }) => response.json())
+    .then((response: PathDef[]) => response.map((k: any) => ({...k, "is-state": ("is-state" in k ? "true" : "false")})))
+    .catch((error: (arg0: number, arg1: string) => any) => { throw error(404, `Error fetching ${version} yang tree`) })
+  }
+
+  payload.paths = await fetchPaths(release)
+  
+  if(model === "nokia" && releases[release].features) {
+    const fetchUrl = `${url.origin}/releases/${release}/features.txt`
+    const platFeats = fetch(fetchUrl)
+    .then(response => response.text())
+    .then(response => yaml.load(response) as Platforms)
+    .catch(error => {throw error(404, "Error fetching platform features")});
+
+    payload.features = await platFeats
+  }
+  
+  return payload
 }

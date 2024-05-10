@@ -1,7 +1,8 @@
 
 <script lang="ts">
   import { onMount } from 'svelte';
-	import { derived, writable } from 'svelte/store';
+	import { derived, writable } from 'svelte/store'
+  import { fade } from 'svelte/transition'
 
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
@@ -93,15 +94,14 @@
 
   let compareFilter = derived([compareStore, yangPaths], ([$compareStore, $yangPaths]) => $yangPaths.filter(x => $compareStore === "" ? true : x.compare === $compareStore));
   let searchFilter = derived([searchStore, compareFilter], ([$searchStore, $compareFilter]) => $compareFilter.filter(x => searchBasedFilter(x, $searchStore)));
-  let highlightFilter = derived([searchStore, searchFilter],  ([$searchStore, $searchFilter]) => $searchFilter.map((x: any) => $searchStore != "" ? markFilter(x, $searchStore) : x));
 
-  let platformFilter = derived([featSelect, highlightFilter],  ([$featSelect, $highlightFilter]) => $featSelect?.length ? $highlightFilter.filter(x => featureBasedFilter(x, $featSelect)) : $searchFilter);
+  let platformFilter = derived([featSelect, searchFilter],  ([$featSelect, $searchFilter]) => $featSelect?.length ? $searchFilter.filter(x => featureBasedFilter(x, $featSelect)) : $searchFilter);
 
   let total = derived(platformFilter, ($platformFilter) => {start.set(0); return $platformFilter.length});
   let end = derived([start, total], ([$start, $total]) => ($start + count) <= $total ? ($start + count) : $total);
   let paginated = derived([start, end, platformFilter], ([$start, $end, $platformFilter]) => $platformFilter.slice($start, $end));
 
-  // UPDATE TABLE PAGINATION
+  // Update Table Pagination
   const updateTable = (s: number) => {if(s >= 0 && s < $total) start.set(s)}
 </script>
 
@@ -141,15 +141,15 @@
         Platform Filters
       </button>
     {/if}
-    <div class="mt-4 {showMoreFilters ? 'block' : 'hidden'}">
-      <div class="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-4">
+    {#if showMoreFilters}
+      <div transition:fade class="mt-4 grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-4">
         {#each $platList as entry}
           <button class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 hover:text-black dark:hover:bg-gray-900 dark:hover:text-white rounded-lg text-center 
             {entry === $platSelect ? 'text-black dark:text-white bg-gray-300 dark:bg-gray-900' : 'text-gray-400 dark:text-gray-400'}" on:click={() => { platformValue = entry }}>{entry}
           </button>
         {/each}
       </div>
-    </div>
+    {/if}
     <div class="flex items-center justify-end py-3 text-sm mt-2">
       {#if $total > 0}
         <p class="mr-2 text-gray-800 dark:text-gray-200">{$start + 1} - {$end > 1 ? $end : 0} of {$total}</p>
@@ -184,16 +184,19 @@
         <tbody>
           {#if $total > 0}
             {#each $paginated as item}
+            {@const path = markFilter(item.path, searchInput)}
+            {@const type = markFilter(item.type, searchInput)}
               <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:cursor-pointer" on:click={() => pathDetail = item}>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item.compare}</td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item["is-state"]}</td>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div use:markRender={item.path}></div></td>
+                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div use:markRender={path}></div></td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
                   {#if item.compare === "~"}
-                    <div class="inline-flex text-gray-400 dark:text-gray-500">from: <div class="ml-1" use:markRender={item.fromType}></div></div>
-                    <div use:markRender={item.type}></div>
+                    {@const fromType = markFilter(item.fromType || "", searchInput)}
+                    <div class="inline-flex text-gray-400 dark:text-gray-500">from: <div class="ml-1" use:markRender={fromType}></div></div>
+                    <div use:markRender={type}></div>
                   {:else}
-                    <div use:markRender={item.type}></div>
+                    <div use:markRender={type}></div>
                   {/if}
                 </td>
               </tr>

@@ -76,7 +76,7 @@
 					<svelte:self {modelName} {...entry} expanded={openContainer(entry)} urlPath={urlPath} />
 				{:else}
 					{@const trigger = isUrlPathLeaf(entry)}
-					{@const currentFocus = ($pathFocus.path === undefined ? getPageUrlPath() : $pathFocus.path)}
+					{@const currentFocus = ("path" in $pathFocus ? $pathFocus.path : getPageUrlPath())}
 					<button class="ml-2.5 px-2 py-0.5 rounded hover:underline 
 						hover:bg-gray-200 hover:text-black hover:dark:bg-gray-600 hover:dark:text-gray-200 
 						{currentFocus === entry.details.path ? 'bg-gray-200 dark:bg-gray-600 dark:text-gray-200' : 'text-blue-600 dark:text-blue-500'}" on:click={() => leafClick(entry.details)}>

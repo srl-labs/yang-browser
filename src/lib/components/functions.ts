@@ -42,26 +42,15 @@ export function searchBasedFilter(x: any, searchTerm: string, showPrefix: boolea
   return keys.every(x => searchStr.includes(x))
 }
 
-export function markFilter(x: any, term: string, showPrefix: boolean = false) {
-  const keys = term.split(/\s+/)
-  const pattern = new RegExp(keys.join('|'), 'g')
-  const markClass = "text-nokia-blue dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold"
-  const markTerm = (str: string) => str.replace(pattern, (match: any) => `<mark class="${markClass}">${match}</mark>`)
-  const markedPath = markTerm(showPrefix ? x["path-with-prefix"] : x.path)
-  const markedType = markTerm(x.type)
-  if("fromType" in x) {
-    const markedFromType = markTerm(x.fromType)
-    if(showPrefix) {
-      return {...x, "path-with-prefix": markedPath, type: markedType, fromType: markedFromType}
-    } else {
-      return {...x, path: markedPath, type: markedType, fromType: markedFromType}
-    }
+export function markFilter(target: string, term: string) {
+  if(term != "") {
+    const keys = term.split(/\s+/)
+    const pattern = new RegExp(keys.join('|'), 'g')
+    const markClass = "text-nokia-blue dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold"
+    const markTerm = (str: string) => str.replace(pattern, (match: any) => `<mark class="${markClass}">${match}</mark>`)
+    return markTerm(target)
   }
-  if(showPrefix) {
-    return {...x, "path-with-prefix": markedPath, type: markedType}
-  } else {
-    return {...x, path: markedPath, type: markedType}
-  }
+  return target
 }
 
 export function markRender (node: HTMLSpanElement, text:string) {

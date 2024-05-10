@@ -14,23 +14,10 @@ export async function load({ url, params, fetch }) {
     throw error(404, "Unsupported X..Y compare parameter")
   }
 
-  let x: string = sep[0]
-  let y: string = sep[1]
-  let urlPath: string = ""
-  let model: string = "nokia"
-
-  if(url.searchParams.has("x")) {
-    x = url.searchParams.get("x")!.trim()
-  }
-  if(url.searchParams.has("y")) {
-    y = url.searchParams.get("y")!.trim()
-  }
-  if(url.searchParams.has("model")) {
-    model = url.searchParams.get("model")!.trim()
-  }
-  if (url.searchParams.has("path")) {
-    urlPath = url.searchParams.get("path")!.trim();
-  }
+  const x = url.searchParams.get("x")?.trim() ?? sep[0];
+  const y = url.searchParams.get("x")?.trim() ?? sep[1];
+  const model = url.searchParams.get("model")?.trim() ?? "nokia";
+  const urlPath = url.searchParams.get("path")?.trim() ?? "";
 
   if(!validVersions.includes(`v${x}`)) {
     throw error(404, "Unsupported X release")
