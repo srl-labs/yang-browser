@@ -36,6 +36,14 @@ export function extractFeatures (data: Platforms): [PlatformFeatures, string[]] 
   return [platforms, uniqueFeatures]
 }
 
+export function escapeText(text: string) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+}
+
+export function removeKeyDefault(text: string) {
+  return text.replaceAll("=*", "")
+}
+
 export function searchBasedFilter(x: any, searchTerm: string, showPrefix: boolean = false) {
   const keys = searchTerm.split(/\s+/)
   const searchStr = `${showPrefix ? x["path-with-prefix"] : x.path};${x.type}`
@@ -45,7 +53,7 @@ export function searchBasedFilter(x: any, searchTerm: string, showPrefix: boolea
 export function markFilter(target: string, term: string) {
   if(term != "") {
     const keys = term.split(/\s+/)
-    const pattern = new RegExp(keys.join('|'), 'g')
+    const pattern = (new RegExp(escapeText(keys.join('|')), 'g'))
     const markClass = "text-nokia-blue dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold"
     const markTerm = (str: string) => str.replace(pattern, (match: any) => `<mark class="${markClass}">${match}</mark>`)
     return markTerm(target)

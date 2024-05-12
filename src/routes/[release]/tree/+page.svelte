@@ -4,7 +4,7 @@
   import type { PathDef, TreePayLoad } from '$lib/structure';
   import { pathFocus } from '$lib/components/sharedStore';
 
-  import { closeSidebar } from '$lib/components/functions'
+  import { closeSidebar, removeKeyDefault } from '$lib/components/functions'
 
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
@@ -13,7 +13,7 @@
 
 	export let data: TreePayLoad;
   let {urlPath, model, modelTitle, release, allModels, paths} = data;
-  let yangTreeUrlPath = urlPath != "" ? (urlPath.split("/").filter(x => x != "")) : []
+  let yangTreeUrlPath = urlPath != "" ? (removeKeyDefault(urlPath).split("/").filter(x => x != "")) : []
 
   // DEFAULTS
   pathFocus.set({});
@@ -22,7 +22,6 @@
     pathDetail = value;
   });
   
-
   // TREE BUILDER
   class TreeNode {
     name: string;
@@ -53,7 +52,7 @@
       let currentNode = root;
 
       let xpath = entry["path"];
-      let clean = xpath.replaceAll("=*", "");
+      let clean = removeKeyDefault(xpath);
       let segments = clean.split("/").slice(1);
       let segLen = segments.length;
 
