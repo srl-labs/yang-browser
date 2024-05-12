@@ -13,3 +13,5 @@ vite.config.ts.timestamp-*
 **/*.clab.yml.bak
 
 tmp
+
+srl-*-yang-models
