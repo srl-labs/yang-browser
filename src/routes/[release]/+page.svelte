@@ -230,8 +230,8 @@
         <tbody>
           {#if $total > 0}
             {#each $paginated as item}
-              {@const path = markFilter((showPathPrefix ? item["path-with-prefix"] : item.path), searchInput)}
-              {@const type = markFilter(item.type, searchInput)}
+              {@const path = markFilter((showPathPrefix ? item["path-with-prefix"] : item.path), $searchStore)}
+              {@const type = markFilter(item.type, $searchStore)}
               <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" on:click={() => pathDetail = item}>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item["is-state"]}</td>
                 <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight group"><div use:markRender={path}></div></td>

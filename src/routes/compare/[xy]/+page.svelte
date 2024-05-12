@@ -7,6 +7,8 @@
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import Popup from '$lib/components/Popup.svelte';
+  import Loading from '$lib/components/Loading.svelte';
+	import ComparePopup from '$lib/components/ComparePopup.svelte';
   import { extractFeatures, searchBasedFilter, markFilter, markRender, featureBasedFilter } from '$lib/components/functions';
 
   // WORKER POST <- START
@@ -110,121 +112,142 @@
 	<title>Nokia SR Linux Compare {x} to {y} Yang Model</title>
 </svelte:head>
 
-
-<Header model={model} modelTitle={"compare"} release={`${x};${y}`} home={true} />
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[80px]">
-  <div class="px-6 pt-6 container mx-auto">
-    <div class="py-2 font-fira">
-      <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full text-[13px] px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
-    </div>
-    <div class="pt-2 pb-4 grid gap-2 grid-cols-2 md:flex md:items-center md:space-x-2 text-gray-800 dark:text-gray-300 text-sm">
-      {#each compareValues as entry}
-        <div class="flex items-center">
-          <input id="compare-radio-{entry.label}" type="radio" class="w-4 h-4" bind:group={compareInput} value="{entry.value}">
-          <label for="compare-radio-{entry.label}" class="ml-2 cursor-pointer">{entry.label}</label>
-        </div>
-      {/each}
-    </div>
-    {#if uniqueFeatures?.length}
-      <button class="flex items-center px-3 py-1 w-fit rounded-lg text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600 dark:text-white" on:click={() => showMoreFilters = !showMoreFilters}>
-        {#if !showMoreFilters}
-          <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-          </svg>
-        {:else}
-          <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
-          </svg>
-        {/if}
-        Platform Filters
-      </button>
-    {/if}
-    {#if showMoreFilters}
-      <div transition:fade class="mt-4 grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-4">
-        {#each $platList as entry}
-          <button class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 hover:text-black dark:hover:bg-gray-900 dark:hover:text-white rounded-lg text-center 
-            {entry === $platSelect ? 'text-black dark:text-white bg-gray-300 dark:bg-gray-900' : 'text-gray-400 dark:text-gray-400'}" on:click={() => { platformValue = entry }}>{entry}
-          </button>
+{#if !mountComplete}
+  <Loading/>
+{:else if $total > 0}
+  <Header model={model} modelTitle={"compare"} release={`${x};${y}`} home={true} />
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[80px]">
+    <div class="px-6 pt-6 container mx-auto">
+      <div class="py-2 font-fira">
+        <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full text-[13px] px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
+      </div>
+      <div class="pt-2 pb-4 grid gap-2 grid-cols-2 md:flex md:items-center md:space-x-2 text-gray-800 dark:text-gray-300 text-sm">
+        {#each compareValues as entry}
+          <div class="flex items-center">
+            <input id="compare-radio-{entry.label}" type="radio" class="w-4 h-4" bind:group={compareInput} value="{entry.value}">
+            <label for="compare-radio-{entry.label}" class="ml-2 cursor-pointer">{entry.label}</label>
+          </div>
         {/each}
       </div>
-    {/if}
-    <div class="flex items-center justify-end py-3 text-sm mt-2">
-      {#if $total > 0}
-        <p class="mr-2 text-gray-800 dark:text-gray-200">{$start + 1} - {$end > 1 ? $end : 0} of {$total}</p>
-        <button class="ml-2 {$start == 0 ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$start == 0}" on:click={() => updateTable($start - count)}>
-          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd"/>
-          </svg>
-        </button>
-        <button class="ml-2 {$end == $total ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$end == $total}" on:click={() => updateTable($end)}>
-          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/>
-          </svg>
-        </button>
+      <div class="flex items-center space-x-2">
+        {#if uniqueFeatures?.length}
+          <button class="flex items-center px-3 py-1 w-fit rounded-lg text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600 dark:text-white" on:click={() => showMoreFilters = !showMoreFilters}>
+            {#if !showMoreFilters}
+              <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+              </svg>
+            {:else}
+              <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+              </svg>
+            {/if}
+            Platform Filters
+          </button>
+        {/if}
+        <span class="dropdown">
+          <a href="https://github.com/nokia/srlinux-yang-models/compare/v{x}..v{y}" target="_blank" class="dropdown-button font-nokia-headline-light px-2.5 py-1 rounded-lg text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white inline-flex items-center align-bottom">
+            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" d="M12.006 2a9.847 9.847 0 0 0-6.484 2.44 10.32 10.32 0 0 0-3.393 6.17 10.48 10.48 0 0 0 1.317 6.955 10.045 10.045 0 0 0 5.4 4.418c.504.095.683-.223.683-.494 0-.245-.01-1.052-.014-1.908-2.78.62-3.366-1.21-3.366-1.21a2.711 2.711 0 0 0-1.11-1.5c-.907-.637.07-.621.07-.621.317.044.62.163.885.346.266.183.487.426.647.71.135.253.318.476.538.655a2.079 2.079 0 0 0 2.37.196c.045-.52.27-1.006.635-1.37-2.219-.259-4.554-1.138-4.554-5.07a4.022 4.022 0 0 1 1.031-2.75 3.77 3.77 0 0 1 .096-2.713s.839-.275 2.749 1.05a9.26 9.26 0 0 1 5.004 0c1.906-1.325 2.74-1.05 2.74-1.05.37.858.406 1.828.101 2.713a4.017 4.017 0 0 1 1.029 2.75c0 3.939-2.339 4.805-4.564 5.058a2.471 2.471 0 0 1 .679 1.897c0 1.372-.012 2.477-.012 2.814 0 .272.18.592.687.492a10.05 10.05 0 0 0 5.388-4.421 10.473 10.473 0 0 0 1.313-6.948 10.32 10.32 0 0 0-3.39-6.165A9.847 9.847 0 0 0 12.007 2Z" clip-rule="evenodd"/>
+            </svg>
+            <span class="ml-0.5">YANG diff</span>
+          </a>
+          <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+            <p class="my-2 max-w-[300px] px-3 text-xs">
+              Beyond the differences shown below, there might be changes in descriptions, type constraints, 
+              or other yang statements which can be viewed from this link.
+            </p>
+          </div>
+        </span>
+      </div>
+      {#if showMoreFilters}
+        <div transition:fade class="mt-4 grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-4">
+          {#each $platList as entry}
+            <button class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 hover:text-black dark:hover:bg-gray-900 dark:hover:text-white rounded-lg text-center 
+              {entry === $platSelect ? 'text-black dark:text-white bg-gray-300 dark:bg-gray-900' : 'text-gray-400 dark:text-gray-400'}" on:click={() => { platformValue = entry }}>{entry}
+            </button>
+          {/each}
+        </div>
       {/if}
-    </div>
-    <div class="overflow-x-auto rounded-t-lg max-w-full mt-2">
-      <table class="text-left w-full text-xs">
-        <colgroup>
-          <col span="1" class="w-[3%]">
-          <col span="1" class="w-[5%]">
-          <col span="1" class="w-[72%]">
-          <col span="1" class="w-[20%]">
-        </colgroup>
-        <thead class="text-sm font-nokia-headline text-gray-800 dark:text-gray-300 bg-gray-300 dark:bg-gray-700">
-          <tr>
-            <th scope="col" class="px-3 py-2"></th>
-            <th scope="col" class="px-3 py-2">State</th>
-            <th scope="col" class="px-3 py-2">Path</th>
-            <th scope="col" class="px-3 py-2">Type</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#if $total > 0}
-            {#each $paginated as item}
-            {@const path = markFilter(item.path, searchInput)}
-            {@const type = markFilter(item.type, searchInput)}
-              <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:cursor-pointer" on:click={() => pathDetail = item}>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item.compare}</td>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item["is-state"]}</td>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div use:markRender={path}></div></td>
-                <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
-                  {#if item.compare === "~"}
-                    {@const fromType = markFilter(item.fromType || "", searchInput)}
-                    <div class="inline-flex text-gray-400 dark:text-gray-500">from: <div class="ml-1" use:markRender={fromType}></div></div>
-                    <div use:markRender={type}></div>
-                  {:else}
-                    <div use:markRender={type}></div>
-                  {/if}
-                </td>
-              </tr>
-            {/each}
-          {:else}
-            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-              <td colspan="4" class="px-3 py-1.5 font-fira text-[13px] text-gray-400 dark:text-gray-500 text-center">{mountComplete ? 'No results found' : 'Yang compare under process...'}</td>
+      <div class="flex items-center justify-end py-3 text-sm mt-2">
+        {#if $total > 0}
+          <p class="mr-2 text-gray-800 dark:text-gray-200">{$start + 1} - {$end > 1 ? $end : 0} of {$total}</p>
+          <button class="ml-2 {$start == 0 ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$start == 0}" on:click={() => updateTable($start - count)}>
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <button class="ml-2 {$end == $total ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$end == $total}" on:click={() => updateTable($end)}>
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        {/if}
+      </div>
+      <div class="overflow-x-auto rounded-t-lg max-w-full mt-2">
+        <table class="text-left w-full text-xs">
+          <colgroup>
+            <col span="1" class="w-[3%]">
+            <col span="1" class="w-[5%]">
+            <col span="1" class="w-[72%]">
+            <col span="1" class="w-[20%]">
+          </colgroup>
+          <thead class="text-sm font-nokia-headline text-gray-800 dark:text-gray-300 bg-gray-300 dark:bg-gray-700">
+            <tr>
+              <th scope="col" class="px-3 py-2"></th>
+              <th scope="col" class="px-3 py-2">State</th>
+              <th scope="col" class="px-3 py-2">Path</th>
+              <th scope="col" class="px-3 py-2">Type</th>
             </tr>
-          {/if}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {#if $total > 0}
+              {#each $paginated as item}
+              {@const path = markFilter(item.path, $searchStore)}
+              {@const type = markFilter(item.type, $searchStore)}
+                <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:cursor-pointer" on:click={() => pathDetail = item}>
+                  <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item.compare}</td>
+                  <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item["is-state"]}</td>
+                  <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div use:markRender={path}></div></td>
+                  <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">
+                    {#if item.compare === "~"}
+                      {@const fromType = markFilter(item.fromType || "", searchInput)}
+                      <div class="inline-flex text-gray-400 dark:text-gray-500">from: <div class="ml-1" use:markRender={fromType}></div></div>
+                      <div use:markRender={type}></div>
+                    {:else}
+                      <div use:markRender={type}></div>
+                    {/if}
+                  </td>
+                </tr>
+              {/each}
+            {:else}
+              <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <td colspan="4" class="px-3 py-1.5 font-fira text-[13px] text-gray-400 dark:text-gray-500 text-center">{mountComplete ? 'No results found' : 'Yang compare under process...'}</td>
+              </tr>
+            {/if}
+          </tbody>
+        </table>
+      </div>
+      <div class="flex items-center justify-end py-3 text-sm mt-2">
+        {#if $total > 0}
+          <p class="mr-2 text-gray-800 dark:text-gray-200">{$start + 1} - {$end > 1 ? $end : 0} of {$total}</p>
+          <button class="ml-2 {$start == 0 ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$start == 0}" on:click={() => updateTable($start - count)}>
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <button class="ml-2 {$end == $total ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$end == $total}" on:click={() => updateTable($end)}>
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        {/if}
+      </div>
+      <Popup pathDetail={pathDetail}/>
     </div>
-    <div class="flex items-center justify-end py-3 text-sm mt-2">
-      {#if $total > 0}
-        <p class="mr-2 text-gray-800 dark:text-gray-200">{$start + 1} - {$end > 1 ? $end : 0} of {$total}</p>
-        <button class="ml-2 {$start == 0 ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$start == 0}" on:click={() => updateTable($start - count)}>
-          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd"/>
-          </svg>
-        </button>
-        <button class="ml-2 {$end == $total ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$end == $total}" on:click={() => updateTable($end)}>
-          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/>
-          </svg>
-        </button>
-      {/if}
-    </div>
-    <Popup pathDetail={pathDetail}/>
+    <Footer home={false}/>
   </div>
-  <Footer home={false}/>
-</div>
+{:else}
+  <ComparePopup {x} {y}/>
+{/if}
