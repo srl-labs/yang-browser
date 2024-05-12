@@ -41,17 +41,20 @@
     <div class="text-center">
       {#if modelTitle === "compare"}
         {@const [x, y] = release.split(";")}
-        {@const title = model === "openconfig" ? "OpenConfig" : ""}
         <p class="text-nokia-old-blue dark:text-white font-light text-lg lg:text-2xl">Yang Compare</p>
-        <div class="inline-flex text-gray-800 text-xs lg:text-sm dark:text-white">
-          <div class="mr-1">SR Linux <span class="font-nokia-headline">v{x}</span> to</div>
-          <div class="dropdown">
-            <button class="dropdown-button font-nokia-headline underline">v{y}</button>
-            <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
-              <p class="my-2 max-w-[200px] px-1 text-xs">
-                Changes and filters shown are with respect to this release
-              </p>
-            </div>
+        <div class="text-gray-800 text-xs lg:text-sm dark:text-white">
+          <div class="flex flex-wrap items-center justify-center space-x-1">
+            <span>SR Linux {model === "openconfig" ? 'OpenConfig ' : ''}</span>
+            <span class="font-nokia-headline">v{x}</span>
+            <span>to</span>
+            <span class="dropdown">
+              <button class="dropdown-button font-nokia-headline underline">v{y}</button>
+              <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+                <p class="my-2 max-w-[200px] px-1 text-xs">
+                  Changes and filters shown are with respect to this release
+                </p>
+              </div>
+            </span>
           </div>
         </div>
       {:else}
