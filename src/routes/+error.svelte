@@ -8,7 +8,7 @@
 			<div class="text-white bg-red-500 px-5 py-3 rounded-t flex items-center">
         <a href="../" class="flex mr-4"><img src="/images/navbar-logo.png" alt="Logo" width="25"/></a>
 				<div>
-          <p class="text-xs">SR Linux Yang Models</p>
+          <p class="text-xs">SR Linux YANG Models</p>
           <p>Error {$page.status}</p>
         </div>
 			</div>
