@@ -43,7 +43,7 @@ export async function load({ url, params, fetch }) {
     const versionUrl = `${url.origin}/releases/v${version}/${model !== "nokia" ? model + "/" : ""}paths.json`
     return fetch(versionUrl)
     .then((response: { json: () => any }) => response.json())
-    .then((response: PathDef[]) => response.map((k: any) => ({...k, release: version, compareTo: y, "is-state": ("is-state" in k ? "true" : "false")})))
+    .then((response: PathDef[]) => response.map((k: any) => ({...k, release: version, compareTo: y, "is-state": ("is-state" in k ? "R" : "RW")})))
     .catch((error: (arg0: number, arg1: string) => any) => { throw error(404, `Error fetching ${version} yang tree`) })
   }
 

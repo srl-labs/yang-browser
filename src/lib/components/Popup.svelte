@@ -56,7 +56,7 @@
   <div id="popup" class="fixed p-4 inset-0 z-50 items-center { Object.keys(pathDetail).length !== 0  ? '' : 'hidden'}" on:click|stopPropagation={closeSidebarPopup}>
     <div class="fixed inset-0 bg-gray-800 bg-opacity-75 transition-opacity"></div>
     <div id="popupContent" class="flex min-h-full justify-center items-center">
-      <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-700 text-left shadow-xl transition-all sm:my-8 max-w-xl">
+      <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-700 text-left shadow-xl transition-all sm:my-8 max-w-4xl">
         <div id="popupHeader" class="flex items-center justify-between px-4 py-2 rounded-t bg-gray-200 dark:bg-gray-600 border-b border-gray-200 dark:border-gray-600">
           <div class="flex items-center">
             <span class="text-lg text-gray-900 dark:text-gray-300">Path Details</span>
@@ -92,8 +92,8 @@
                   </tr>
                 {/if}
                 <tr>
-                  <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">State:</th>
-                  <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{"is-state" in pathDetail ? pathDetail["is-state"] : false}</td>
+                  <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Data:</th>
+                  <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{pathDetail["is-state"] === "RW" ? "config" : "state"}</td>
                 </tr>
                 <tr class="border-t border-gray-200 dark:border-gray-600">
                   <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Type:</th>

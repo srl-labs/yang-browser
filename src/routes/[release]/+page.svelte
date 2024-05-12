@@ -18,8 +18,8 @@
   let showMoreFilters = false;
   const stateValues = [
 		{ label: "All", value: "" },
-		{ label: "State", value: "true" },
-		{ label: "Config", value: "false" }
+		{ label: "State", value: "R" },
+		{ label: "Config", value: "RW" }
 	]
 
   // Writable Stores
@@ -222,7 +222,7 @@
         </colgroup>
         <thead class="text-sm font-nokia-headline text-gray-800 dark:text-gray-300 bg-gray-300 dark:bg-gray-700">
           <tr>
-            <th scope="col" class="px-3 py-2">State</th>
+            <th scope="col" class="px-3 py-2"></th>
             <th scope="col" class="px-3 py-2">Path</th>
             <th scope="col" class="px-3 py-2">Type</th>
           </tr>

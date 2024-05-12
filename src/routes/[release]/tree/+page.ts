@@ -47,7 +47,7 @@ export async function load({ url, fetch, params }) {
 
   let yangPathUrl = `${url.origin}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`;
   let yangPaths = fetch(yangPathUrl).then(response => response.json())
-  .then((response: PathDef[]) => response.map((k: any) => ({...k, "is-state": ("is-state" in k ? "true" : "false")})))
+  .then((response: PathDef[]) => response.map((k: any) => ({...k, "is-state": ("is-state" in k ? "R" : "RW")})))
   .catch(error => {throw error(404, "Error fetching yang tree")})
   
   payload.paths = await yangPaths
