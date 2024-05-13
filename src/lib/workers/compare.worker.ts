@@ -22,10 +22,11 @@ onmessage = async (event: MessageEvent<ComparePostMessage>) => {
 
     if (pathResponse.ok) {
       const pathJson = await pathResponse.json()
+      const addDefaults = pathJson.map((k: any) => ({...k, release: release, compareTo: y, "is-state": ("is-state" in k ? "R" : "RW")}))
       if(release === x) {
-        xpaths = pathJson.map((k: any) => ({...k, "is-state": ("is-state" in k ? "R" : "RW")}))
+        xpaths = addDefaults
       } else if(release === y) {
-        ypaths = pathJson.map((k: any) => ({...k, "is-state": ("is-state" in k ? "R" : "RW")}))
+        ypaths = addDefaults
       }
     } else {
       throw error(404, `Error fetching ${release} yang tree`)
