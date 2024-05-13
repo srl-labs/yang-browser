@@ -20,10 +20,10 @@ export async function load({ url, params }) {
   const urlPath = url.searchParams.get("path")?.trim() ?? "";
 
   if(!validVersions.includes(`v${x}`)) {
-    throw error(404, "Unsupported X release")
+    throw error(404, `Unsupported X (${x}) release`)
   }
   if(!validVersions.includes(`v${y}`)) {
-    throw error(404, "Unsupported Y release")
+    throw error(404, `Unsupported Y (${y}) release`)
   }
   if(x === y) {
     throw error(404, "X & Y releases cannot be the same")
