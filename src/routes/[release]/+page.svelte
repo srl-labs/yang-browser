@@ -21,11 +21,13 @@
   let paths: PathDef[] = []
   let platforms: PlatformFeatures = {}
   let uniqueFeatures: string[] = []
+  let platOption = ""
 
   const onWorkerMessage = (event: MessageEvent<FetchResponseMessage>) => {
     paths = event.data.paths;
     platforms = event.data.platforms;
     uniqueFeatures = event.data.uniqueFeatures;
+    platOption = "7220-IXR-D2L";
     mountComplete = true
   };
 
@@ -76,7 +78,6 @@
   let platFind = writable("");
   $: platFind.set(platformSearch.trim().toUpperCase());
 
-  let platOption = "7220-IXR-D2L"
   let platSelect = writable("");
   $: platSelect.set(platOption)
 

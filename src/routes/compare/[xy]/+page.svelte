@@ -22,11 +22,13 @@
   let diff: DiffResponseMessage[] = []
   let platforms: PlatformFeatures = {}
   let uniqueFeatures: string[] = []
+  let platformValue = "";
 
   const onWorkerMessage = (event: MessageEvent<CompareResponseMessage>) => {
     diff = event.data.diff;
     platforms = event.data.platforms;
     uniqueFeatures = event.data.uniqueFeatures;
+    platformValue = "7220-IXR-D2L";
     mountComplete = true
     //console.log('Worker response received');
   };
@@ -75,7 +77,6 @@
   let platFind = writable("");
   $: platFind.set(platformSearch.trim().toUpperCase());
 
-  let platformValue = "7220-IXR-D2L";
   let platSelect = writable("");
   $: platSelect.set(platformValue);
 
