@@ -5,7 +5,6 @@
   import { closeSidebar, markRender } from '$lib/components/functions';
 
   export let pathDetail: any = {}
-
   const treePopup = () => $page.url.pathname.includes("tree") ? true : false
 
   function closePopup() {
