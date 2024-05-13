@@ -6,9 +6,9 @@
 
 	export let expanded = true;
 	export let modelName: string;
-	export let name: string;
-	export let children: any[];
-	export let details: string;
+	export let name: string = "";
+	export let children: any[] = [];
+	export let details: string = "";
 	export let urlPath: string[];
 	const dump = details;
 

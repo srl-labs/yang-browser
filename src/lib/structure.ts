@@ -17,9 +17,7 @@ export interface PayLoad {
   modelTitle: string, 
   release: string,
   allModels: Model[],
-  paths: PathDef[],
   urlPath: string,
-  features: Platforms
 }
 
 export interface Platforms {
@@ -38,6 +36,16 @@ export interface TreePayLoad {
   release: string,
   allModels: Model[],
   paths: string[],
+}
+
+export interface ComparePayLoad {
+  urlPath: string,
+  x: string,
+  y: string,
+  model: string,
+  xpaths: PathDef[],
+  ypaths: PathDef[],
+  yfeatures: Platforms
 }
 
 export interface PathDef {
