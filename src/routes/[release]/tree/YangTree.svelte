@@ -53,7 +53,7 @@
 {#if modelName == name}
 	<p class="flex items-center dark:text-gray-300 py-0.5">Tree Browser</p>
 {:else}
-	<button class="flex items-center py-0.5 {expanded ? 'text-gray-400 dark:text-gray-500': 'dark:text-gray-300'} hover:text-green-600 hover:dark:text-green-600" on:click={toggle}>
+	<button class="flex items-center text-left py-0.5 {expanded ? 'text-gray-400 dark:text-gray-500': 'dark:text-gray-300'} hover:text-green-600 hover:dark:text-green-600" on:click={toggle}>
 		<span class="flex pr-1">
 			<!--minus-circle-->
 			<svg class="w-5 h-5 {expanded ? 'minus-circle-active': 'hidden'}" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
