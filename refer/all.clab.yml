@@ -19,8 +19,6 @@ topology:
       type: ixrd4
     7220-IXR-D5:
       type: ixrd5
-    7220-IXR-D5T:
-      type: ixrd5t
     7220-IXR-H2:
       type: ixrh2
     7220-IXR-H3:
