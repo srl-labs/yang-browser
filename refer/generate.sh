@@ -14,7 +14,13 @@ extract_pyang_features() {
   features_mod="srl_nokia-features"
   # read the 7220-IXR-D2L.json file and extract comma separated features
   # the paths are relative to the ./refer/srl-$SRL_VER-yang-models folder
-  fs=$(cat ../../tmp/7220-IXR-D2L.json | jq -r 'join(",")')
+  # if sr linux release is > 24 than use the simplified feature list
+  if [ $(echo $SRL_VER | cut -d'.' -f1) -ge 24 ]; then
+    fs=$(cat ../../tmp/7220-IXR-D2L.json | jq -r 'join(",")')
+  else
+    fs=$(jq --argjson unusedFeatures "$(cat ../unused-features.json)" 'map(select(. as $in | any($unusedFeatures[]; . == $in) | not))' ../../tmp/7220-IXR-D2L.json | jq -r 'join(",")')
+  fi
+
   echo ${features_mod}:${fs}
 }
 
@@ -140,7 +146,7 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
     elif [ "$MODEL_TYPE" = "openconfig" ]; then
       cat $SCRIPT_DIR/oc-jstree-to-bulma.html tree.html >tmp.html
     fi
-    cat $SCRIPT_DIR/jstree-to-bulma.html tree.html >tmp.html
+
     mv tmp.html tree.html
 
     # Clearing unnecessary variables

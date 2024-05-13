@@ -35,7 +35,7 @@ set -e
 # export SRL_VERSION that is used by the containerlab to spin up the needed version of srl container
 export SRL_VERSION
 
-# sudo -E containerlab deploy -c -t ./refer/all.clab.yml
+sudo -E containerlab deploy -c -t ./refer/all.clab.yml
 
 # remove all json files that might be there from previous extraction
 rm -f ./tmp/*.json
