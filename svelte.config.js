@@ -12,7 +12,12 @@ const config = {
 		adapter: adapter({
 			routes: {
 				include: ['/*'],
-				exclude: ['<all>']
+				exclude: [
+					"/_app/*",
+					"/fonts/*",
+					"/images/*",
+					"/releases/*",
+				]
 			}
 		})
 	}
