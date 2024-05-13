@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 
 import yaml from 'js-yaml'
 import rel from '$lib/releases.yaml?raw'
-import type { PathDef, Releases, TreePayLoad } from '$lib/structure'
+import type { Releases } from '$lib/structure'
 const releases = yaml.load(rel) as Releases
 const validVersions = [...new Set(Object.keys(releases))]
 
@@ -35,21 +35,12 @@ export async function load({ url, fetch, params }) {
   const urlPath = url.searchParams.get("path")?.trim() ?? "";
   const crossLaunched = url.searchParams.get("from")?.trim() === "pb" ? true : false ?? "";
 
-  let payload: TreePayLoad = {
-    urlPath: decodeURIComponent(urlPath),
-    crossLaunched: crossLaunched, 
-    model: model,
+  return {
+    model: model, 
+    release: release, 
+    allModels: allModels, 
     modelTitle: modelTitle,
-    release: release,
-    allModels: allModels,
-    paths: []
+    crossLaunched: crossLaunched, 
+    urlPath: decodeURIComponent(urlPath)
   }
-
-  let yangPathUrl = `${url.origin}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`;
-  let yangPaths = fetch(yangPathUrl).then(response => response.json())
-  .then((response: PathDef[]) => response.map((k: any) => ({...k, "is-state": ("is-state" in k ? "R" : "RW")})))
-  .catch(error => {throw error(404, "Error fetching yang tree")})
-  
-  payload.paths = await yangPaths
-  return payload
 }

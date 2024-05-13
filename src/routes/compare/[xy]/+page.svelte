@@ -11,14 +11,16 @@
 	import ComparePopup from '$lib/components/ComparePopup.svelte';
   import { extractFeatures, searchBasedFilter, markFilter, markRender, featureBasedFilter } from '$lib/components/functions';
 
+
+
   // WORKER POST <- START
-	import type { PathDef, Platforms } from '$lib/structure.js';
-  import type { PostMessage, ResponseMessage } from "$lib/workers/structure";
+	import type { ComparePayLoad, PathDef } from '$lib/structure';
+  import type { ComparePostMessage, CompareResponseMessage } from "$lib/workers/structure";
 
   let mountComplete = false;
-  let diff: ResponseMessage[] = [] // IMPORTANT
+  let diff: CompareResponseMessage[] = [] // IMPORTANT
 
-  const onWorkerMessage = (event: MessageEvent<ResponseMessage[]>) => {
+  const onWorkerMessage = (event: MessageEvent<CompareResponseMessage[]>) => {
     diff = event.data;
     mountComplete = true
     //console.log('Worker response received');
@@ -30,24 +32,16 @@
     const CompareWorker = await import('$lib/workers/compare.worker?worker');
     compareWorker = new CompareWorker.default();
 
-    const message: PostMessage = { x, y }
+    const message: ComparePostMessage = { x, y }
     compareWorker.postMessage(message);
 
     compareWorker.onmessage = onWorkerMessage;
   }
   // WORKER POST <- END
 
-  interface PageData {
-    urlPath: string,
-    x: string,
-    y: string,
-    model: string,
-    xpaths: PathDef[],
-    ypaths: PathDef[],
-    yfeatures: Platforms
-  }
 
-  export let data: PageData
+
+  export let data: ComparePayLoad
   const {urlPath, x, y, model, xpaths, ypaths, yfeatures} = data
   let [platforms, uniqueFeatures] = extractFeatures(yfeatures);
 
@@ -82,7 +76,7 @@
   $: platSelect.set(platformValue);
 
   let start = writable(0);
-  let yangPaths = writable<ResponseMessage[]>([]);
+  let yangPaths = writable<CompareResponseMessage[]>([]);
   $: yangPaths.set(diff)
 
   let platStore = writable<string[]>([]);

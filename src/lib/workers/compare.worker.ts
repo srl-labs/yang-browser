@@ -1,7 +1,7 @@
 import type { PathDef } from "$lib/structure";
-import type { PostMessage, ResponseMessage } from "$lib/workers/structure";
+import type { ComparePostMessage, CompareResponseMessage } from "$lib/workers/structure";
 
-onmessage = (event: MessageEvent<PostMessage>) => {
+onmessage = (event: MessageEvent<ComparePostMessage>) => {
   const { x, y } = event.data;
 
   const xOnlyPath = x.map((k :PathDef) => k.path)
@@ -9,9 +9,9 @@ onmessage = (event: MessageEvent<PostMessage>) => {
 
   const getPathObj = (list: PathDef[], path: string) => list.filter((k :PathDef) => k.path === path)
 
-  const typeChange: ResponseMessage[] = []
-  const removedFromX: ResponseMessage[] = []
-  const newInY: ResponseMessage[] = []
+  const typeChange: CompareResponseMessage[] = []
+  const removedFromX: CompareResponseMessage[] = []
+  const newInY: CompareResponseMessage[] = []
 
   const setX = new Set(xOnlyPath)
   const setY = new Set(yOnlyPath)
