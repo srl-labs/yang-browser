@@ -12,10 +12,9 @@
 # tree and jstree output for a featureset of D2L
 extract_pyang_features() {
   features_mod="srl_nokia-features"
-  # read the 7220-IXR-D2L.json file and remove features from it found in unused-features.json
-  # this is needed since the info command provides all features, even those that do not exist in yang features.
+  # read the 7220-IXR-D2L.json file and extract comma separated features
   # the paths are relative to the ./refer/srl-$SRL_VER-yang-models folder
-  fs=$(jq --argjson unusedFeatures "$(cat ../unused-features.json)" 'map(select(. as $in | any($unusedFeatures[]; . == $in) | not))' ../../7220-IXR-D2L.json | jq -r 'join(",")')
+  fs=$(cat ../../tmp/7220-IXR-D2L.json | jq -r 'join(",")')
   echo ${features_mod}:${fs}
 }
 
@@ -74,13 +73,13 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
   cd $YANG_DIR_NAME
   PROCEED=0
   if [ "$MODEL_TYPE" = "srl_nokia" ]; then
-    mkdir -p ../../release/$SRL_VER_CYCLE
-    OUT_DIR=$(realpath ../../release/$SRL_VER_CYCLE)
+    mkdir -p ../../static/releases/$SRL_VER_CYCLE
+    OUT_DIR=$(realpath ../../static/releases/$SRL_VER_CYCLE)
     PROCEED=1
   elif [ "$MODEL_TYPE" = "openconfig" ]; then
     if [ -d "./openconfig" ]; then
-      mkdir -p ../../release/$SRL_VER_CYCLE/openconfig
-      OUT_DIR=$(realpath ../../release/$SRL_VER_CYCLE/openconfig)
+      mkdir -p ../../static/releases/$SRL_VER_CYCLE/openconfig
+      OUT_DIR=$(realpath ../../static/releases/$SRL_VER_CYCLE/openconfig)
       PROCEED=1
     else
       echo
