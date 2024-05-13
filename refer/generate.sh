@@ -33,7 +33,7 @@ if [ "$MODEL_TYPE" = "srl_nokia" ]; then
   GNMIC_ADDONS="--dir ietf/ --dir openconfig"
 elif [ "$MODEL_TYPE" = "openconfig" ]; then
   MODEL_PATH="openconfig"
-  GNMIC_ADDONS="--dir ietf/ --dir iana/"
+  GNMIC_ADDONS="--dir ietf/ --dir iana/ --exclude ietf-interfaces"
 else
   echo "Error: Model must be specified (srl_nokia | openconfig)."
   exit 1
