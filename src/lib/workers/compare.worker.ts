@@ -1,42 +1,87 @@
-import type { PathDef } from "$lib/structure";
-import type { ComparePostMessage, CompareResponseMessage } from "$lib/workers/structure";
+import type { PathDef, Platforms, PlatformFeatures, Releases } from "$lib/structure";
+import type { ComparePostMessage, DiffResponseMessage } from "$lib/workers/structure";
 
-onmessage = (event: MessageEvent<ComparePostMessage>) => {
-  const { x, y } = event.data;
+import yaml from 'js-yaml'
+import rel from '$lib/releases.yaml?raw'
+import { error } from "@sveltejs/kit";
+import { extractFeatures } from "$lib/components/functions";
+const releases = yaml.load(rel) as Releases
 
-  const xOnlyPath = x.map((k :PathDef) => k.path)
-  const yOnlyPath = y.map((k :PathDef) => k.path)
+onmessage = async (event: MessageEvent<ComparePostMessage>) => {
+  const { x, y, model, urlOrigin } = event.data;
+
+  let xpaths: PathDef[] = []
+  let ypaths: PathDef[] = []
+  let yfeatures: Platforms = {}
+  let platforms: PlatformFeatures = {}
+  let uniqueFeatures: string[] = []
+
+  async function fetchPaths(release: string) {
+    const versionUrl = `${urlOrigin}/releases/v${release}/${model !== "nokia" ? model + "/" : ""}paths.json`
+    const pathResponse = await fetch(versionUrl)
+
+    if (pathResponse.ok) {
+      const pathJson = await pathResponse.json()
+      if(release === x) {
+        xpaths = pathJson.map((k: any) => ({...k, "is-state": ("is-state" in k ? "R" : "RW")}))
+      } else if(release === y) {
+        ypaths = pathJson.map((k: any) => ({...k, "is-state": ("is-state" in k ? "R" : "RW")}))
+      }
+    } else {
+      throw error(404, `Error fetching ${release} yang tree`)
+    }
+  }
+
+  await fetchPaths(x)
+  await fetchPaths(y)
+
+  if(model === "nokia" && releases[`v${y}`]?.features) {
+    const fetchUrl = `${urlOrigin}/releases/v${y}/features.txt`
+    
+    const featResponse = await fetch(fetchUrl)
+    if (featResponse.ok) {
+      const featText = await featResponse.text()
+      yfeatures = yaml.load(featText) as Platforms
+      [platforms, uniqueFeatures] = extractFeatures(yfeatures);
+    } else {
+      throw error(404, "Error fetching platform features")
+    }
+  }
+
+  // Start of Compare operation
+  const xOnlyPath = xpaths.map((k :PathDef) => k.path)
+  const yOnlyPath = ypaths.map((k :PathDef) => k.path)
 
   const getPathObj = (list: PathDef[], path: string) => list.filter((k :PathDef) => k.path === path)
 
-  const typeChange: CompareResponseMessage[] = []
-  const removedFromX: CompareResponseMessage[] = []
-  const newInY: CompareResponseMessage[] = []
+  const typeChange: DiffResponseMessage[] = []
+  const removedFromX: DiffResponseMessage[] = []
+  const newInY: DiffResponseMessage[] = []
 
   const setX = new Set(xOnlyPath)
   const setY = new Set(yOnlyPath)
 
   for (const item of setX) {
     if (setY.has(item)) {
-      const xObj = getPathObj(x, item)[0]
-      const yObj = getPathObj(y, item)[0]
+      const xObj = getPathObj(xpaths, item)[0]
+      const yObj = getPathObj(ypaths, item)[0]
       if(xObj.type !== yObj.type) {
         typeChange.push({...yObj, fromType: xObj.type, fromRel: xObj.release, compare: "~"})
       }
     } else {
-      const xObj = getPathObj(x, item)[0]
+      const xObj = getPathObj(xpaths, item)[0]
       removedFromX.push({...xObj, compare: "-"})
     }
   }
 
   for (const item of setY) {
     if (!setX.has(item)) {
-      const yObj = getPathObj(y, item)[0]
+      const yObj = getPathObj(ypaths, item)[0]
       newInY.push({...yObj, compare: "+"})
     }
   }
 
-  const sortedList = [...newInY, ...removedFromX, ...typeChange].sort((a, b) => {
+  const diff = [...newInY, ...removedFromX, ...typeChange].sort((a, b) => {
     const keyA = a["path"]
     const keyB = b["path"]
     if (keyA < keyB) return -1
@@ -45,8 +90,7 @@ onmessage = (event: MessageEvent<ComparePostMessage>) => {
   })
 
   //console.log('Worker request processed');
-  const message = sortedList;
-  postMessage(message);
+  postMessage({diff, platforms, uniqueFeatures});
 };
 
 export {};

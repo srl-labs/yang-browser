@@ -1,6 +1,7 @@
 
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
 	import { derived, writable } from 'svelte/store'
   import { fade } from 'svelte/transition'
 
@@ -9,30 +10,34 @@
 	import Popup from '$lib/components/Popup.svelte';
   import Loading from '$lib/components/Loading.svelte';
 	import ComparePopup from '$lib/components/ComparePopup.svelte';
-  import { extractFeatures, searchBasedFilter, markFilter, markRender, featureBasedFilter } from '$lib/components/functions';
+  import { searchBasedFilter, markFilter, markRender, featureBasedFilter } from '$lib/components/functions';
 
 
 
   // WORKER POST <- START
-	import type { ComparePayLoad, PathDef } from '$lib/structure';
-  import type { ComparePostMessage, CompareResponseMessage } from "$lib/workers/structure";
+	import type { PlatformFeatures, ComparePayLoad } from '$lib/structure';
+  import type { ComparePostMessage, CompareResponseMessage, DiffResponseMessage } from "$lib/workers/structure";
 
   let mountComplete = false;
-  let diff: CompareResponseMessage[] = [] // IMPORTANT
+  let diff: DiffResponseMessage[] = []
+  let platforms: PlatformFeatures = {}
+  let uniqueFeatures: string[] = []
 
-  const onWorkerMessage = (event: MessageEvent<CompareResponseMessage[]>) => {
-    diff = event.data;
+  const onWorkerMessage = (event: MessageEvent<CompareResponseMessage>) => {
+    diff = event.data.diff;
+    platforms = event.data.platforms;
+    uniqueFeatures = event.data.uniqueFeatures;
     mountComplete = true
     //console.log('Worker response received');
   };
 
   let compareWorker: Worker | undefined = undefined;
 
-  const loadWorker = async (x: PathDef[], y: PathDef[]) => {
+  const loadWorker = async (x: string, y: string, model: string, urlOrigin: string) => {
     const CompareWorker = await import('$lib/workers/compare.worker?worker');
     compareWorker = new CompareWorker.default();
 
-    const message: ComparePostMessage = { x, y }
+    const message: ComparePostMessage = { x, y, model, urlOrigin }
     compareWorker.postMessage(message);
 
     compareWorker.onmessage = onWorkerMessage;
@@ -42,10 +47,9 @@
 
 
   export let data: ComparePayLoad
-  const {urlPath, x, y, model, xpaths, ypaths, yfeatures} = data
-  let [platforms, uniqueFeatures] = extractFeatures(yfeatures);
+  const {x, y, model, urlPath} = data
 
-  onMount(() => loadWorker(xpaths, ypaths))
+  onMount(() => loadWorker(x, y, model, $page.url.origin))
 
   // Defaults
   let count = 40;
@@ -76,13 +80,11 @@
   $: platSelect.set(platformValue);
 
   let start = writable(0);
-  let yangPaths = writable<CompareResponseMessage[]>([]);
+  let yangPaths = writable<DiffResponseMessage[]>([]);
   $: yangPaths.set(diff)
 
   let platStore = writable<string[]>([]);
-  if (Object.keys(platforms).length) {
-    platStore.set(Object.keys(platforms));
-  }
+  $: if(Object.keys(platforms)?.length) platStore.set(Object.keys(platforms));
 
   // Derived Stores
   let platList = derived([platFind, platStore], ([$platFind, $platStore]) => $platStore?.length ? $platStore.filter((x: string) => x.includes($platFind)) : []);
