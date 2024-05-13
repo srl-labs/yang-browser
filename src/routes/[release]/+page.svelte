@@ -216,9 +216,9 @@
     <div class="overflow-x-auto rounded-t-lg max-w-full mt-2">
       <table class="text-left w-full">
         <colgroup>
-          <col span="1" class="w-[5%]">
+          <col span="1" class="w-[2%]">
           <col span="1" class="w-[80%]">
-          <col span="1" class="w-[15%]">
+          <col span="1" class="w-[18%]">
         </colgroup>
         <thead class="text-sm font-nokia-headline text-gray-800 dark:text-gray-300 bg-gray-300 dark:bg-gray-700">
           <tr>

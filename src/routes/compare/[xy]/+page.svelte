@@ -114,7 +114,7 @@
 
 {#if !mountComplete}
   <Loading/>
-{:else if $total > 0}
+{:else if $yangPaths.length > 0}
   <Header model={model} modelTitle={"compare"} release={`${x};${y}`} home={true} />
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -189,14 +189,14 @@
         <table class="text-left w-full text-xs">
           <colgroup>
             <col span="1" class="w-[3%]">
-            <col span="1" class="w-[5%]">
-            <col span="1" class="w-[72%]">
+            <col span="1" class="w-[2%]">
+            <col span="1" class="w-[75%]">
             <col span="1" class="w-[20%]">
           </colgroup>
           <thead class="text-sm font-nokia-headline text-gray-800 dark:text-gray-300 bg-gray-300 dark:bg-gray-700">
             <tr>
               <th scope="col" class="px-3 py-2"></th>
-              <th scope="col" class="px-3 py-2">State</th>
+              <th scope="col" class="px-3 py-2"></th>
               <th scope="col" class="px-3 py-2">Path</th>
               <th scope="col" class="px-3 py-2">Type</th>
             </tr>

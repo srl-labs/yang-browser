@@ -37,7 +37,8 @@ export function extractFeatures (data: Platforms): [PlatformFeatures, string[]] 
 }
 
 export function escapeText(text: string) {
-  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+  //return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+  return text.replace(/[\[\]\*]/g, '\\$&')
 }
 
 export function removeKeyDefault(text: string) {
