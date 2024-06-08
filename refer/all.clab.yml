@@ -3,7 +3,7 @@ topology:
   defaults:
     image: ghcr.io/nokia/srlinux:${SRL_VERSION:-23.3.2}
     kind: nokia_srlinux
-    license: /opt/nokia/srl/24-3.lic
+    license: ${LIC_PATH:-/opt/nokia/srl/24-3.lic}
   nodes:
     7220-IXR-D1:
       type: ixrd1

@@ -27,7 +27,7 @@
 # snmp-mib-interface
 
 # example:
-# SRL_VERSION=23.3.3 bash refer/extract-features.sh
+# SRL_VERSION=23.10.4 LIC_PATH=/opt/nokia/srl/23-10.lic bash refer/extract-features.sh
 # note, that the script doesn't remove the lab after the features are extracted.
 
 set -e
@@ -40,7 +40,7 @@ sudo -E containerlab deploy -c -t ./refer/all.clab.yml
 # remove all json files that might be there from previous extraction
 rm -f ./tmp/*.json
 
-for node in "7220-IXR-D1" "7220-IXR-D2" "7220-IXR-D2L" "7220-IXR-D3" "7220-IXR-D3L" "7220-IXR-D4" "7220-IXR-D5" "7220-IXR-D5T" "7220-IXR-H2" "7220-IXR-H3" "7220-IXR-H4" "7250-IXR-6" "7250-IXR-6e" "7250-IXR-10" "7250-IXR-10e"
+for node in "7220-IXR-D1" "7220-IXR-D2" "7220-IXR-D2L" "7220-IXR-D3" "7220-IXR-D3L" "7220-IXR-D4" "7220-IXR-D5" "7220-IXR-H2" "7220-IXR-H3" "7220-IXR-H4" "7250-IXR-6" "7250-IXR-6e" "7250-IXR-10" "7250-IXR-10e"
 do
     docker exec clab-all-${node} sr_cli 'info from state system features | as json' | jq .system.features >> ./tmp/${node}.json &
 done
