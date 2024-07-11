@@ -8,17 +8,19 @@
 # execute from repo root as `bash refer/generate.sh <srl_nokia | openconfig> [<srl_release1> <srl_release2> ...]`
 # example: bash refer/generate.sh srl_nokia 22.11.1
 
+SCRIPT_DIR="$(realpath $(dirname "$0"))"
+
 # convert features from the D2L json file to pyang format so that we can generate
 # tree and jstree output for a featureset of D2L
 extract_pyang_features() {
   features_mod="srl_nokia-features"
   # read the 7220-IXR-D2L.json file and extract comma separated features
-  # the paths are relative to the ./refer/srl-$SRL_VER-yang-models folder
+  # the relative paths are relative to the ./refer/srl-$SRL_VER-yang-models folder
   # if sr linux release is > 24 than use the simplified feature list
   if [ $(echo $SRL_VER | cut -d'.' -f1) -ge 24 ]; then
-    fs=$(cat ../../tmp/7220-IXR-D2L.json | jq -r 'join(",")')
+    fs=$(cat ${SCRIPT_DIR}/../static/releases/v${SRL_VER}/platform_features/7220-IXR-D2L.json | jq -r 'join(",")')
   else
-    fs=$(jq --argjson unusedFeatures "$(cat ../unused-features.json)" 'map(select(. as $in | any($unusedFeatures[]; . == $in) | not))' ../../tmp/7220-IXR-D2L.json | jq -r 'join(",")')
+    fs=$(jq --argjson unusedFeatures "$(cat ../unused-features.json)" 'map(select(. as $in | any($unusedFeatures[]; . == $in) | not))' ${SCRIPT_DIR}/../static/releases/v${SRL_VER}/platform_features/7220-IXR-D2L.json | jq -r 'join(",")')
   fi
 
   echo ${features_mod}:${fs}
@@ -29,7 +31,7 @@ MODEL_TYPE="$1"
 # SR Linux release version are passed as a space separated list of release version
 SRL_VER_LIST="${@:2}"
 
-GNMIC_CONTAINER=ghcr.io/openconfig/gnmic:0.32.0
+GNMIC_CONTAINER=ghcr.io/openconfig/gnmic:0.38.0
 
 PYANG_CONTAINER=ghcr.io/hellt/pyang:2.5.3
 
@@ -46,7 +48,6 @@ else
 fi
 
 # change into the script directory
-SCRIPT_DIR="$(realpath $(dirname "$0"))"
 cd $SCRIPT_DIR
 
 # PYANG RESPONSE HANDLER
@@ -67,7 +68,7 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
   SRL_VER_CYCLE=v$(echo $SRL_VER | cut -d'-' -f1)
 
   # PULL SRL YANG MODEL
-  YANG_DIR_NAME="$(pwd)/srl-$SRL_VER-yang-models"
+  YANG_DIR_NAME="${SCRIPT_DIR}/srl-$SRL_VER-yang-models"
 
   docker pull ghcr.io/nokia/srlinux:$SRL_VER || echo "using local image"
   id=$(docker create ghcr.io/nokia/srlinux:$SRL_VER foo)
