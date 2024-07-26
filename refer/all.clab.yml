@@ -1,9 +1,9 @@
 name: all
 topology:
   defaults:
-    image: ghcr.io/nokia/srlinux:${SRL_VERSION:-23.3.2}
+    image: ghcr.io/nokia/srlinux:${SRL_VERSION:-24.7.1}
     kind: nokia_srlinux
-    license: ${LIC_PATH:-/opt/nokia/srl/24-3.lic}
+    license: ${LIC_PATH:-/opt/nokia/srl/24-7.lic}
   nodes:
     7220-IXR-D1:
       type: ixrd1
@@ -33,3 +33,7 @@ topology:
       type: ixr10
     7250-IXR-10e:
       type: ixr10e
+    7250-IXR-X3b:
+      type: ixrx3b
+    7250-IXR-X1b:
+      type: ixrx1b
