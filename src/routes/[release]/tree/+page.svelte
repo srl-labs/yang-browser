@@ -6,7 +6,8 @@
   import type { TreePayLoad } from '$lib/structure';
   import { pathFocus } from '$lib/components/sharedStore';
 
-  import { closeSidebar, removeKeyDefault } from '$lib/components/functions'
+  import { closeSidebar } from '$lib/components/functions'
+  import { folderMatchesSearch, urlPathPasson } from "./matchFunctions";
 
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
@@ -47,9 +48,9 @@
 
   onMount(() => loadWorker(model, release, $page.url.origin))
 
-  let yangTreeUrlPath = urlPath != "" ? (removeKeyDefault(urlPath).split("/").filter(x => x != "")) : []
-
   // DEFAULTS
+  let searchQuery = ""
+
   pathFocus.set({});
 	let pathDetail = {};
 	pathFocus.subscribe((value) => {
@@ -73,8 +74,13 @@
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="min-w-[280px] overflow-x-auto dark:bg-gray-800 font-nokia-headline-light pt-[80px] lg:pt-[90px]" on:click={closeSidebar}>
     <div class="p-6 overflow-x-auto text-sm container mx-auto">
+      <div class="pb-5 font-fira">
+        <input type="text" bind:value={searchQuery} placeholder="Search..." class="w-full text-[13px] px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
+      </div>
       <div class="font-fira text-xs tracking-tight">
-        <YangTree modelName="{release}" name={$yangTarget.name} children={$yangTarget.children} details={$yangTarget.details} urlPath={yangTreeUrlPath} />
+        {#each $yangTarget.children as folder}
+          <YangTree folder={folder} searchQuery={searchQuery.trim().toLowerCase()} expanded={folderMatchesSearch(folder, searchQuery, urlPath)} urlPath={urlPathPasson(urlPath)} />
+        {/each}
       </div>
       <Popup pathDetail={pathDetail}/>
       <Footer home={false}/>

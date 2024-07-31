@@ -3,6 +3,8 @@ import { error } from '@sveltejs/kit';
 import yaml from 'js-yaml'
 import rel from '$lib/releases.yaml?raw'
 import type { Releases } from '$lib/structure'
+import { removeKeyDefault } from '$lib/components/functions';
+
 const releases = yaml.load(rel) as Releases
 const validVersions = [...new Set(Object.keys(releases))]
 
@@ -41,6 +43,6 @@ export async function load({ url, fetch, params }) {
     allModels: allModels, 
     modelTitle: modelTitle,
     crossLaunched: crossLaunched, 
-    urlPath: decodeURIComponent(urlPath)
+    urlPath: removeKeyDefault(decodeURIComponent(urlPath))
   }
 }

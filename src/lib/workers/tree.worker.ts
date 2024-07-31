@@ -21,16 +21,18 @@ onmessage = async (event: MessageEvent<FetchPostMessage>) => {
   // Tree Builder
   class TreeNode {
     name: string;
+    type: string;
     children: any[];
 	  details: any | PathDef;
-    constructor(name: string, isKey: boolean, details: any | PathDef) {
+    constructor(name: string, isKey: boolean, details: any | PathDef, type: string) {
       isKey ? this.name = name + "*" : this.name = name
+      this.type = type;
       this.children = [];
       this.details = details;
     }
   }
 
-  const root = new TreeNode(release, false, {});
+  const root = new TreeNode(release, false, {}, "folder");
   const extractBetween = (str: string) => {
     const regex = /\[(.*?)\]/g;
     const matches = [];
@@ -50,19 +52,28 @@ onmessage = async (event: MessageEvent<FetchPostMessage>) => {
     let segments = clean.split("/").slice(1);
     let segLen = segments.length;
 
+    let containerPath = []
+
     segments.forEach((segment: string, i: number) => {
+      containerPath.push(segment)
       if(segment.includes("[")) keys = extractBetween(segment);
       let childNode = currentNode.children.find((node: { name: string; }) => node.name === segment);
 
       if (!childNode) {
         let isKey = false;
-        let paramPath = (i == (segLen - 1) ? entry : {});
+        let isLast = (i == (segLen - 1))
+
+        let paramPath = (isLast ? entry : {"path" : "/" + containerPath.join("/")});
         if(keys.length > 0 && keys.includes(segment)) isKey = true;
-        childNode = new TreeNode(segment, isKey, paramPath);
+        let nodeType = (isLast ? "file" : "folder")
+        
+        childNode = new TreeNode(segment, isKey, paramPath, nodeType)
         if(isKey) {
           currentNode.children = [childNode].concat(currentNode.children)
         }
         else currentNode.children.push(childNode);
+
+        if(isLast) containerPath.pop()
       }
 
       currentNode = childNode;

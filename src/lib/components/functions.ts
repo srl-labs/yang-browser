@@ -51,11 +51,12 @@ export function searchBasedFilter(x: any, searchTerm: string, showPrefix: boolea
   return keys.every(x => searchStr.includes(x))
 }
 
-export function markFilter(target: string, term: string) {
+export function markFilter(target: string, term: string, from = "path") {
   if(term != "") {
     const keys = term.split(/\s+/)
     const pattern = (new RegExp(escapeText(keys.join('|')), 'g'))
-    const markClass = "text-nokia-blue dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold"
+    const lightColor = from === "tree" ? "text-yellow-600" : "text-nokia-blue"
+    const markClass = lightColor + " dark:text-yellow-400 bg-white dark:bg-gray-800 font-bold"
     const markTerm = (str: string) => str.replace(pattern, (match: any) => `<mark class="${markClass}">${match}</mark>`)
     return markTerm(target)
   }
