@@ -63,6 +63,11 @@
 		{ label: "Deleted", value: "-" },
 		{ label: "Modified", value: "~" }
 	]
+  const stateValues = [
+		{ label: "All", value: "" },
+		{ label: "State", value: "R" },
+		{ label: "Config", value: "RW" }
+	]
   
   // Writable Stores
   let searchInput = urlPath
@@ -72,6 +77,10 @@
   let compareInput = ""
   let compareStore = writable("")
   $: compareStore.set(compareInput)
+
+  let stateInput = "";
+  let stateStore = writable("");
+  $: stateStore.set(stateInput);
 
   let platformSearch = "";
   let platFind = writable("");
@@ -92,7 +101,8 @@
   let featSelect = derived(platSelect, ($platSelect) => $platSelect != "" && Object.keys(platforms)?.length ? platforms[$platSelect]: []);
 
   let compareFilter = derived([compareStore, yangPaths], ([$compareStore, $yangPaths]) => $yangPaths.filter(x => $compareStore === "" ? true : x.compare === $compareStore));
-  let searchFilter = derived([searchStore, compareFilter], ([$searchStore, $compareFilter]) => $compareFilter.filter(x => searchBasedFilter(x, $searchStore)));
+  let stateFilter = derived([stateStore, compareFilter], ([$stateStore, $compareFilter]) => $compareFilter.filter((x: any) => $stateStore == "" ? true : x["is-state"] == $stateStore));
+  let searchFilter = derived([searchStore, stateFilter], ([$searchStore, $stateFilter]) => $stateFilter.filter(x => searchBasedFilter(x, $searchStore)));
 
   let platformFilter = derived([featSelect, searchFilter],  ([$featSelect, $searchFilter]) => $featSelect?.length ? $searchFilter.filter(x => featureBasedFilter(x, $featSelect)) : $searchFilter);
 
@@ -120,43 +130,77 @@
       <div class="py-2 font-fira">
         <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full text-[13px] px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
       </div>
-      <div class="pt-2 pb-4 grid gap-2 grid-cols-2 md:flex md:items-center md:space-x-2 text-gray-800 dark:text-gray-300 text-sm">
-        {#each compareValues as entry}
-          <div class="flex items-center">
-            <input id="compare-radio-{entry.label}" type="radio" class="w-4 h-4" bind:group={compareInput} value="{entry.value}">
-            <label for="compare-radio-{entry.label}" class="ml-2 cursor-pointer">{entry.label}</label>
-          </div>
-        {/each}
-      </div>
-      <div class="flex items-center space-x-2">
-        {#if uniqueFeatures?.length}
-          <button class="flex items-center px-3 py-1 w-fit rounded-lg text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600 dark:text-white" on:click={() => showMoreFilters = !showMoreFilters}>
-            {#if !showMoreFilters}
-              <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+      <div class="overflow-x-auto scroll-light dark:scroll-dark">
+        <div class="py-2 space-x-2 flex items-center text-gray-800 dark:text-gray-300 text-sm">
+          <div class="dropdown">
+            <button class="dropdown-button px-3 py-1 text-xs border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-center inline-flex items-center">
+              Changes {compareInput != "" ? `(${compareInput})` : ""}
+              <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
               </svg>
-            {:else}
-              <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
-              </svg>
-            {/if}
-            Platform Filters
-          </button>
-        {/if}
-        <span class="dropdown">
-          <a href="https://github.com/nokia/srlinux-yang-models/compare/v{x}..v{y}" target="_blank" class="dropdown-button font-nokia-headline-light px-2.5 py-1 rounded-lg text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white inline-flex items-center align-bottom">
-            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path fill-rule="evenodd" d="M12.006 2a9.847 9.847 0 0 0-6.484 2.44 10.32 10.32 0 0 0-3.393 6.17 10.48 10.48 0 0 0 1.317 6.955 10.045 10.045 0 0 0 5.4 4.418c.504.095.683-.223.683-.494 0-.245-.01-1.052-.014-1.908-2.78.62-3.366-1.21-3.366-1.21a2.711 2.711 0 0 0-1.11-1.5c-.907-.637.07-.621.07-.621.317.044.62.163.885.346.266.183.487.426.647.71.135.253.318.476.538.655a2.079 2.079 0 0 0 2.37.196c.045-.52.27-1.006.635-1.37-2.219-.259-4.554-1.138-4.554-5.07a4.022 4.022 0 0 1 1.031-2.75 3.77 3.77 0 0 1 .096-2.713s.839-.275 2.749 1.05a9.26 9.26 0 0 1 5.004 0c1.906-1.325 2.74-1.05 2.74-1.05.37.858.406 1.828.101 2.713a4.017 4.017 0 0 1 1.029 2.75c0 3.939-2.339 4.805-4.564 5.058a2.471 2.471 0 0 1 .679 1.897c0 1.372-.012 2.477-.012 2.814 0 .272.18.592.687.492a10.05 10.05 0 0 0 5.388-4.421 10.473 10.473 0 0 0 1.313-6.948 10.32 10.32 0 0 0-3.39-6.165A9.847 9.847 0 0 0 12.007 2Z" clip-rule="evenodd"/>
-            </svg>
-            <span class="ml-0.5">YANG diff</span>
-          </a>
-          <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
-            <p class="my-2 max-w-[300px] px-3 text-xs">
-              Beyond the differences shown below, there might be changes in descriptions, type constraints, 
-              or other yang statements which can be viewed from this link.
-            </p>
+            </button>
+            <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+              <div class="my-2 overflow-y-auto scroll-light dark:scroll-dark">
+                <ul>
+                  {#each compareValues as entry}
+                    <li class="flex items-center px-4 py-2 text-xs hover:bg-gray-200 dark:hover:bg-gray-600">
+                      <input id="compare-radio-{entry.label}" type="radio" class="w-4 h-4" bind:group={compareInput} value="{entry.value}">
+                      <label for="compare-radio-{entry.label}" class="ml-2 cursor-pointer">{entry.label} {entry.value != "" ? `(${entry.value})` : ""}</label>
+                    </li>
+                  {/each}
+                </ul>
+              </div>
+            </div>
           </div>
-        </span>
+          <div class="dropdown">
+            <button class="dropdown-button px-3 py-1 text-xs border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-center inline-flex items-center">
+              State {stateInput != "" ? `(${stateInput})` : ""}
+              <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+              </svg>
+            </button>
+            <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+              <div class="my-2 overflow-y-auto scroll-light dark:scroll-dark">
+                <ul>
+                  {#each stateValues as entry}
+                    <li class="flex items-center px-4 py-2 text-xs hover:bg-gray-200 dark:hover:bg-gray-600">
+                      <input id="state-radio-{entry.label}" type="radio" class="w-4 h-4" bind:group={stateInput} value="{entry.value}">
+                      <label for="state-radio-{entry.label}" class="ml-2 cursor-pointer">{entry.label} {entry.value != "" ? `(${entry.value})` : ""}</label>
+                    </li>
+                  {/each}
+                </ul>
+              </div>
+            </div>
+          </div>
+          {#if uniqueFeatures?.length}
+            <button class="flex items-center px-3 py-1 text-nowrap rounded-lg text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600 dark:text-white" on:click={() => showMoreFilters = !showMoreFilters}>
+              {#if !showMoreFilters}
+                <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+                </svg>
+              {:else}
+                <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+                </svg>
+              {/if}
+              Platform Filters
+            </button>
+          {/if}
+          <div class="dropdown">
+            <a href="https://github.com/nokia/srlinux-yang-models/compare/v{x}..v{y}" target="_blank" class="dropdown-button font-nokia-headline-light px-3 py-1 rounded-full text-xs text-nowrap bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white inline-flex items-center align-bottom">
+              <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                <path fill-rule="evenodd" d="M12.006 2a9.847 9.847 0 0 0-6.484 2.44 10.32 10.32 0 0 0-3.393 6.17 10.48 10.48 0 0 0 1.317 6.955 10.045 10.045 0 0 0 5.4 4.418c.504.095.683-.223.683-.494 0-.245-.01-1.052-.014-1.908-2.78.62-3.366-1.21-3.366-1.21a2.711 2.711 0 0 0-1.11-1.5c-.907-.637.07-.621.07-.621.317.044.62.163.885.346.266.183.487.426.647.71.135.253.318.476.538.655a2.079 2.079 0 0 0 2.37.196c.045-.52.27-1.006.635-1.37-2.219-.259-4.554-1.138-4.554-5.07a4.022 4.022 0 0 1 1.031-2.75 3.77 3.77 0 0 1 .096-2.713s.839-.275 2.749 1.05a9.26 9.26 0 0 1 5.004 0c1.906-1.325 2.74-1.05 2.74-1.05.37.858.406 1.828.101 2.713a4.017 4.017 0 0 1 1.029 2.75c0 3.939-2.339 4.805-4.564 5.058a2.471 2.471 0 0 1 .679 1.897c0 1.372-.012 2.477-.012 2.814 0 .272.18.592.687.492a10.05 10.05 0 0 0 5.388-4.421 10.473 10.473 0 0 0 1.313-6.948 10.32 10.32 0 0 0-3.39-6.165A9.847 9.847 0 0 0 12.007 2Z" clip-rule="evenodd"/>
+              </svg>
+              <span class="ml-0.5">YANG diff</span>
+            </a>
+            <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+              <p class="my-2 max-w-[300px] px-3 text-xs">
+                Beyond the differences shown below, there might be changes in descriptions, type constraints, 
+                or other yang statements which can be viewed from this link.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
       {#if showMoreFilters}
         <div transition:fade class="mt-4 grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-4">
