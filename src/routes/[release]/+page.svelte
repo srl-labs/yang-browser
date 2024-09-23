@@ -185,7 +185,8 @@
               <div class="my-2 overflow-y-auto scroll-light dark:scroll-dark">
                 <ul>
                   {#each stateValues as entry}
-                    <li class="flex items-center px-4 py-2 text-xs hover:bg-gray-200 dark:hover:bg-gray-600">
+                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                    <li class="flex items-center px-4 py-2 text-xs hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer" on:click={() => stateInput = entry.value}>
                       <input id="state-radio-{entry.label}" type="radio" class="w-4 h-4" bind:group={stateInput} value="{entry.value}">
                       <label for="state-radio-{entry.label}" class="ml-2 cursor-pointer">{entry.label} {entry.value != "" ? `(${entry.value})` : ""}</label>
                     </li>
