@@ -172,34 +172,62 @@
       <div class="my-2 font-fira">
         <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full text-[13px] px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
       </div>
-      <div class="pt-2 pb-4 flex items-center space-x-4 text-gray-800 dark:text-gray-300 text-sm">
-        {#each stateValues as entry}
-          <div class="flex items-center">
-            <input id="state-radio-{entry.label}" type="radio" class="w-4 h-4" bind:group={stateInput} value="{entry.value}">
-            <label for="state-radio-{entry.label}" class="ml-2 cursor-pointer">{entry.label}</label>
+      <div class="overflow-x-auto scroll-light dark:scroll-dark">
+        <div class="py-2 space-x-2 flex items-center">
+          <div class="dropdown">
+            <button class="dropdown-button px-2 py-1 text-xs border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-center inline-flex items-center">
+              {#if stateInput === ""}
+                State
+                <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                </svg>
+              {:else}
+                <span class="font-fira px-1">{stateInput}</span> - State
+                <button class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-400" on:click={() => stateInput = ""}>
+                  <svg class="w-4 h-4 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z" clip-rule="evenodd"/>
+                  </svg>
+                </button>
+              {/if}
+            </button>
+            <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+              <div class="my-2 overflow-y-auto scroll-light dark:scroll-dark">
+                <ul>
+                  {#each stateValues as entry}
+                    {#if entry.value != ""}
+                      <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                      <li class="flex items-center px-4 py-2 text-xs hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer" on:click={() => stateInput = entry.value}>
+                        <p class="flex">
+                          <span class="font-fira text-gray-500 dark:text-gray-400 w-3 mr-2">{entry.value != "" ? entry.value : ""}</span>
+                          <span class="ml-1">{entry.label}</span>
+                        </p>
+                      </li>
+                    {/if}
+                  {/each}
+                </ul>
+              </div>
+            </div>
           </div>
-        {/each}
-      </div>
-      <div class="flex items-center">
-        <div class="flex items-center px-3 py-1 w-fit border hover:border-gray-300 dark:border-gray-500 dark:hover:border-gray-400 rounded-full cursor-pointer">
-          <input id="prefix-checkbox" type="checkbox" class="w-3 h-3 cursor-pointer" bind:checked={showPathPrefix}>
-          <label for="prefix-checkbox" class="ms-2 text-xs text-gray-900 dark:text-gray-300 select-none cursor-pointer">Show prefix</label>
+          {#if uniqueFeatures?.length}
+            <button class="flex items-center ml-2 px-3 py-1 w-fit text-xs rounded-lg bg-blue-100 hover:bg-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600 border border-blue-200 dark:border-blue-600 dark:text-white" on:click={() => showMoreFilters = !showMoreFilters}>
+              {#if !showMoreFilters}
+                <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+                </svg>
+              {/if}
+              {#if showMoreFilters}
+                <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+                </svg>
+              {/if}
+              Filters
+            </button>
+          {/if}
+          <div class="flex items-center text-nowrap px-3 py-1 w-fit border hover:border-gray-300 dark:border-gray-500 dark:hover:border-gray-400 rounded-lg cursor-pointer">
+            <input id="prefix-checkbox" type="checkbox" class="w-3 h-3 cursor-pointer" bind:checked={showPathPrefix}>
+            <label for="prefix-checkbox" class="ms-2 text-xs text-gray-900 dark:text-gray-300 select-none cursor-pointer">Show prefix</label>
+          </div>
         </div>
-        {#if uniqueFeatures?.length}
-          <button class="flex items-center ml-2 px-3 py-1 w-fit text-xs rounded-full bg-blue-100 hover:bg-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600 dark:text-white" on:click={() => showMoreFilters = !showMoreFilters}>
-            {#if !showMoreFilters}
-              <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-              </svg>
-            {/if}
-            {#if showMoreFilters}
-              <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
-              </svg>
-            {/if}
-            Filters
-          </button>
-        {/if}
       </div>
       {#if showMoreFilters}
         <div transition:fade class="flex flex-wrap items-start mt-4 md:space-x-6">
