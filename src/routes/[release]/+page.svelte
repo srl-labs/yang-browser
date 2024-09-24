@@ -31,16 +31,16 @@
     mountComplete = true
   };
 
-  let compareWorker: Worker | undefined = undefined;
+  let releaseWorker: Worker | undefined = undefined;
 
   const loadWorker = async (model: string, release: string, urlOrigin: string) => {
-    const CompareWorker = await import('$lib/workers/fetch.worker?worker');
-    compareWorker = new CompareWorker.default();
+    const ReleaseWorker = await import('$lib/workers/fetch.worker?worker');
+    releaseWorker = new ReleaseWorker.default();
 
     const message: FetchPostMessage = { model, release, urlOrigin }
-    compareWorker.postMessage(message);
+    releaseWorker.postMessage(message);
 
-    compareWorker.onmessage = onWorkerMessage;
+    releaseWorker.onmessage = onWorkerMessage;
   }
   // WORKER POST <- END
   
