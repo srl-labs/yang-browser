@@ -6,7 +6,7 @@ import type { Releases } from '$lib/structure'
 const releases = yaml.load(rel) as Releases
 const validVersions = [...new Set(Object.keys(releases))]
 
-export async function load({ url, fetch, params }) {
+export async function load({ url, params }) {
   const release = params.release;
 
   if(!validVersions.includes(release)) {
@@ -33,11 +33,13 @@ export async function load({ url, fetch, params }) {
   }
 
   const urlPath = url.searchParams.get("path")?.trim().toLowerCase() ?? "";
+  const platform = url.searchParams.get("platform")?.trim().toLowerCase() ?? "7220-IXR-D2L";
   const crossLaunched = url.searchParams.get("from")?.trim() === "pb" ? true : false ?? "";
 
   return {
     model: model, 
     release: release, 
+    platform: platform, 
     allModels: allModels, 
     modelTitle: modelTitle,
     crossLaunched: crossLaunched, 

@@ -2,40 +2,54 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
-	import { derived, writable } from 'svelte/store'
-  import { fade } from 'svelte/transition'
 
 	import Header from '$lib/components/Header.svelte';
-	import Footer from '$lib/components/Footer.svelte';
+  import Footer from '$lib/components/Footer.svelte';
 	import Popup from '$lib/components/Popup.svelte';
   import Loading from '$lib/components/Loading.svelte';
 	import ComparePopup from '$lib/components/ComparePopup.svelte';
-  import { searchBasedFilter, markFilter, markRender, featureBasedFilter } from '$lib/components/functions';
-  import { compareValues, stateValues } from '$lib/components/sharedStore';
 
+  import SearchInput from '$lib/components/SearchInput.svelte';
+  import StateButton from '$lib/components/StateButton.svelte';
+	import ChangesButton from '$lib/components/ChangesButton.svelte';
+	import PlatformButton from '$lib/components/PlatformButton.svelte';
+  import PlatformGrid from '$lib/components/PlatformGrid.svelte';
+  import Pagination from '$lib/components/Pagination.svelte';
+	
+  import { markFilter, markRender } from '$lib/components/functions';
+  import { compareStore, paginated, platFeat, platFind, platSelect, searchStore, stateStore, total, yangPaths } from '$lib/components/sharedStore';
+
+  export let data: ComparePayLoad
+  const {x, y, model, urlPath} = data
+
+  let pathDetail = {};
+  let showPlatformGrid = false;
 
   // WORKER POST <- START
 	import type { PlatformFeatures, ComparePayLoad } from '$lib/structure';
   import type { ComparePostMessage, CompareResponseMessage, DiffResponseMessage } from "$lib/workers/structure";
-
-  let mountComplete = false;
+	
+  let mountComplete = false
   let diff: DiffResponseMessage[] = []
   let platforms: PlatformFeatures = {}
+  let supportedPlatforms: string[] = []
   let uniqueFeatures: string[] = []
-  let platformValue = "";
+  let platformSelected = ""
+  
+  let compareWorker: Worker | undefined = undefined;
 
-  const onWorkerMessage = (event: MessageEvent<CompareResponseMessage>) => {
+  function onWorkerMessage(event: MessageEvent<CompareResponseMessage>) {
     diff = event.data.diff;
     platforms = event.data.platforms;
     uniqueFeatures = event.data.uniqueFeatures;
-    platformValue = "7220-IXR-D2L";
+    platformSelected = "7220-IXR-D2L";
+    if(Object.keys(platforms)?.length) {
+      supportedPlatforms = Object.keys(platforms)
+    }
     mountComplete = true
-    //console.log('Worker response received');
-  };
+  }
 
-  let compareWorker: Worker | undefined = undefined;
-
-  const loadWorker = async (x: string, y: string, model: string, urlOrigin: string) => {
+  async function loadWorker(x: string, y: string, model: string, urlOrigin: string) {
     const CompareWorker = await import('$lib/workers/compare.worker?worker');
     compareWorker = new CompareWorker.default();
 
@@ -46,61 +60,24 @@
   }
   // WORKER POST <- END
 
-
-
-  export let data: ComparePayLoad
-  const {x, y, model, urlPath} = data
-
   onMount(() => loadWorker(x, y, model, $page.url.origin))
 
-  // Defaults
-  let count = 40;
-  let pathDetail = {};
-  let showMoreFilters = false;
-  
   // Writable Stores
   let searchInput = urlPath
-  let searchStore = writable("")
   $: searchStore.set(searchInput.trim().toLowerCase())
 
   let compareInput = ""
-  let compareStore = writable("")
   $: compareStore.set(compareInput)
 
   let stateInput = "";
-  let stateStore = writable("");
   $: stateStore.set(stateInput);
 
   let platformSearch = "";
-  let platFind = writable("");
   $: platFind.set(platformSearch.trim().toUpperCase());
 
-  let platSelect = writable("");
-  $: platSelect.set(platformValue);
-
-  let start = writable(0);
-  let yangPaths = writable<DiffResponseMessage[]>([]);
+  $: platFeat.set(platforms);
+  $: platSelect.set(platformSelected);
   $: yangPaths.set(diff)
-
-  let platStore = writable<string[]>([]);
-  $: if(Object.keys(platforms)?.length) platStore.set(Object.keys(platforms));
-
-  // Derived Stores
-  let platList = derived([platFind, platStore], ([$platFind, $platStore]) => $platStore?.length ? $platStore.filter((x: string) => x.includes($platFind)) : []);
-  let featSelect = derived(platSelect, ($platSelect) => $platSelect != "" && Object.keys(platforms)?.length ? platforms[$platSelect]: []);
-
-  let compareFilter = derived([compareStore, yangPaths], ([$compareStore, $yangPaths]) => $yangPaths.filter(x => $compareStore === "" ? true : x.compare === $compareStore));
-  let stateFilter = derived([stateStore, compareFilter], ([$stateStore, $compareFilter]) => $compareFilter.filter((x: any) => $stateStore == "" ? true : x["is-state"] == $stateStore));
-  let searchFilter = derived([searchStore, stateFilter], ([$searchStore, $stateFilter]) => $stateFilter.filter(x => searchBasedFilter(x, $searchStore)));
-
-  let platformFilter = derived([featSelect, searchFilter],  ([$featSelect, $searchFilter]) => $featSelect?.length ? $searchFilter.filter(x => featureBasedFilter(x, $featSelect)) : $searchFilter);
-
-  let total = derived(platformFilter, ($platformFilter) => {start.set(0); return $platformFilter.length});
-  let end = derived([start, total], ([$start, $total]) => ($start + count) <= $total ? ($start + count) : $total);
-  let paginated = derived([start, end, platformFilter], ([$start, $end, $platformFilter]) => $platformFilter.slice($start, $end));
-
-  // Update Table Pagination
-  const updateTable = (s: number) => {if(s >= 0 && s < $total) start.set(s)}
 </script>
 
 
@@ -116,93 +93,12 @@
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[80px]">
     <div class="px-6 pt-6 container mx-auto">
-      <div class="py-2 font-fira">
-        <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full text-[13px] px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
-      </div>
+      <SearchInput bind:searchInput />
       <div class="overflow-x-auto scroll-light dark:scroll-dark">
         <div class="py-2 space-x-2 flex items-center text-sm">
-          <div class="dropdown">
-            <button class="dropdown-button px-2 py-1 text-xs border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-center inline-flex items-center">
-              {#if compareInput === ""}
-                Changes
-                <svg class="w-2.5 h-2.5 ms-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                </svg>
-              {:else}
-                <span class="font-fira pl-0.5 pr-1">{compareInput}</span> Changes
-                <button class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-400" on:click={() => compareInput = ""}>
-                  <svg class="w-4 h-4 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z" clip-rule="evenodd"/>
-                  </svg>
-                </button>
-              {/if}
-            </button>
-            <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
-              <div class="my-2 overflow-y-auto scroll-light dark:scroll-dark">
-                <ul>
-                  {#each compareValues as entry}
-                    {#if entry.value != ""}
-                      <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-                      <li class="flex items-center px-4 py-2 text-xs hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer" on:click={() => compareInput = entry.value}>
-                        <p class="flex">
-                          <span class="font-fira text-gray-500 dark:text-gray-400 w-3">{entry.value != "" ? entry.value : ""}</span>
-                          <span class="ml-1">{entry.label}</span>
-                        </p>
-                      </li>
-                      {/if}
-                  {/each}
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="dropdown">
-            <button class="dropdown-button px-2 py-1 text-xs border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-center inline-flex items-center">
-              {#if stateInput === ""}
-                State
-                <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                </svg>
-              {:else}
-              <span class="font-fira text-gray-600 dark:text-gray-300 px-1">{stateInput}</span> - {stateValues.filter(x => x.value === stateInput)[0].label}
-                <button class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-400" on:click={() => stateInput = ""}>
-                  <svg class="w-4 h-4 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z" clip-rule="evenodd"/>
-                  </svg>
-                </button>
-              {/if}
-            </button>
-            <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
-              <div class="my-2 overflow-y-auto scroll-light dark:scroll-dark">
-                <ul>
-                  {#each stateValues as entry}
-                    {#if entry.value != ""}
-                      <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-                      <li class="flex items-center px-4 py-2 text-xs hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer" on:click={() => stateInput = entry.value}>
-                        <p class="flex">
-                          <span class="font-fira text-gray-500 dark:text-gray-400 w-3 mr-2">{entry.value != "" ? entry.value : ""}</span>
-                          <span class="ml-1">{entry.label}</span>
-                        </p>
-                      </li>
-                    {/if}
-                  {/each}
-                </ul>
-              </div>
-            </div>
-          </div>
-          {#if uniqueFeatures?.length}
-            <button class="flex items-center px-3 py-1 text-nowrap rounded-lg text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600 border border-blue-200 dark:border-blue-600 dark:text-white" on:click={() => showMoreFilters = !showMoreFilters}>
-              {#if !showMoreFilters}
-                <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                </svg>
-              {:else}
-                <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
-                </svg>
-              {/if}
-              Platform Filters
-            </button>
-          {/if}
+          <ChangesButton bind:compareInput />
+          <StateButton bind:stateInput />
+          <PlatformButton enabled={supportedPlatforms?.length} bind:showPlatformGrid />
           <div class="dropdown">
             <a href="https://github.com/nokia/srlinux-yang-models/compare/v{x}..v{y}" target="_blank" class="dropdown-button font-nokia-headline-light px-3 py-1 rounded-full text-xs text-nowrap bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white inline-flex items-center align-bottom">
               <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
@@ -219,30 +115,8 @@
           </div>
         </div>
       </div>
-      {#if showMoreFilters}
-        <div transition:fade class="mt-4 grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-4">
-          {#each $platList as entry}
-            <button class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-300 hover:text-black dark:hover:bg-gray-900 dark:hover:text-white rounded-lg text-center 
-              {entry === $platSelect ? 'text-black dark:text-white bg-gray-300 dark:bg-gray-900' : 'text-gray-400 dark:text-gray-400'}" on:click={() => { platformValue = entry }}>{entry}
-            </button>
-          {/each}
-        </div>
-      {/if}
-      <div class="flex items-center justify-end py-3 text-sm mt-2">
-        {#if $total > 0}
-          <p class="mr-2 text-gray-800 dark:text-gray-200">{$start + 1} - {$end > 1 ? $end : 0} of {$total}</p>
-          <button class="ml-2 {$start == 0 ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$start == 0}" on:click={() => updateTable($start - count)}>
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd"/>
-            </svg>
-          </button>
-          <button class="ml-2 {$end == $total ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$end == $total}" on:click={() => updateTable($end)}>
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/>
-            </svg>
-          </button>
-        {/if}
-      </div>
+      <PlatformGrid bind:showPlatformGrid bind:supportedPlatforms bind:platformSelected />
+      <Pagination />
       <div class="overflow-x-auto rounded-t-lg max-w-full mt-2">
         <table class="text-left w-full text-xs">
           <colgroup>
@@ -262,8 +136,8 @@
           <tbody>
             {#if $total > 0}
               {#each $paginated as item}
-              {@const path = markFilter(item.path, $searchStore)}
-              {@const type = markFilter(item.type, $searchStore)}
+                {@const path = markFilter(item.path, $searchStore)}
+                {@const type = markFilter(item.type, $searchStore)}
                 <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:cursor-pointer" on:click={() => pathDetail = item}>
                   <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item.compare}</td>
                   <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item["is-state"]}</td>
@@ -287,21 +161,7 @@
           </tbody>
         </table>
       </div>
-      <div class="flex items-center justify-end py-3 text-sm mt-2">
-        {#if $total > 0}
-          <p class="mr-2 text-gray-800 dark:text-gray-200">{$start + 1} - {$end > 1 ? $end : 0} of {$total}</p>
-          <button class="ml-2 {$start == 0 ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$start == 0}" on:click={() => updateTable($start - count)}>
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd"/>
-            </svg>
-          </button>
-          <button class="ml-2 {$end == $total ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$end == $total}" on:click={() => updateTable($end)}>
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/>
-            </svg>
-          </button>
-        {/if}
-      </div>
+      <Pagination />
       <Popup pathDetail={pathDetail}/>
     </div>
     <Footer home={false}/>

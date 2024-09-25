@@ -159,7 +159,7 @@
     {#if Object.keys(treePaths)?.length}
       <div class="px-5 py-4 container mx-auto border-t dark:border-gray-600">
         <div class="font-fira text-xs tracking-tight">
-          {#each treePaths.children as folder}
+          {#each $yangTarget.children as folder}
             <YangTree bind:folder urlPath={searchInput !== "" ? "" : urlPath} />
           {/each}
         </div>

@@ -13,7 +13,7 @@
 	const isCrossLaunched = () => urlPath !== "" && $page.data.crossLaunched
 
 	function expandPriority(targetPath: string) {
-		urlPath.replaceAll("=*", "").indexOf(targetPath) !== -1
+		return urlPath.replaceAll("=*", "").indexOf(targetPath) !== -1
 	}
 
 	function leafClick(details: any) {
