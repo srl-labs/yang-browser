@@ -11,7 +11,7 @@
   import Loading from '$lib/components/Loading.svelte';
 	import ComparePopup from '$lib/components/ComparePopup.svelte';
   import { searchBasedFilter, markFilter, markRender, featureBasedFilter } from '$lib/components/functions';
-
+  import { compareValues, stateValues } from '$lib/components/sharedStore';
 
 
   // WORKER POST <- START
@@ -57,17 +57,6 @@
   let count = 40;
   let pathDetail = {};
   let showMoreFilters = false;
-  const compareValues = [
-		{ label: "All", value: "" },
-		{ label: "Added", value: "+" },
-		{ label: "Deleted", value: "-" },
-		{ label: "Modified", value: "~" }
-	]
-  const stateValues = [
-		{ label: "All", value: "" },
-		{ label: "State", value: "R" },
-		{ label: "Config", value: "RW" }
-	]
   
   // Writable Stores
   let searchInput = urlPath

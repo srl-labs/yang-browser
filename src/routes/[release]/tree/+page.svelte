@@ -152,7 +152,7 @@
       <div class="text-right mt-6">
         <button class="px-4 py-2 rounded-lg text-xs 
           {pastYangTreeArgs === $yangTreeArgs ? 'bg-green-100 dark:bg-green-900 text-gray-500 dark:text-gray-500 cursor-not-allowed' : 'text-white bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800'}" 
-          disabled={pastYangTreeArgs === $yangTreeArgs} on:click={updateYangTree}>Apply Filter
+          disabled={pastYangTreeArgs === $yangTreeArgs} on:click={updateYangTree}>Apply
         </button>
       </div>
     </div>
