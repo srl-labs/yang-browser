@@ -32,7 +32,7 @@ export async function load({ url, fetch, params }) {
     }
   }
 
-  const urlPath = url.searchParams.get("path")?.trim() ?? "";
+  const urlPath = url.searchParams.get("path")?.trim().toLowerCase() ?? "";
   const crossLaunched = url.searchParams.get("from")?.trim() === "pb" ? true : false ?? "";
 
   return {

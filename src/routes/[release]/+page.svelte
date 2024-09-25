@@ -209,18 +209,18 @@
             </div>
           </div>
           {#if uniqueFeatures?.length}
-            <button class="flex items-center ml-2 px-3 py-1 w-fit text-xs rounded-lg bg-blue-100 hover:bg-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600 border border-blue-200 dark:border-blue-600 dark:text-white" on:click={() => showMoreFilters = !showMoreFilters}>
+            <button class="flex items-center ml-2 px-3 py-1 w-fit text-xs text-nowrap rounded-lg text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600" on:click={() => showMoreFilters = !showMoreFilters}>
               {#if !showMoreFilters}
-                <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                <svg class="w-2 h-2 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
                 </svg>
               {/if}
               {#if showMoreFilters}
-                <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                <svg class="w-2 h-2 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
                 </svg>
               {/if}
-              Filters
+              Platform Filters
             </button>
           {/if}
           <div class="flex items-center text-nowrap px-3 py-1 w-fit border hover:border-gray-300 dark:border-gray-500 dark:hover:border-gray-400 rounded-lg cursor-pointer">

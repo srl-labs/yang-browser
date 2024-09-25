@@ -1,75 +1,33 @@
 import { error } from "@sveltejs/kit";
-import type { PathDef } from "$lib/structure";
+import type { PlatformFeatures, Platforms, Releases } from "$lib/structure";
 import type { FetchPostMessage } from "$lib/workers/structure";
-import { removeKeyDefault } from "$lib/components/functions";
+import { extractFeatures } from "$lib/components/functions";
+
+import yaml from 'js-yaml'
+import rel from '$lib/releases.yaml?raw'
+const releases = yaml.load(rel) as Releases
 
 onmessage = async (event: MessageEvent<FetchPostMessage>) => {
   const { model, release, urlOrigin } = event.data;
 
-  let paths: PathDef[] = []
+  let features: Platforms = {}
+  let platforms: PlatformFeatures = {}
+  let uniqueFeatures: string[] = []
 
-  const versionUrl = `${urlOrigin}/releases/${release}/${model !== "nokia" ? model + "/" : ""}paths.json`
-  const pathResponse = await fetch(versionUrl)
-
-  if (pathResponse.ok) {
-    const pathJson = await pathResponse.json()
-    paths = pathJson.map((k: any) => ({...k, "is-state": ("is-state" in k ? "R" : "RW")}))
-  } else {
-    throw error(404, `Error fetching ${release} yang tree`)
-  }
-
-  // Tree Builder
-  class TreeNode {
-    name: string;
-    children: any[];
-	  details: any | PathDef;
-    constructor(name: string, isKey: boolean, details: any | PathDef) {
-      isKey ? this.name = name + "*" : this.name = name
-      this.children = [];
-      this.details = details;
+  if(model === "nokia" && releases[release]?.features) {
+    const fetchUrl = `${urlOrigin}/releases/${release}/features.txt`
+    
+    const featResponse = await fetch(fetchUrl)
+    if (featResponse.ok) {
+      const featText = await featResponse.text()
+      features = yaml.load(featText) as Platforms
+      [platforms, uniqueFeatures] = extractFeatures(features);
+    } else {
+      throw error(404, "Error fetching platform features")
     }
   }
 
-  const root = new TreeNode(release, false, {});
-  const extractBetween = (str: string) => {
-    const regex = /\[(.*?)\]/g;
-    const matches = [];
-    let match;
-    while ((match = regex.exec(str)) !== null) {
-      matches.push(match[1]);
-    }
-    return matches;
-  };
-
-  let keys: string[] = [];
-  for (const entry of paths) {
-    let currentNode = root;
-
-    let xpath = entry["path"];
-    let clean = removeKeyDefault(xpath);
-    let segments = clean.split("/").slice(1);
-    let segLen = segments.length;
-
-    segments.forEach((segment: string, i: number) => {
-      if(segment.includes("[")) keys = extractBetween(segment);
-      let childNode = currentNode.children.find((node: { name: string; }) => node.name === segment);
-
-      if (!childNode) {
-        let isKey = false;
-        let paramPath = (i == (segLen - 1) ? entry : {});
-        if(keys.length > 0 && keys.includes(segment)) isKey = true;
-        childNode = new TreeNode(segment, isKey, paramPath);
-        if(isKey) {
-          currentNode.children = [childNode].concat(currentNode.children)
-        }
-        else currentNode.children.push(childNode);
-      }
-
-      currentNode = childNode;
-    })
-  }
-
-  postMessage(root);
+  postMessage({platforms, uniqueFeatures});
 };
 
 export {};

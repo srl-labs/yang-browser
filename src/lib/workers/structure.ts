@@ -25,6 +25,15 @@ export interface FetchPostMessage {
   urlOrigin: string
 }
 
+export interface YangTreePostMessage {
+  model: string
+  release: string
+  urlOrigin: string
+  searchInput: string
+  stateInput: string 
+  featSelect: string[]
+}
+
 export interface FetchResponseMessage {
   paths: PathDef[]
   platforms: PlatformFeatures
@@ -32,6 +41,11 @@ export interface FetchResponseMessage {
 }
 
 export interface TreeResponseMessage {
+  platforms: PlatformFeatures
+  uniqueFeatures: string[]
+}
+
+export interface YangTreeResponseMessage {
   name?: string
   children?: any[]
   details?: any | PathDef
