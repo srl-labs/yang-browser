@@ -32,7 +32,7 @@
   // YANGTREE WORKER
   let yangTreeWorker: Worker | undefined = undefined
   async function loadYangTreeWorker (model: string, release: string, urlOrigin: string, searchInput: string, stateInput: string, featSelect: string[]) {
-    const YangTreeWorker = await import('$lib/workers/YangTree.worker?worker')
+    const YangTreeWorker = await import('$lib/workers/yangTree.worker?worker')
     yangTreeWorker = new YangTreeWorker.default()
     const yangTreeMessage: YangTreePostMessage = { model, release, urlOrigin, searchInput, stateInput, featSelect }
     yangTreeWorker.postMessage(yangTreeMessage)
