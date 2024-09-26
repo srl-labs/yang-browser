@@ -1,12 +1,12 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
 
-  export let showPlatformGrid: boolean
+  export let showPlatformFilters: boolean
   export let supportedPlatforms: string[]
   export let platformSelected = ""
 </script>
 
-{#if showPlatformGrid && supportedPlatforms?.length}
+{#if showPlatformFilters && supportedPlatforms?.length}
   <div transition:fade class="mt-4 grid grid-cols-2 md:grid-cols-6 lg:grid-cols-8 gap-4">
     {#each supportedPlatforms as entry}
       <input id="platform-{entry}" type="radio" class="hidden peer" bind:group={platformSelected} value="{entry}"/>

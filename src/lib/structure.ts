@@ -18,6 +18,7 @@ export interface PayLoad {
   release: string,
   allModels: Model[],
   urlPath: string,
+  platform: string
 }
 
 export interface Platforms {
@@ -30,6 +31,7 @@ export interface PlatformFeatures {
 
 export interface TreePayLoad {
   urlPath: string,
+  platform: string,
   crossLaunched: boolean,
   model: string,
   modelTitle: string, 

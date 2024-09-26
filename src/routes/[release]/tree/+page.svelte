@@ -1,129 +1,95 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { page } from "$app/stores";
-  import { derived, writable } from 'svelte/store';
+  import { onMount } from "svelte"
+  import { page } from "$app/stores"
 
-  import type { PlatformFeatures, TreePayLoad } from '$lib/structure';
+  import Header from '$lib/components/Header.svelte'
+  import Footer from '$lib/components/Footer.svelte'
+  import SearchInput from "$lib/components/SearchInput.svelte"
+  import StateButton from '$lib/components/StateButton.svelte'
+  import PlatformButton from '$lib/components/PlatformButton.svelte'
+	import PlatformGrid from '$lib/components/PlatformGrid.svelte'
+  
+  import YangTree from './YangTree.svelte'
+  import Popup from '$lib/components/Popup.svelte'
+  import Loading from '$lib/components/Loading.svelte'
 
-  import { pathFocus } from '$lib/components/sharedStore';
-  import { closeSidebar, removeKeyDefault } from '$lib/components/functions'
-
-  import Header from '$lib/components/Header.svelte';
-  import Footer from '$lib/components/Footer.svelte';
-  import StateButton from '$lib/components/StateButton.svelte';
-  import PlatformButton from '$lib/components/PlatformButton.svelte';
-  import Popup from '$lib/components/Popup.svelte';
-  import Loading from '$lib/components/Loading.svelte';
-  import YangTree from './YangTree.svelte';
-
-
-  // YangTree WORKER POST <- START
-  import type { YangTreePostMessage, YangTreeResponseMessage } from "$lib/workers/structure";
-
-  let treePaths: YangTreeResponseMessage = {}
+  import { pathFocus } from '$lib/components/sharedStore'
+  import { closeSidebar, toLower } from '$lib/components/functions'
+  import type { PlatformFeatures, TreePayLoad } from '$lib/structure'
+  import type { FetchPostMessage, FetchResponseMessage, YangTreePostMessage, YangTreeResponseMessage } from "$lib/workers/structure"
+  import { featSelect, platFeat, platSelect, searchStore, stateStore, yangTarget, yangTreeArgs } from "./store"
+  
+  // DEFAULTS
+  let popupDetail = {}
   let pastYangTreeArgs = ""
-
-  const onYangTreeWorkerMessage = (event: MessageEvent<YangTreeResponseMessage>) => {
-    treePaths = event.data
-    secondMountComplete = true
-  };
-
-  let yangTreeWorker: Worker | undefined = undefined;
-
-  const loadYangTreeWorker = async (model: string, release: string, urlOrigin: string, searchInput: string, stateInput: string, featSelect: string[]) => {
-    const YangTreeWorker = await import('$lib/workers/YangTree.worker?worker');
-    yangTreeWorker = new YangTreeWorker.default();
-
-    const yangTreeMessage: YangTreePostMessage = { model, release, urlOrigin, searchInput, stateInput, featSelect }
-    yangTreeWorker.postMessage(yangTreeMessage);
-
-    yangTreeWorker.onmessage = onYangTreeWorkerMessage;
-  }
-  // YangTree WORKER POST <- END
-
-
-
-  // Tree WORKER POST <- START
-  import type { FetchPostMessage, FetchResponseMessage } from "$lib/workers/structure";
-	import PlatformGrid from "$lib/components/PlatformGrid.svelte";
-	import SearchInput from "$lib/components/SearchInput.svelte";
-	
-  let firstMountComplete = false;
-  let secondMountComplete = false;
-  let platforms: PlatformFeatures = {}
+  let treePaths: YangTreeResponseMessage = {}
+  let platformFeatures: PlatformFeatures = {}
   let supportedPlatforms: string[] = []
   let uniqueFeatures: string[] = []
-  let platformSelected = ""
+  let treeWorkerComplete = false
+  let yangTreeWorkerComplete = false
 
-  const onReleaseWorkerMessage = (event: MessageEvent<FetchResponseMessage>) => {
-    platforms = event.data.platforms;
-    if(Object.keys(platforms)?.length) {
-      supportedPlatforms = Object.keys(platforms)
-    }
-    uniqueFeatures = event.data.uniqueFeatures;
-    platformSelected = "7220-IXR-D2L";
-    firstMountComplete = true
-    secondMountComplete = false
-
-    let platformFeatures = Object.keys(platforms)?.length ? platforms[platformSelected]: []
-    //pastYangTreeArgs = `${$page.data.urlPath};;;;${platformSelected}`
-    //loadYangTreeWorker(model, release, $page.url.origin, $page.data.urlPath, "", platformFeatures)
-    pastYangTreeArgs = `;;;;${platformSelected}`
-    loadYangTreeWorker(model, release, $page.url.origin, "", "", platformFeatures)
-  };
-
-  let releaseWorker: Worker | undefined = undefined;
-
-  const loadReleaseWorker = async (model: string, release: string, urlOrigin: string) => {
-    const ReleaseWorker = await import('$lib/workers/fetch.worker?worker');
-    releaseWorker = new ReleaseWorker.default();
-
-    const releaseMessage: FetchPostMessage = { model, release, urlOrigin }
-    releaseWorker.postMessage(releaseMessage);
-
-    releaseWorker.onmessage = onReleaseWorkerMessage;
+  // YANGTREE WORKER
+  let yangTreeWorker: Worker | undefined = undefined
+  async function loadYangTreeWorker (model: string, release: string, urlOrigin: string, searchInput: string, stateInput: string, featSelect: string[]) {
+    const YangTreeWorker = await import('$lib/workers/YangTree.worker?worker')
+    yangTreeWorker = new YangTreeWorker.default()
+    const yangTreeMessage: YangTreePostMessage = { model, release, urlOrigin, searchInput, stateInput, featSelect }
+    yangTreeWorker.postMessage(yangTreeMessage)
+    yangTreeWorker.onmessage = onYangTreeWorkerMessage
   }
-  // Tree WORKER POST <- END
-  
+  function onYangTreeWorkerMessage(event: MessageEvent<YangTreeResponseMessage>) {
+    treePaths = event.data
+    yangTreeWorkerComplete = true
+  }
 
-	export let data: TreePayLoad;
-  let {model, modelTitle, urlPath, release, allModels} = data;
+  // TREE WORKER
+  let treeWorker: Worker | undefined = undefined
+  async function loadReleaseWorker(model: string, release: string, urlOrigin: string) {
+    const ReleaseWorker = await import('$lib/workers/fetch.worker?worker')
+    treeWorker = new ReleaseWorker.default()
+    const releaseMessage: FetchPostMessage = { model, release, urlOrigin }
+    treeWorker.postMessage(releaseMessage)
+    treeWorker.onmessage = onReleaseWorkerMessage
+  }
+  function onReleaseWorkerMessage(event: MessageEvent<FetchResponseMessage>) {
+    platformFeatures = event.data.platformFeatures
+    if(Object.keys(platformFeatures)?.length) {
+      supportedPlatforms = Object.keys(platformFeatures)
+    }
+    uniqueFeatures = event.data.uniqueFeatures
+    treeWorkerComplete = true
+    yangTreeWorkerComplete = false
+    //pastYangTreeArgs = `${$page.data.urlPath};;;;${platformSelected}`
+    //loadYangTreeWorker(model, release, $page.url.origin, $page.data.urlPath, "", supportedPlatforms)
+    pastYangTreeArgs = `;;;;${platformSelected}`
+    loadYangTreeWorker(model, release, $page.url.origin, "", "", supportedPlatforms)
+  }
 
+  // ON PAGELOAD
+	export let data: TreePayLoad
+  let {model, modelTitle, urlPath, release, allModels} = data
   onMount(() => loadReleaseWorker(model, release, $page.url.origin))
 
-  // Defaults
-  pathFocus.set({});
-	let pathDetail = {};
+  // OTHER BINDING VARIABLES
+  let searchInput = ""
+  let stateInput = ""
+  let platformSelected = data.platform
+  let showPlatformFilters = false
+
+  pathFocus.set({})
 	pathFocus.subscribe((value) => {
-    pathDetail = value;
-  });
+    popupDetail = value
+  })
 
-  let showPlatformGrid = false;
-  const stateValues = [
-		{ label: "All", value: "" },
-		{ label: "State", value: "R" },
-		{ label: "Config", value: "RW" }
-	]
+  $: {
+    searchStore.set(toLower(searchInput))
+    stateStore.set(stateInput)
+    platFeat.set(platformFeatures)
+    platSelect.set(platformSelected)
+    yangTarget.set(treePaths)
+  }
 
-  // Writable Stores
-  let searchInput = "";
-  let searchStore = writable("");
-  $: searchStore.set(searchInput);
-
-  let stateInput = "";
-  let stateStore = writable("");
-  $: stateStore.set(stateInput);
-
-  let platSelect = writable("");
-  $: platSelect.set(platformSelected)
-
-  let yangTarget = writable<YangTreeResponseMessage>({});
-  $: yangTarget.set(treePaths)
-
-  // Derived Stores
-  let yangTreeArgs = derived([searchStore, stateStore, platSelect], ([$searchStore, $stateStore, $platSelect]) => $searchStore + ";;" + $stateStore + ";;" + $platSelect)
-  let featSelect = derived(platSelect, ($platSelect) => $platSelect != "" && Object.keys(platforms)?.length ? platforms[$platSelect]: []);
-  
   function updateYangTree() {
     pastYangTreeArgs = $yangTreeArgs
     loadYangTreeWorker(model, release, $page.url.origin, searchInput, stateInput, $featSelect)
@@ -134,7 +100,7 @@
 	<title>SR Linux {release} {model !== "nokia" ? modelTitle : ""} Tree Browser</title>
 </svelte:head>
 
-{#if !firstMountComplete}
+{#if !treeWorkerComplete}
   <Loading/>
 {:else}
   <Header model={model} modelTitle={modelTitle} release={release} allModels={allModels} home={false} />
@@ -146,9 +112,9 @@
       <SearchInput bind:searchInput />
       <div class="flex py-1 items-center space-x-2">
         <StateButton bind:stateInput />
-        <PlatformButton enabled={supportedPlatforms?.length} bind:showPlatformGrid />
+        <PlatformButton enabled={supportedPlatforms?.length} bind:showPlatformFilters />
       </div>
-      <PlatformGrid bind:showPlatformGrid bind:supportedPlatforms bind:platformSelected />
+      <PlatformGrid bind:showPlatformFilters bind:supportedPlatforms bind:platformSelected />
       <div class="text-right mt-6">
         <button class="px-4 py-2 rounded-lg text-xs 
           {pastYangTreeArgs === $yangTreeArgs ? 'bg-green-100 dark:bg-green-900 text-gray-500 dark:text-gray-500 cursor-not-allowed' : 'text-white bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800'}" 
@@ -163,7 +129,7 @@
             <YangTree bind:folder urlPath={searchInput !== "" ? "" : urlPath} />
           {/each}
         </div>
-        <Popup pathDetail={pathDetail}/>
+        <Popup {popupDetail} />
         <Footer home={false}/>
       </div>
     {/if}

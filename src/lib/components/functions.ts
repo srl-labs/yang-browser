@@ -1,5 +1,13 @@
 import type { Platforms, PlatformFeatures, PathDef } from '$lib/structure'
 
+export function toLower(str: string) {
+  return str.trim().toLowerCase()
+}
+
+export function toUpper(str: string) {
+  return str.trim().toUpperCase()
+}
+
 export function reverseSortVersions(versions: string[]) {
   return versions.sort((a, b) => {
     return b.localeCompare(a, undefined, { numeric: true });

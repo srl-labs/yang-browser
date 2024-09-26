@@ -1,91 +1,83 @@
 
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { onMount } from 'svelte'
+  import { page } from '$app/stores'
+  import { defaultPlatform } from '$lib/components/sharedStore'
 
-	import Header from '$lib/components/Header.svelte';
-  import Footer from '$lib/components/Footer.svelte';
-	import Popup from '$lib/components/Popup.svelte';
-  import Loading from '$lib/components/Loading.svelte';
-	import ComparePopup from '$lib/components/ComparePopup.svelte';
+	import Header from '$lib/components/Header.svelte'
+  import Footer from '$lib/components/Footer.svelte'
+	import Popup from '$lib/components/Popup.svelte'
+  import Loading from '$lib/components/Loading.svelte'
+	import ComparePopup from '$lib/components/ComparePopup.svelte'
 
-  import SearchInput from '$lib/components/SearchInput.svelte';
-  import StateButton from '$lib/components/StateButton.svelte';
-	import ChangesButton from '$lib/components/ChangesButton.svelte';
-	import PlatformButton from '$lib/components/PlatformButton.svelte';
-  import PlatformGrid from '$lib/components/PlatformGrid.svelte';
-  import Pagination from '$lib/components/Pagination.svelte';
+  import SearchInput from '$lib/components/SearchInput.svelte'
+  import StateButton from '$lib/components/StateButton.svelte'
+	import ChangesButton from '$lib/components/ChangesButton.svelte'
+	import PlatformButton from '$lib/components/PlatformButton.svelte'
+  import PlatformGrid from '$lib/components/PlatformGrid.svelte'
+  import Pagination from './Pagination.svelte'
 	
-  import { markFilter, markRender } from '$lib/components/functions';
-  import { compareStore, paginated, platFeat, platFind, platSelect, searchStore, stateStore, total, yangPaths } from '$lib/components/sharedStore';
+  import type { PlatformFeatures, ComparePayLoad } from '$lib/structure'
+  import type { ComparePostMessage, CompareResponseMessage, DiffResponseMessage } from '$lib/workers/structure'
+  import { compareStore, paginated, platFeat, platFind, platSelect, searchStore, stateStore, total, yangPaths } from './store'
+  import { markFilter, markRender, toLower, toUpper } from '$lib/components/functions'
 
+  // DEFAULTS
+  let popupDetail = {}
+  let diff: DiffResponseMessage[] = []
+  let platformFeatures: PlatformFeatures = {}
+  let uniqueFeatures: string[] = []
+  let supportedPlatforms: string[] = []
+  let workerComplete = false
+
+  // COMPARE WORKER
+  let compareWorker: Worker | undefined = undefined
+  async function loadWorker(x: string, y: string, model: string, urlOrigin: string) {
+    const CompareWorker = await import('$lib/workers/compare.worker?worker')
+    compareWorker = new CompareWorker.default()
+    const message: ComparePostMessage = { x, y, model, urlOrigin }
+    compareWorker.postMessage(message)
+    compareWorker.onmessage = onWorkerMessage
+  }
+  function onWorkerMessage(event: MessageEvent<CompareResponseMessage>) {
+    diff = event.data.diff
+    platformFeatures = event.data.platformFeatures
+    uniqueFeatures = event.data.uniqueFeatures
+    if(Object.keys(platformFeatures)?.length) {
+      supportedPlatforms = Object.keys(platformFeatures)
+    }
+    workerComplete = true
+  }
+
+  // ON PAGELOAD
   export let data: ComparePayLoad
   const {x, y, model, urlPath} = data
-
-  let pathDetail = {};
-  let showPlatformGrid = false;
-
-  // WORKER POST <- START
-	import type { PlatformFeatures, ComparePayLoad } from '$lib/structure';
-  import type { ComparePostMessage, CompareResponseMessage, DiffResponseMessage } from "$lib/workers/structure";
-	
-  let mountComplete = false
-  let diff: DiffResponseMessage[] = []
-  let platforms: PlatformFeatures = {}
-  let supportedPlatforms: string[] = []
-  let uniqueFeatures: string[] = []
-  let platformSelected = ""
-  
-  let compareWorker: Worker | undefined = undefined;
-
-  function onWorkerMessage(event: MessageEvent<CompareResponseMessage>) {
-    diff = event.data.diff;
-    platforms = event.data.platforms;
-    uniqueFeatures = event.data.uniqueFeatures;
-    platformSelected = "7220-IXR-D2L";
-    if(Object.keys(platforms)?.length) {
-      supportedPlatforms = Object.keys(platforms)
-    }
-    mountComplete = true
-  }
-
-  async function loadWorker(x: string, y: string, model: string, urlOrigin: string) {
-    const CompareWorker = await import('$lib/workers/compare.worker?worker');
-    compareWorker = new CompareWorker.default();
-
-    const message: ComparePostMessage = { x, y, model, urlOrigin }
-    compareWorker.postMessage(message);
-
-    compareWorker.onmessage = onWorkerMessage;
-  }
-  // WORKER POST <- END
-
   onMount(() => loadWorker(x, y, model, $page.url.origin))
 
-  // Writable Stores
+  // OTHER BINDING VARIABLES
   let searchInput = urlPath
-  $: searchStore.set(searchInput.trim().toLowerCase())
-
   let compareInput = ""
-  $: compareStore.set(compareInput)
+  let stateInput = ""
+  let platformSearch = ""
+  let showPlatformFilters = false
+  let platformSelected = defaultPlatform
 
-  let stateInput = "";
-  $: stateStore.set(stateInput);
-
-  let platformSearch = "";
-  $: platFind.set(platformSearch.trim().toUpperCase());
-
-  $: platFeat.set(platforms);
-  $: platSelect.set(platformSelected);
-  $: yangPaths.set(diff)
+  $: {
+    searchStore.set(toLower(searchInput))
+    compareStore.set(compareInput)
+    stateStore.set(stateInput)
+    platFeat.set(platformFeatures)
+    platFind.set(toUpper(platformSearch))
+    platSelect.set(platformSelected)
+    yangPaths.set(diff)
+  }
 </script>
-
 
 <svelte:head>
 	<title>Nokia SR Linux Compare {x} to {y} Yang Model</title>
 </svelte:head>
 
-{#if !mountComplete}
+{#if !workerComplete}
   <Loading/>
 {:else if $yangPaths.length > 0}
   <Header model={model} modelTitle={"compare"} release={`${x};${y}`} home={true} />
@@ -98,7 +90,7 @@
         <div class="py-2 space-x-2 flex items-center text-sm">
           <ChangesButton bind:compareInput />
           <StateButton bind:stateInput />
-          <PlatformButton enabled={supportedPlatforms?.length} bind:showPlatformGrid />
+          <PlatformButton enabled={supportedPlatforms?.length} bind:showPlatformFilters />
           <div class="dropdown">
             <a href="https://github.com/nokia/srlinux-yang-models/compare/v{x}..v{y}" target="_blank" class="dropdown-button font-nokia-headline-light px-3 py-1 rounded-full text-xs text-nowrap bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white inline-flex items-center align-bottom">
               <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
@@ -115,7 +107,7 @@
           </div>
         </div>
       </div>
-      <PlatformGrid bind:showPlatformGrid bind:supportedPlatforms bind:platformSelected />
+      <PlatformGrid bind:showPlatformFilters bind:supportedPlatforms bind:platformSelected />
       <Pagination />
       <div class="overflow-x-auto rounded-t-lg max-w-full mt-2">
         <table class="text-left w-full text-xs">
@@ -138,7 +130,7 @@
               {#each $paginated as item}
                 {@const path = markFilter(item.path, $searchStore)}
                 {@const type = markFilter(item.type, $searchStore)}
-                <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:cursor-pointer" on:click={() => pathDetail = item}>
+                <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:cursor-pointer" on:click={() => popupDetail = item}>
                   <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item.compare}</td>
                   <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item["is-state"]}</td>
                   <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div use:markRender={path}></div></td>
@@ -155,14 +147,14 @@
               {/each}
             {:else}
               <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                <td colspan="4" class="px-3 py-1.5 font-fira text-[13px] text-gray-400 dark:text-gray-500 text-center">{mountComplete ? 'No results found' : 'Yang compare under process...'}</td>
+                <td colspan="4" class="px-3 py-1.5 font-fira text-[13px] text-gray-400 dark:text-gray-500 text-center">{workerComplete ? 'No results found' : 'Yang compare under process...'}</td>
               </tr>
             {/if}
           </tbody>
         </table>
       </div>
       <Pagination />
-      <Popup pathDetail={pathDetail}/>
+      <Popup {popupDetail} />
     </div>
     <Footer home={false}/>
   </div>

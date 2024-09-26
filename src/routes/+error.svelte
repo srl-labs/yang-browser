@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/stores'
 </script>
 
 <div class="flex h-screen p-7 font-nokia-headline-light">

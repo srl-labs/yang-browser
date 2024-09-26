@@ -13,7 +13,7 @@ onmessage = async (event: MessageEvent<ComparePostMessage>) => {
   let xpaths: PathDef[] = []
   let ypaths: PathDef[] = []
   let yfeatures: Platforms = {}
-  let platforms: PlatformFeatures = {}
+  let platformFeatures: PlatformFeatures = {}
   let uniqueFeatures: string[] = []
 
   async function fetchPaths(release: string) {
@@ -43,7 +43,7 @@ onmessage = async (event: MessageEvent<ComparePostMessage>) => {
     if (featResponse.ok) {
       const featText = await featResponse.text()
       yfeatures = yaml.load(featText) as Platforms
-      [platforms, uniqueFeatures] = extractFeatures(yfeatures);
+      [platformFeatures, uniqueFeatures] = extractFeatures(yfeatures);
     } else {
       throw error(404, "Error fetching platform features")
     }
@@ -91,7 +91,7 @@ onmessage = async (event: MessageEvent<ComparePostMessage>) => {
   })
 
   //console.log('Worker request processed');
-  postMessage({diff, platforms, uniqueFeatures});
+  postMessage({diff, platformFeatures, uniqueFeatures});
 };
 
 export {};

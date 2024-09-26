@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { page } from "$app/stores";
-	import { goto } from "$app/navigation";
+	import { page } from "$app/stores"
+	import { goto } from "$app/navigation"
 	
-	import { pathFocus } from '$lib/components/sharedStore';
+	import { pathFocus } from '$lib/components/sharedStore'
 
-	export let folder;
-	export let urlPath: string = "";
+	export let folder
+	export let urlPath: string = ""
 	let expanded = false
 
 	// LOCAL FUNCTIONS
@@ -17,10 +17,10 @@
 	}
 
 	function leafClick(details: any) {
-		pathFocus.set(details);
-		$page.url.searchParams.delete("from");
-		$page.url.searchParams.set("path", details.path);
-		goto(`?${$page.url.searchParams.toString()}`, {noScroll: true});
+		pathFocus.set(details)
+		$page.url.searchParams.delete("from")
+		$page.url.searchParams.set("path", details.path)
+		goto(`?${$page.url.searchParams.toString()}`, {noScroll: true})
 	}
 </script>
 

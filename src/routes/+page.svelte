@@ -1,12 +1,13 @@
 <script lang="ts">
-  import Footer from '$lib/components/Footer.svelte';
+  import Footer from '$lib/components/Footer.svelte'
   
-  import yaml from 'js-yaml';
-  import rel from '$lib/releases.yaml?raw';
-  import type { Releases } from '$lib/structure';
-  import { reverseSortVersions } from '$lib/components/functions';
+  import yaml from 'js-yaml'
+  import rel from '$lib/releases.yaml?raw'
 
-  const releases = yaml.load(rel) as Releases;
+  import type { Releases } from '$lib/structure'
+  import { reverseSortVersions } from '$lib/components/functions'
+
+  const releases = yaml.load(rel) as Releases
   const validVersions = [...new Set(Object.keys(releases))]
 
   interface MajorGroup {
@@ -34,7 +35,7 @@
       const key = `v${major}`
 
       if (!group[key]) {
-        group[key] = {};
+        group[key] = {}
       }
       if(!group[key][minor]) {
         group[key][minor] = [target]
@@ -47,7 +48,7 @@
       if(top > 0) result[majorKey] = { focus: [], others: [] }
       for(const minorKey in group[majorKey]) {
         if(top > 0) {
-          const versions = group[majorKey][minorKey];
+          const versions = group[majorKey][minorKey]
           group[majorKey][minorKey] = reverseSortVersions(versions)
           result[majorKey].focus.push(group[majorKey][minorKey][0])
           group[majorKey][minorKey].shift()

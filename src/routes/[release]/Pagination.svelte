@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { count, start, end, total } from "./sharedStore";
+	import { count } from "$lib/components/sharedStore"
+	import { start, end, total } from "./store"
 
   function updateTable(s: number) {
     if(s >= 0 && s < $total) {
