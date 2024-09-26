@@ -1,35 +1,35 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { onMount } from 'svelte'
+	import { browser } from '$app/environment'
 
-	let darkMode = false;
+	let darkMode = false
 
 	onMount(() => {
 		if (browser) {
 			darkMode =
 				localStorage.theme === 'dark' ||
-				(!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+				(!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
-			themeIconSwitch();
+			themeIconSwitch()
 		}
 	})
 
 	const themeIconSwitch = () => {
 		if (darkMode) {
-			document.documentElement.classList.add('dark');
-			document.getElementById('toggle-dark-icon')?.classList.add('hidden');
-			document.getElementById('toggle-light-icon')?.classList.remove('hidden');
+			document.documentElement.classList.add('dark')
+			document.getElementById('toggle-dark-icon')?.classList.add('hidden')
+			document.getElementById('toggle-light-icon')?.classList.remove('hidden')
 		} else {
-			document.documentElement.classList.remove('dark');
-			document.getElementById('toggle-dark-icon')?.classList.remove('hidden');
-			document.getElementById('toggle-light-icon')?.classList.add('hidden');
+			document.documentElement.classList.remove('dark')
+			document.getElementById('toggle-dark-icon')?.classList.remove('hidden')
+			document.getElementById('toggle-light-icon')?.classList.add('hidden')
 		}
 	}
 
 	const toggleDarkMode = () => {
-		darkMode = !darkMode;
-		localStorage.setItem('theme', darkMode ? 'dark' : 'light');
-		themeIconSwitch();
+		darkMode = !darkMode
+		localStorage.setItem('theme', darkMode ? 'dark' : 'light')
+		themeIconSwitch()
 	}
 </script>
 

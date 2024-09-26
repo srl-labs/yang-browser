@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-	import { copy } from 'svelte-copy';
+  import { page } from '$app/stores'
+	import { copy } from 'svelte-copy'
 
-  import { closeSidebar, markRender } from '$lib/components/functions';
+  import { closeSidebar, markRender } from '$lib/components/functions'
 
   export let popupDetail: any = {}
   const treePopup = () => $page.url.pathname.includes("tree") ? true : false
 
   function closePopup() {
     if(Object.keys(popupDetail).length !== 0) {
-      popupDetail = {};
+      popupDetail = {}
     }
   }
 
   function closeSidebarPopup(event: any) {
     if(!document.getElementById("popupContent")?.contains(event.target)) {
-      closeSidebar();
-      closePopup();
+      closeSidebar()
+      closePopup()
     }
   }
 
@@ -42,8 +42,8 @@
       document.getElementById("clip")?.classList.toggle("hidden")
       document.getElementById("copied")?.classList.toggle("hidden")
     }
-    setTimeout(toggle, 1000);
-    toggle();
+    setTimeout(toggle, 1000)
+    toggle()
   }
 </script>
 

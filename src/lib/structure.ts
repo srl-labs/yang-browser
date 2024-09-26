@@ -1,5 +1,5 @@
 export interface Releases {
-  [key: string]: Release;
+  [key: string]: Release
 }
 
 export interface Release {

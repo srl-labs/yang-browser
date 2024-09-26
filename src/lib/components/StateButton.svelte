@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { stateValues } from '$lib/components/sharedStore';
+  import { stateValues } from '$lib/components/sharedStore'
 
-  export let stateInput = "";
+  export let stateInput = ""
 </script>
 
 <div class="dropdown">

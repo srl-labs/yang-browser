@@ -1,15 +1,16 @@
+
+import { error } from "@sveltejs/kit"
+
+import { extractFeatures } from "$lib/components/functions"
+import type { FetchPostMessage } from "$lib/workers/structure"
+import type { PathDef, Platforms, PlatformFeatures, Releases } from "$lib/structure"
+
 import yaml from 'js-yaml'
-import { error } from "@sveltejs/kit";
-import { extractFeatures } from "$lib/components/functions";
-
-import type { PathDef, Platforms, PlatformFeatures, Releases } from "$lib/structure";
-import type { FetchPostMessage } from "$lib/workers/structure";
-
 import rel from '$lib/releases.yaml?raw'
 const releases = yaml.load(rel) as Releases
 
 onmessage = async (event: MessageEvent<FetchPostMessage>) => {
-  const { model, release, urlOrigin } = event.data;
+  const { model, release, urlOrigin } = event.data
 
   let paths: PathDef[] = []
   let features: Platforms = {}
@@ -33,13 +34,13 @@ onmessage = async (event: MessageEvent<FetchPostMessage>) => {
     if (featResponse.ok) {
       const featText = await featResponse.text()
       features = yaml.load(featText) as Platforms
-      [platformFeatures, uniqueFeatures] = extractFeatures(features);
+      [platformFeatures, uniqueFeatures] = extractFeatures(features)
     } else {
       throw error(404, "Error fetching platform features")
     }
   }
 
-  postMessage({paths, platformFeatures, uniqueFeatures});
-};
+  postMessage({paths, platformFeatures, uniqueFeatures})
+}
 
-export {};
+export {}

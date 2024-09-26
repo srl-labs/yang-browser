@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { compareValues } from '$lib/components/sharedStore';
+  import { compareValues } from '$lib/components/sharedStore'
 
-  export let compareInput = "";
+  export let compareInput = ""
 </script>
 
 <div class="dropdown">

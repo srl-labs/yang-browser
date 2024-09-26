@@ -1,14 +1,15 @@
-import type { PathDef, Platforms, PlatformFeatures, Releases } from "$lib/structure";
-import type { ComparePostMessage, DiffResponseMessage } from "$lib/workers/structure";
+import { error } from "@sveltejs/kit"
+
+import { extractFeatures } from "$lib/components/functions"
+import type { PathDef, Platforms, PlatformFeatures, Releases } from "$lib/structure"
+import type { ComparePostMessage, DiffResponseMessage } from "$lib/workers/structure"
 
 import yaml from 'js-yaml'
 import rel from '$lib/releases.yaml?raw'
-import { error } from "@sveltejs/kit";
-import { extractFeatures } from "$lib/components/functions";
 const releases = yaml.load(rel) as Releases
 
 onmessage = async (event: MessageEvent<ComparePostMessage>) => {
-  const { x, y, model, urlOrigin } = event.data;
+  const { x, y, model, urlOrigin } = event.data
 
   let xpaths: PathDef[] = []
   let ypaths: PathDef[] = []
@@ -43,7 +44,7 @@ onmessage = async (event: MessageEvent<ComparePostMessage>) => {
     if (featResponse.ok) {
       const featText = await featResponse.text()
       yfeatures = yaml.load(featText) as Platforms
-      [platformFeatures, uniqueFeatures] = extractFeatures(yfeatures);
+      [platformFeatures, uniqueFeatures] = extractFeatures(yfeatures)
     } else {
       throw error(404, "Error fetching platform features")
     }
@@ -90,8 +91,7 @@ onmessage = async (event: MessageEvent<ComparePostMessage>) => {
     return 0
   })
 
-  //console.log('Worker request processed');
-  postMessage({diff, platformFeatures, uniqueFeatures});
-};
+  postMessage({diff, platformFeatures, uniqueFeatures})
+}
 
-export {};
+export {}

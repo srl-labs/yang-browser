@@ -1,10 +1,11 @@
-import { error } from "@sveltejs/kit";
-import type { PathDef, Releases } from "$lib/structure";
-import type { YangTreePostMessage } from "$lib/workers/structure";
-import { featureBasedFilter, removeKeyDefault, searchBasedFilter } from "$lib/components/functions";
+import { error } from "@sveltejs/kit"
+
+import type { PathDef, Releases } from "$lib/structure"
+import type { YangTreePostMessage } from "$lib/workers/structure"
+import { featureBasedFilter, removeKeyDefault, searchBasedFilter } from "$lib/components/functions"
 
 onmessage = async (event: MessageEvent<YangTreePostMessage>) => {
-  const { model, release, urlOrigin, searchInput, stateInput, featSelect } = event.data;
+  const { model, release, urlOrigin, searchInput, stateInput, featSelect } = event.data
 
   let paths: PathDef[] = []
 
@@ -18,73 +19,73 @@ onmessage = async (event: MessageEvent<YangTreePostMessage>) => {
     throw error(404, `Error fetching ${release} yang tree`)
   }
 
-  let stateFilter = paths.filter((x: any) => stateInput == "" ? true : x["is-state"] == stateInput);
-  let searchFilter = stateFilter.filter((x: any) => searchBasedFilter(x, searchInput));
-  let featFilter = featSelect?.length ? searchFilter.filter((x: any) => featureBasedFilter(x, featSelect)) : searchFilter;
+  let stateFilter = paths.filter((x: any) => stateInput == "" ? true : x["is-state"] == stateInput)
+  let searchFilter = stateFilter.filter((x: any) => searchBasedFilter(x, searchInput))
+  let featFilter = featSelect?.length ? searchFilter.filter((x: any) => featureBasedFilter(x, featSelect)) : searchFilter
 
   // Tree Builder
   class TreeNode {
-    name: string;
-    children: any[];
-	  details: any | PathDef;
-    type: string;
+    name: string
+    children: any[]
+	  details: any | PathDef
+    type: string
     constructor(name: string, isKey: boolean, details: any | PathDef, type: string) {
       isKey ? this.name = name + "*" : this.name = name
-      this.children = [];
-      this.details = details;
-      this.type = type;
+      this.children = []
+      this.details = details
+      this.type = type
     }
   }
 
-  const node = new TreeNode(release, false, {}, "folder");
+  const node = new TreeNode(release, false, {}, "folder")
   const extractBetween = (str: string) => {
-    const regex = /\[(.*?)\]/g;
-    const matches = [];
-    let match;
+    const regex = /\[(.*?)\]/g
+    const matches = []
+    let match
     while ((match = regex.exec(str)) !== null) {
-      matches.push(match[1]);
+      matches.push(match[1])
     }
-    return matches;
-  };
+    return matches
+  }
 
-  let keys: string[] = [];
+  let keys: string[] = []
   for (const entry of featFilter) {
-    let currentNode = node;
+    let currentNode = node
 
-    let xpath = entry["path"];
-    let clean = removeKeyDefault(xpath);
-    let segments = clean.split("/").slice(1);
-    let segLen = segments.length;
+    let xpath = entry["path"]
+    let clean = removeKeyDefault(xpath)
+    let segments = clean.split("/").slice(1)
+    let segLen = segments.length
 
     let containerPath = []
 
     segments.forEach((segment: string, i: number) => {
       containerPath.push(segment)
-      if(segment.includes("[")) keys = extractBetween(segment);
-      let childNode = currentNode.children.find((node: { name: string; }) => node.name === segment);
+      if(segment.includes("[")) keys = extractBetween(segment)
+      let childNode = currentNode.children.find((node: { name: string }) => node.name === segment)
 
       if (!childNode) {
-        let isKey = false;
+        let isKey = false
         let isLast = (i == (segLen - 1))
 
-        let paramPath = (isLast ? entry : {"path" : "/" + containerPath.join("/")});
-        if(keys.length > 0 && keys.includes(segment)) isKey = true;
+        let paramPath = (isLast ? entry : {"path" : "/" + containerPath.join("/")})
+        if(keys.length > 0 && keys.includes(segment)) isKey = true
         let nodeType = (isLast ? "file" : "folder")
 
         childNode = new TreeNode(segment, isKey, paramPath, nodeType)
         if(isKey) {
           currentNode.children = [childNode].concat(currentNode.children)
         }
-        else currentNode.children.push(childNode);
+        else currentNode.children.push(childNode)
 
         if(isLast) containerPath.pop()
       }
 
-      currentNode = childNode;
+      currentNode = childNode
     })
   }
 
-  postMessage(node);
-};
+  postMessage(node)
+}
 
-export {};
+export {}
