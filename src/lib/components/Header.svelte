@@ -1,21 +1,21 @@
 <script lang="ts">
-  import Theme from '$lib/components/Theme.svelte';
+  import yaml from 'js-yaml'
+  import rel from '$lib/releases.yaml?raw'
 
-  import yaml from 'js-yaml';
-  import rel from '$lib/releases.yaml?raw';
-  import type { Model, Releases } from '$lib/structure';
-  import { reverseSortVersions } from '$lib/components/functions';
+  import type { Model, Releases } from '$lib/structure'
+  import { reverseSortVersions } from '$lib/components/functions'
+  import { toggleSidebar, closeSidebar } from '$lib/components/functions'
+  
+  import Theme from '$lib/components/Theme.svelte'
 
-  const releases = yaml.load(rel) as Releases;
+  const releases = yaml.load(rel) as Releases
   const validVersions = reverseSortVersions([...new Set(Object.keys(releases))])
 
-  import { toggleSidebar, closeSidebar } from '$lib/components/functions'
-
-  export let model: string;
-  export let modelTitle: string;
-  export let release: string;
-  export let allModels: Model[] = [];
-  export let home: boolean;
+  export let model: string
+  export let modelTitle: string
+  export let release: string
+  export let allModels: Model[] = []
+  export let home: boolean
 </script>
 
 <svelte:window on:keyup={({key}) => key === "Escape" ? closeSidebar() : ""} />

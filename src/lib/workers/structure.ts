@@ -15,7 +15,7 @@ export interface DiffResponseMessage extends PathDef {
 
 export interface CompareResponseMessage {
   diff: DiffResponseMessage[]
-  platforms: PlatformFeatures
+  platformFeatures: PlatformFeatures
   uniqueFeatures: string[]
 }
 
@@ -25,13 +25,27 @@ export interface FetchPostMessage {
   urlOrigin: string
 }
 
+export interface YangTreePostMessage {
+  model: string
+  release: string
+  urlOrigin: string
+  searchInput: string
+  stateInput: string 
+  featSelect: string[]
+}
+
 export interface FetchResponseMessage {
   paths: PathDef[]
-  platforms: PlatformFeatures
+  platformFeatures: PlatformFeatures
   uniqueFeatures: string[]
 }
 
 export interface TreeResponseMessage {
+  platforms: PlatformFeatures
+  uniqueFeatures: string[]
+}
+
+export interface YangTreeResponseMessage {
   name?: string
   children?: any[]
   details?: any | PathDef

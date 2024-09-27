@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let home: boolean;
+	export let home: boolean
 </script>
 
 <p

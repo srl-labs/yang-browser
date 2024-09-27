@@ -1,19 +1,21 @@
-import { error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit'
 
 import yaml from 'js-yaml'
 import rel from '$lib/releases.yaml?raw'
 import type { Releases } from '$lib/structure'
+import { defaultPlatform } from '$lib/components/sharedStore'
+
 const releases = yaml.load(rel) as Releases
 const validVersions = [...new Set(Object.keys(releases))]
 
-export async function load({ url, fetch, params }) {
-  const release = params.release;
+export async function load({ url, params }) {
+  const release = params.release
 
   if(!validVersions.includes(release)) {
     throw error(404, "Unsupported release")
   }
 
-  const model = url.searchParams.get("model")?.trim() ?? "nokia";
+  const model = url.searchParams.get("model")?.trim() ?? "nokia"
   if(model != "openconfig" && model != "nokia") {
     throw error(404, "Unsupported model")
   }
@@ -32,12 +34,14 @@ export async function load({ url, fetch, params }) {
     }
   }
 
-  const urlPath = url.searchParams.get("path")?.trim() ?? "";
-  const crossLaunched = url.searchParams.get("from")?.trim() === "pb" ? true : false ?? "";
+  const urlPath = url.searchParams.get("path")?.trim().toLowerCase() ?? ""
+  const platform = url.searchParams.get("platform")?.trim().toLowerCase() ?? defaultPlatform
+  const crossLaunched = url.searchParams.get("from")?.trim() === "pb" ? true : false
 
   return {
     model: model, 
     release: release, 
+    platform: platform, 
     allModels: allModels, 
     modelTitle: modelTitle,
     crossLaunched: crossLaunched, 

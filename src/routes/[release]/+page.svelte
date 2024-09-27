@@ -1,140 +1,85 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { page } from "$app/stores";
-	import { writable, derived } from 'svelte/store'
+  import { onMount } from 'svelte'
+  import { page } from '$app/stores'
   import { fade } from 'svelte/transition'
   
-  import Header from '$lib/components/Header.svelte';
-  import Footer from '$lib/components/Footer.svelte';
-  import Popup from '$lib/components/Popup.svelte';
-  import Loading from "$lib/components/Loading.svelte";
+  import Header from '$lib/components/Header.svelte'
+  import Footer from '$lib/components/Footer.svelte'
+  import Popup from '$lib/components/Popup.svelte'
+  import Loading from '$lib/components/Loading.svelte'
 
-  import { closeSidebar, searchBasedFilter, featureBasedFilter, markFilter, markRender } from '$lib/components/functions'
-  import type { PayLoad, PathDef, PlatformFeatures } from '$lib/structure';
+  import StateButton from '$lib/components/StateButton.svelte'
+  import SearchInput from '$lib/components/SearchInput.svelte'
+  import PlatformButton from '$lib/components/PlatformButton.svelte'
+  import ShowPrefixCheck from '$lib/components/ShowPrefixCheck.svelte'
+  import Pagination from './Pagination.svelte'
 
+  import type { PayLoad, PathDef, PlatformFeatures } from '$lib/structure'
+  import type { FetchPostMessage, FetchResponseMessage } from '$lib/workers/structure'
+  import { toLower, toUpper, closeSidebar, markFilter, markRender } from '$lib/components/functions'
+	import { featDeviate, featExtra, featFilter, featFind, featList, featSelect, featStore, paginated, platFeat, platFind, platList, platSelect, platStore, prefixStore, searchStore, stateStore, total, yangPaths } from './store'
 
-
-  // WORKER POST <- START
-  import type { FetchPostMessage, FetchResponseMessage } from "$lib/workers/structure";
-	
-  let mountComplete = false;
+  // DEFAULTS
+  let popupDetail = {}
   let paths: PathDef[] = []
-  let platforms: PlatformFeatures = {}
+  let platformFeatures: PlatformFeatures = {}
   let uniqueFeatures: string[] = []
-  let platOption = ""
+  let supportedPlatforms: string[] = []
+  let workerComplete = false
 
-  const onWorkerMessage = (event: MessageEvent<FetchResponseMessage>) => {
-    paths = event.data.paths;
-    platforms = event.data.platforms;
-    uniqueFeatures = event.data.uniqueFeatures;
-    platOption = "7220-IXR-D2L";
-    mountComplete = true
-  };
-
-  let compareWorker: Worker | undefined = undefined;
-
-  const loadWorker = async (model: string, release: string, urlOrigin: string) => {
-    const CompareWorker = await import('$lib/workers/fetch.worker?worker');
-    compareWorker = new CompareWorker.default();
-
+  // RELEASE WORKER
+  let releaseWorker: Worker | undefined = undefined
+  async function loadWorker(model: string, release: string, urlOrigin: string) {
+    const ReleaseWorker = await import('$lib/workers/fetch.worker?worker')
+    releaseWorker = new ReleaseWorker.default()
     const message: FetchPostMessage = { model, release, urlOrigin }
-    compareWorker.postMessage(message);
-
-    compareWorker.onmessage = onWorkerMessage;
+    releaseWorker.postMessage(message)
+    releaseWorker.onmessage = onWorkerMessage
   }
-  // WORKER POST <- END
+  function onWorkerMessage(event: MessageEvent<FetchResponseMessage>) {
+    paths = event.data.paths
+    platformFeatures = event.data.platformFeatures
+    uniqueFeatures = event.data.uniqueFeatures
+    if(Object.keys(platformFeatures)?.length) {
+      supportedPlatforms = Object.keys(platformFeatures)
+    }
+    workerComplete = true
+  }
   
-
-
-	export let data: PayLoad;
-  let {model, modelTitle, urlPath, release, allModels} = data;
-
+  // ON PAGELOAD
+  export let data: PayLoad
+  let {model, modelTitle, urlPath, release, allModels} = data
   onMount(() => loadWorker(model, release, $page.url.origin))
 
-  // Defaults
-  let count = 40;
-  let pathDetail = {};
-  let showMoreFilters = false;
-  const stateValues = [
-		{ label: "All", value: "" },
-		{ label: "State", value: "R" },
-		{ label: "Config", value: "RW" }
-	]
+  // OTHER BINDING VARIABLES
+  let searchInput = urlPath
+  let stateInput = ""
+  let showPathPrefix = false
+  let platformSearch = ""
+  let featureSearch = ""
+  let showPlatformFilters = false
+  let platOption = data.platform
 
-  // Writable Stores
-  let searchInput = urlPath;
-  let searchStore = writable("");
-  $: searchStore.set(searchInput.trim().toLowerCase());
-
-  let stateInput = "";
-  let stateStore = writable("");
-  $: stateStore.set(stateInput);
-
-  let showPathPrefix = false;
-  let prefixStore = writable(false)
+  $: searchStore.set(toLower(searchInput))
+  $: stateStore.set(stateInput)
   $: prefixStore.set(showPathPrefix)
-
-  let platformSearch = "";
-  let platFind = writable("");
-  $: platFind.set(platformSearch.trim().toUpperCase());
-
-  let platSelect = writable("");
+  $: platFeat.set(platformFeatures)
+  $: platStore.set(supportedPlatforms)
+  $: platFind.set(toUpper(platformSearch))
   $: platSelect.set(platOption)
-
-  let featureSearch = "";
-  let featFind = writable("");
-  $: featFind.set(featureSearch.trim().toLowerCase());
-
-  let start = writable(0);
-  let yangPaths = writable<PathDef[]>([]);
+  $: featStore.set(uniqueFeatures)
+  $: featFind.set(toLower(featureSearch))
   $: yangPaths.set(paths)
 
-  let platStore = writable<string[]>([]);
-  $: if(Object.keys(platforms)?.length) platStore.set(Object.keys(platforms));
-
-  let featStore = writable<string[]>([]);
-  $: if(uniqueFeatures?.length) featStore.set(uniqueFeatures);
-
-  let featDeviate = writable<string[]>([]);
-  let featExtra = writable<string[]>([]);
-
-  // Feature based filter
-  function featFilterAction (platFeatures: string[], deviation: string[], extras: string[]) {
-    if(platFeatures?.length) {
-      platFeatures = platFeatures.filter(f => !deviation.includes(f))
-      return platFeatures.concat(extras)
-    } else return []
-  }
-
-  // Derived Stores
-  let platList = derived([platFind, platStore], ([$platFind, $platStore]) => $platStore?.length ? $platStore.filter((x: string) => x.includes($platFind)) : []);
-  let featList = derived([featFind, featStore], ([$featFind, $featStore]) => $featStore?.length ? $featStore.filter((x: string) => x.includes($featFind)) : []);
-
-  let featSelect = derived(platSelect, ($platSelect) => $platSelect != "" && Object.keys(platforms)?.length ? platforms[$platSelect]: []);
-  let featFilter = derived([featSelect, featDeviate, featExtra], ([$featSelect, $featDeviate, $featExtra]) => featFilterAction($featSelect, $featDeviate, $featExtra));
-  
-  let stateFilter = derived([stateStore, yangPaths], ([$stateStore, $yangPaths]) => $yangPaths.filter((x: any) => $stateStore == "" ? true : x["is-state"] == $stateStore));
-  let searchFilter = derived([searchStore, stateFilter, prefixStore], ([$searchStore, $stateFilter, $prefixStore]) => $stateFilter.filter((x: any) => searchBasedFilter(x, $searchStore, $prefixStore)));
-
-  let platFeatFilter = derived([featFilter, searchFilter],  ([$featFilter, $searchFilter]) => $featFilter?.length ? $searchFilter.filter((x: any) => featureBasedFilter(x, $featFilter)) : $searchFilter);
-
-  let total = derived(platFeatFilter, ($platFeatFilter) => {start.set(0); return $platFeatFilter.length});
-  let end = derived([start, total], ([$start, $total]) => ($start + count) <= $total ? ($start + count) : $total);
-
-  let paginated = derived([start, end, platFeatFilter], ([$start, $end, $platFeatFilter]) => $platFeatFilter.slice($start, $end));
-
-  // Update Table Pagination
-  const updateTable = (s: number) => {if(s >= 0 && s < $total) start.set(s)}
-
-  // Reset feature deviations and extras
+  // RESET FEATURE DEVIATIONS AND EXTRAS
   function resetFeatSelect() {
     featDeviate.set([])
     featExtra.set([])
   }
 
-  // Update feature deviations and extras
+  // UPDATE FEATURE DEVIATIONS AND EXTRAS
   function updateFeatDeviate (event: any, feat: string) {
-    const checked = (event.target as HTMLInputElement)?.checked;
+    const checked = (event.target as HTMLInputElement)?.checked
     let fd = $featDeviate
     let fe = $featExtra
     if(!checked && $featSelect.includes(feat) && !fd.includes(feat)) {
@@ -160,7 +105,7 @@
 	<title>Nokia SR Linux {release} {model !== "nokia" ? modelTitle : ""} Yang Model</title>
 </svelte:head>
 
-{#if !mountComplete}
+{#if !workerComplete}
   <Loading/>
 {:else if $yangPaths.length > 0}
   <Header model={model} modelTitle={modelTitle} release={release} allModels={allModels} home={true} />
@@ -169,67 +114,15 @@
   <div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[85px]" on:click={closeSidebar}>
     <div class="px-6 pt-6 container mx-auto">
       <p class="text-gray-800 dark:text-gray-300 font-nokia-headline">Path Browser</p>
-      <div class="my-2 font-fira">
-        <input type="text" bind:value={searchInput} placeholder="Search..." class="w-full text-[13px] px-3 py-2 rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
-      </div>
+      <SearchInput bind:searchInput />
       <div class="overflow-x-auto scroll-light dark:scroll-dark">
         <div class="py-2 space-x-2 flex items-center">
-          <div class="dropdown">
-            <button class="dropdown-button px-2 py-1 text-xs border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-center inline-flex items-center">
-              {#if stateInput === ""}
-                State
-                <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                </svg>
-              {:else}
-              <span class="font-fira text-gray-600 dark:text-gray-300 px-1">{stateInput}</span> - {stateValues.filter(x => x.value === stateInput)[0].label}
-                <button class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-400" on:click={() => stateInput = ""}>
-                  <svg class="w-4 h-4 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z" clip-rule="evenodd"/>
-                  </svg>
-                </button>
-              {/if}
-            </button>
-            <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
-              <div class="my-2 overflow-y-auto scroll-light dark:scroll-dark">
-                <ul>
-                  {#each stateValues as entry}
-                    {#if entry.value != ""}
-                      <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-                      <li class="flex items-center px-4 py-2 text-xs hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer" on:click={() => stateInput = entry.value}>
-                        <p class="flex">
-                          <span class="font-fira text-gray-500 dark:text-gray-400 w-3 mr-2">{entry.value != "" ? entry.value : ""}</span>
-                          <span class="ml-1">{entry.label}</span>
-                        </p>
-                      </li>
-                    {/if}
-                  {/each}
-                </ul>
-              </div>
-            </div>
-          </div>
-          {#if uniqueFeatures?.length}
-            <button class="flex items-center ml-2 px-3 py-1 w-fit text-xs rounded-lg bg-blue-100 hover:bg-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600 border border-blue-200 dark:border-blue-600 dark:text-white" on:click={() => showMoreFilters = !showMoreFilters}>
-              {#if !showMoreFilters}
-                <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-                </svg>
-              {/if}
-              {#if showMoreFilters}
-                <svg class="w-2 h-2 mr-1 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
-                </svg>
-              {/if}
-              Filters
-            </button>
-          {/if}
-          <div class="flex items-center text-nowrap px-3 py-1 w-fit border hover:border-gray-300 dark:border-gray-500 dark:hover:border-gray-400 rounded-lg cursor-pointer">
-            <input id="prefix-checkbox" type="checkbox" class="w-3 h-3 cursor-pointer" bind:checked={showPathPrefix}>
-            <label for="prefix-checkbox" class="ms-2 text-xs text-gray-900 dark:text-gray-300 select-none cursor-pointer">Show prefix</label>
-          </div>
+          <StateButton bind:stateInput />
+          <PlatformButton enabled={supportedPlatforms?.length} bind:showPlatformFilters />
+          <ShowPrefixCheck bind:showPathPrefix />
         </div>
       </div>
-      {#if showMoreFilters}
+      {#if showPlatformFilters}
         <div transition:fade class="flex flex-wrap items-start mt-4 md:space-x-6">
           <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-40">
             <p class="px-4 py-2 font-nokia-headline text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">Platform</p>
@@ -269,21 +162,7 @@
           </div>
         </div>
       {/if}
-      <div class="flex items-center justify-end py-3 text-sm mt-2">
-        {#if $total > 0}
-          <p class="mr-2 text-gray-800 dark:text-gray-200">{$start + 1} - {$end > 1 ? $end : 0} of {$total}</p>
-          <button class="ml-2 {$start == 0 ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$start == 0}" on:click={() => updateTable($start - count)}>
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd"/>
-            </svg>
-          </button>
-          <button class="ml-2 {$end == $total ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$end == $total}" on:click={() => updateTable($end)}>
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/>
-            </svg>
-          </button>
-        {/if}
-      </div>
+      <Pagination />
       <div class="overflow-x-auto rounded-t-lg max-w-full mt-2">
         <table class="text-left w-full">
           <colgroup>
@@ -303,7 +182,7 @@
               {#each $paginated as item}
                 {@const path = markFilter((showPathPrefix ? item["path-with-prefix"] : item.path), $searchStore)}
                 {@const type = markFilter(item.type, $searchStore)}
-                <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" on:click={() => pathDetail = item}>
+                <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600" on:click={() => popupDetail = item}>
                   <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight">{item["is-state"]}</td>
                   <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight group"><div use:markRender={path}></div></td>
                   <td class="px-3 py-1.5 font-fira text-[13px] tracking-tight"><div use:markRender={type}></td>
@@ -317,22 +196,8 @@
           </tbody>
         </table>
       </div>
-      <div class="flex items-center justify-end py-3 text-sm mt-2">
-        {#if $total > 0}
-          <p class="mr-2 text-gray-800 dark:text-gray-200">{$start + 1} - {$end > 1 ? $end : 0} of {$total}</p>
-          <button class="ml-2 {$start == 0 ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$start == 0}" on:click={() => updateTable($start - count)}>
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd"/>
-            </svg>
-          </button>
-          <button class="ml-2 {$end == $total ? 'bg-gray-300 dark:bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-600'} text-white rounded" disabled="{$end == $total}" on:click={() => updateTable($end)}>
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/>
-            </svg>
-          </button>
-        {/if}
-      </div>
-      <Popup pathDetail={pathDetail}/>
+      <Pagination />
+      <Popup {popupDetail} />
     </div>
     <Footer home={false}/>
   </div>

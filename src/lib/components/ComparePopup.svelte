@@ -1,6 +1,6 @@
 <script lang="ts">
-  export let x: string;
-  export let y: string;
+  export let x: string
+  export let y: string
 </script>
 
 <div class="flex h-screen p-7 font-nokia-headline-light">
