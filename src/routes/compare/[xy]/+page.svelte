@@ -62,15 +62,13 @@
   let showPlatformFilters = false
   let platformSelected = defaultPlatform
 
-  $: {
-    searchStore.set(toLower(searchInput))
-    compareStore.set(compareInput)
-    stateStore.set(stateInput)
-    platFeat.set(platformFeatures)
-    platFind.set(toUpper(platformSearch))
-    platSelect.set(platformSelected)
-    yangPaths.set(diff)
-  }
+  $: searchStore.set(toLower(searchInput))
+  $: compareStore.set(compareInput)
+  $: stateStore.set(stateInput)
+  $: platFeat.set(platformFeatures)
+  $: platFind.set(toUpper(platformSearch))
+  $: platSelect.set(platformSelected)
+  $: yangPaths.set(diff)
 </script>
 
 <svelte:head>

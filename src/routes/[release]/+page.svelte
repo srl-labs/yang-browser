@@ -60,18 +60,16 @@
   let showPlatformFilters = false
   let platOption = data.platform
 
-  $: {
-    searchStore.set(toLower(searchInput))
-    stateStore.set(stateInput)
-    prefixStore.set(showPathPrefix)
-    platFeat.set(platformFeatures)
-    platStore.set(supportedPlatforms)
-    platFind.set(toUpper(platformSearch))
-    platSelect.set(platOption)
-    featStore.set(uniqueFeatures)
-    featFind.set(toLower(featureSearch))
-    yangPaths.set(paths)
-  }
+  $: searchStore.set(toLower(searchInput))
+  $: stateStore.set(stateInput)
+  $: prefixStore.set(showPathPrefix)
+  $: platFeat.set(platformFeatures)
+  $: platStore.set(supportedPlatforms)
+  $: platFind.set(toUpper(platformSearch))
+  $: platSelect.set(platOption)
+  $: featStore.set(uniqueFeatures)
+  $: featFind.set(toLower(featureSearch))
+  $: yangPaths.set(paths)
 
   // RESET FEATURE DEVIATIONS AND EXTRAS
   function resetFeatSelect() {

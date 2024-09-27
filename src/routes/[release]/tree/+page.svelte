@@ -21,7 +21,10 @@
 
   import type { PlatformFeatures, TreePayLoad } from '$lib/structure'
   import type { FetchPostMessage, FetchResponseMessage, YangTreePostMessage, YangTreeResponseMessage } from "$lib/workers/structure"
-  
+
+  const isCrossLaunched = () => $page.data.crossLaunched
+  const getUrlPath = () => $page.data.urlPath
+
   // DEFAULTS
   let popupDetail = {}
   let pastYangTreeArgs = ""
@@ -30,7 +33,6 @@
   let supportedPlatforms: string[] = []
   let uniqueFeatures: string[] = []
   let treeWorkerComplete = false
-  let yangTreeWorkerComplete = false
 
   // YANGTREE WORKER
   let yangTreeWorker: Worker | undefined = undefined
@@ -43,7 +45,6 @@
   }
   function onYangTreeWorkerMessage(event: MessageEvent<YangTreeResponseMessage>) {
     treePaths = event.data
-    yangTreeWorkerComplete = true
   }
 
   // TREE WORKER
@@ -62,21 +63,19 @@
     }
     uniqueFeatures = event.data.uniqueFeatures
     treeWorkerComplete = true
-    yangTreeWorkerComplete = false
-
+    let searchInput = isCrossLaunched() ? "" : getUrlPath()
     let featureSelected = platformFeatures[$page.data.platform]
-    let searchInput = $page.data.crossLaunched ? "" : $page.data.urlPath
     pastYangTreeArgs = `${searchInput};;;;${platformSelected}`
     loadYangTreeWorker(model, release, $page.url.origin, searchInput, "", featureSelected)
   }
 
   // ON PAGELOAD
 	export let data: TreePayLoad
-  let {model, modelTitle, urlPath, crossLaunched, release, allModels} = data
+  let {model, modelTitle, release, allModels} = data
   onMount(() => loadReleaseWorker(model, release, $page.url.origin))
 
   // OTHER BINDING VARIABLES
-  let searchInput = crossLaunched ? "" : urlPath
+  let searchInput = isCrossLaunched() ? "" : getUrlPath()
   let stateInput = ""
   let platformSelected = data.platform
   let showPlatformFilters = false
@@ -85,27 +84,27 @@
 	pathFocus.subscribe((value) => {
     popupDetail = value
   })
-
+  
+  $: platFeat.set(platformFeatures)
   $: {
     searchStore.set(toLower(searchInput))
     stateStore.set(stateInput)
-    platFeat.set(platformFeatures)
     platSelect.set(platformSelected)
-    yangTarget.set(treePaths)
   }
+  $: yangTarget.set(treePaths)
 
   // TRIGGER SEARCH FILTERS
   function triggerApply() {
     if(pastYangTreeArgs !== $yangTreeArgs) {
       pastYangTreeArgs = $yangTreeArgs
       $page.url.searchParams.delete("from")
-      if(searchInput != "") {
-        $page.url.searchParams.set("path", searchInput)
+      if($searchStore != "") {
+        $page.url.searchParams.set("path", $searchStore)
       } else {
         $page.url.searchParams.delete("path")
       }
       goto(`?${$page.url.searchParams.toString()}`, {invalidateAll: true})
-      loadYangTreeWorker(model, release, $page.url.origin, searchInput, stateInput, $featSelect)
+      loadYangTreeWorker(model, release, $page.url.origin, $searchStore, $stateStore, $featSelect)
     }
 	}
 </script>
@@ -142,7 +141,7 @@
       <div class="px-5 py-4 container mx-auto border-t dark:border-gray-600">
         <div class="font-fira text-xs tracking-tight">
           {#each $yangTarget.children as folder}
-            <YangTree {folder} {crossLaunched} {urlPath} expanded={decideExpand(folder, crossLaunched, urlPath)} />
+            <YangTree {folder} expanded={decideExpand(folder, isCrossLaunched(), getUrlPath())} />
           {/each}
         </div>
         <Popup {popupDetail} />
