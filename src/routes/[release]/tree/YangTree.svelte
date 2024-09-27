@@ -3,18 +3,15 @@
 	import { goto } from "$app/navigation"
 	
 	import { pathFocus } from '$lib/components/sharedStore'
+	import { markFilter, markRender } from "$lib/components/functions"
+	import { decideExpand } from "./expand"
 
 	export let folder
-	export let urlPath: string = ""
-	let expanded = false
+	export let crossLaunched = false
+	export let urlPath = ""
+	export let expanded = false
 
-	// LOCAL FUNCTIONS
 	const toggle = () => expanded = !expanded
-	const isCrossLaunched = () => urlPath !== "" && $page.data.crossLaunched
-
-	function expandPriority(targetPath: string) {
-		return urlPath.replaceAll("=*", "").indexOf(targetPath) !== -1
-	}
 
 	function leafClick(details: any) {
 		pathFocus.set(details)
@@ -39,24 +36,30 @@
       <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
     </svg>
   </span>
-  <div class="flex">{folder.name}</div>
+  <div class="flex" title="{folder.details.path}" use:markRender={markFilter(folder.name, urlPath)}>{folder.name}</div>
 </button>
 
-{#if (isCrossLaunched() ? expandPriority(folder.details.path) : expanded) && folder.children && folder.children?.length}
-	<ul class="ml-2.5 px-2 list-none border-l dark:border-gray-300">
-		{#each folder.children as entry}
-			<li class="pt-1">
-				{#if entry.children.length > 0}
-					<svelte:self folder={entry} urlPath={urlPath} />
-				{:else}
-					<button class="ml-2.5 px-2 py-0.5 rounded hover:underline 
-						hover:bg-gray-200 hover:text-black hover:dark:bg-gray-600 hover:dark:text-gray-200 
-						{urlPath === entry.details.path ? 'bg-gray-200 dark:bg-gray-600 dark:text-gray-200' : 'text-blue-600 dark:text-blue-500'}" 
-						on:click={() => leafClick(entry.details)}>
-						<div title="{entry.details.path}">{entry.name}</div>
-					</button>
-				{/if}
-			</li>
-		{/each}
-	</ul>
+{#if expanded}
+	{#if folder.children && folder.children?.length}
+		<ul class="ml-2.5 px-2 list-none border-l dark:border-gray-300">
+			{#each folder.children as entry}
+				<li class="pt-1">
+					{#if entry.children.length > 0}
+						<svelte:self folder={entry} {crossLaunched} {urlPath} expanded={decideExpand(entry, crossLaunched, urlPath)} />
+					{:else}
+						<button class="ml-2.5 px-2 py-0.5 rounded hover:underline 
+							hover:bg-gray-200 hover:text-black hover:dark:bg-gray-600 hover:dark:text-gray-200 
+							{urlPath === entry.details.path ? 'bg-gray-200 dark:bg-gray-600 dark:text-gray-200' : 'text-blue-600 dark:text-blue-500'}" 
+							on:click={() => leafClick(entry.details)}>
+							{#if urlPath === entry.details.path}
+                <div title="{entry.details.path}">{entry.name}</div>
+              {:else}
+                <div title="{entry.details.path}" use:markRender={markFilter(entry.name, urlPath)}></div>
+              {/if}
+						</button>
+					{/if}
+				</li>
+			{/each}
+		</ul>
+	{/if}
 {/if}

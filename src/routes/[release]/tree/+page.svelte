@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte"
   import { page } from "$app/stores"
+  import { goto } from "$app/navigation"
 
   import Header from '$lib/components/Header.svelte'
   import Footer from '$lib/components/Footer.svelte'
@@ -13,11 +14,13 @@
   import Popup from '$lib/components/Popup.svelte'
   import Loading from '$lib/components/Loading.svelte'
 
+  import { decideExpand } from "./expand"
   import { pathFocus } from '$lib/components/sharedStore'
   import { closeSidebar, toLower } from '$lib/components/functions'
+  import { featSelect, platFeat, platSelect, searchStore, stateStore, yangTarget, yangTreeArgs } from "./store"
+
   import type { PlatformFeatures, TreePayLoad } from '$lib/structure'
   import type { FetchPostMessage, FetchResponseMessage, YangTreePostMessage, YangTreeResponseMessage } from "$lib/workers/structure"
-  import { featSelect, platFeat, platSelect, searchStore, stateStore, yangTarget, yangTreeArgs } from "./store"
   
   // DEFAULTS
   let popupDetail = {}
@@ -60,19 +63,20 @@
     uniqueFeatures = event.data.uniqueFeatures
     treeWorkerComplete = true
     yangTreeWorkerComplete = false
-    //pastYangTreeArgs = `${$page.data.urlPath};;;;${platformSelected}`
-    //loadYangTreeWorker(model, release, $page.url.origin, $page.data.urlPath, "", supportedPlatforms)
-    pastYangTreeArgs = `;;;;${platformSelected}`
-    loadYangTreeWorker(model, release, $page.url.origin, "", "", supportedPlatforms)
+
+    let featureSelected = platformFeatures[$page.data.platform]
+    let searchInput = $page.data.crossLaunched ? "" : $page.data.urlPath
+    pastYangTreeArgs = `${searchInput};;;;${platformSelected}`
+    loadYangTreeWorker(model, release, $page.url.origin, searchInput, "", featureSelected)
   }
 
   // ON PAGELOAD
 	export let data: TreePayLoad
-  let {model, modelTitle, urlPath, release, allModels} = data
+  let {model, modelTitle, urlPath, crossLaunched, release, allModels} = data
   onMount(() => loadReleaseWorker(model, release, $page.url.origin))
 
   // OTHER BINDING VARIABLES
-  let searchInput = ""
+  let searchInput = crossLaunched ? "" : urlPath
   let stateInput = ""
   let platformSelected = data.platform
   let showPlatformFilters = false
@@ -90,15 +94,27 @@
     yangTarget.set(treePaths)
   }
 
-  function updateYangTree() {
-    pastYangTreeArgs = $yangTreeArgs
-    loadYangTreeWorker(model, release, $page.url.origin, searchInput, stateInput, $featSelect)
-  }
+  // TRIGGER SEARCH FILTERS
+  function triggerApply() {
+    if(pastYangTreeArgs !== $yangTreeArgs) {
+      pastYangTreeArgs = $yangTreeArgs
+      $page.url.searchParams.delete("from")
+      if(searchInput != "") {
+        $page.url.searchParams.set("path", searchInput)
+      } else {
+        $page.url.searchParams.delete("path")
+      }
+      goto(`?${$page.url.searchParams.toString()}`, {invalidateAll: true})
+      loadYangTreeWorker(model, release, $page.url.origin, searchInput, stateInput, $featSelect)
+    }
+	}
 </script>
 
 <svelte:head>
 	<title>SR Linux {release} {model !== "nokia" ? modelTitle : ""} Tree Browser</title>
 </svelte:head>
+
+<svelte:window on:keyup={({key}) => key === "Enter" ? triggerApply() : ""} />
 
 {#if !treeWorkerComplete}
   <Loading/>
@@ -118,15 +134,15 @@
       <div class="text-right mt-6">
         <button class="px-4 py-2 rounded-lg text-xs 
           {pastYangTreeArgs === $yangTreeArgs ? 'bg-green-100 dark:bg-green-900 text-gray-500 dark:text-gray-500 cursor-not-allowed' : 'text-white bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800'}" 
-          disabled={pastYangTreeArgs === $yangTreeArgs} on:click={updateYangTree}>Apply
+          disabled={pastYangTreeArgs === $yangTreeArgs} on:click={triggerApply}>Apply
         </button>
       </div>
     </div>
-    {#if Object.keys(treePaths)?.length}
+    {#if Object.keys($yangTarget)?.length}
       <div class="px-5 py-4 container mx-auto border-t dark:border-gray-600">
         <div class="font-fira text-xs tracking-tight">
           {#each $yangTarget.children as folder}
-            <YangTree bind:folder urlPath={searchInput !== "" ? "" : urlPath} />
+            <YangTree {folder} {crossLaunched} {urlPath} expanded={decideExpand(folder, crossLaunched, urlPath)} />
           {/each}
         </div>
         <Popup {popupDetail} />
