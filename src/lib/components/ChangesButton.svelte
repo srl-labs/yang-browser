@@ -5,7 +5,7 @@
 </script>
 
 <div class="dropdown">
-  <button class="dropdown-button px-2 py-1 text-xs text-center rounded-lg inline-flex items-center dark:text-white 
+  <button class="dropdown-button px-2 py-1 text-xs text-center text-nowrap rounded-lg inline-flex items-center dark:text-white 
     bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 
     border border-gray-200 dark:border-gray-600">
     {#if compareInput === ""}
