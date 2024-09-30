@@ -35,7 +35,7 @@ export async function load({ url, params }) {
   }
 
   const urlPath = url.searchParams.get("path")?.trim().toLowerCase() ?? ""
-  const platform = url.searchParams.get("platform")?.trim().toLowerCase() ?? defaultPlatform
+  const platform = url.searchParams.get("platform")?.trim() ?? defaultPlatform
   const crossLaunched = url.searchParams.get("from")?.trim() === "pb" ? true : false
 
   return {

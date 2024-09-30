@@ -35,7 +35,7 @@ export async function load({ url, params }) {
   }
 
   const urlPath = url.searchParams.get("path")?.trim() ?? ""
-  const platform = url.searchParams.get("platform")?.trim().toLowerCase() ?? defaultPlatform
+  const platform = url.searchParams.get("platform")?.trim() ?? defaultPlatform
 
   return {
     model: model, 

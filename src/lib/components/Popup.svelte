@@ -5,6 +5,7 @@
   import { closeSidebar, markRender } from '$lib/components/functions'
 
   export let popupDetail: any = {}
+  export let platformSelected: string
   const treePopup = () => $page.url.pathname.includes("tree") ? true : false
 
   function closePopup() {
@@ -33,8 +34,9 @@
     const toTree = (treePopup() ? "" : "/tree")
     const fromParam = (treePopup() ? "" : "&from=pb")
     const modelParam = (model !== "nokia" ? `&model=${model}` : "")
+    const platParam = `&platform=${platformSelected.toUpperCase()}`
     const release = "release" in path ? `v${path.release}` : $page.data.release
-    return `/${release}${toTree}?path=${encodeURIComponent(path.path)}${fromParam}${modelParam}`
+    return `/${release}${toTree}?path=${encodeURIComponent(path.path)}${platParam}${fromParam}${modelParam}`
   }
 
   function copyEffect() {

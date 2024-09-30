@@ -152,7 +152,7 @@
         </table>
       </div>
       <Pagination />
-      <Popup {popupDetail} />
+      <Popup {popupDetail} platformSelected={$platSelect} />
     </div>
     <Footer home={false}/>
   </div>

@@ -103,6 +103,7 @@
       } else {
         $page.url.searchParams.delete("path")
       }
+      $page.url.searchParams.set("platform", $platSelect)
       goto(`?${$page.url.searchParams.toString()}`, {invalidateAll: true})
       loadYangTreeWorker(model, release, $page.url.origin, $searchStore, $stateStore, $featSelect)
     }
@@ -144,7 +145,7 @@
             <YangTree {folder} expanded={decideExpand(folder, isCrossLaunched(), getUrlPath())} />
           {/each}
         </div>
-        <Popup {popupDetail} />
+        <Popup {popupDetail} platformSelected={$platSelect} />
         <Footer home={false}/>
       </div>
     {/if}
