@@ -16,6 +16,8 @@
   export let release: string
   export let allModels: Model[] = []
   export let home: boolean
+  export let supportedPlatforms: string[] = []
+  export let platformSelected = ""
 </script>
 
 <svelte:window on:keyup={({key}) => key === "Escape" ? closeSidebar() : ""} />
@@ -35,7 +37,7 @@
           </svg>
         </button>
       {/if}
-			<a href="../" class="flex px-2"><img src="/images/navbar-logo.png" alt="Logo" width="25"/></a>
+			<a href="{modelTitle === "platformCompare" ? '../../' : '../'}" class="flex px-2"><img src="/images/navbar-logo.png" alt="Logo" width="25"/></a>
 		</div>
 		<!-- navbar centre item -->
     <div class="text-center">
@@ -143,16 +145,18 @@
             </a>
           </li>
           <li>
-            <div class="flex items-center px-2 py-3">
-              <p class="mr-3 dark:text-white text-sm">Compare with</p>
-              <div class="dropdown">
+            <div class="flex items-center justify-between px-2 py-3">
+              <div title="Compare YANG paths of the same platform between releases">
+                <p class="mr-3 dark:text-white text-sm">Compare with</p>
+              </div>
+              <div class="dropdown relative">
                 <button class="dropdown-button px-3 py-1 text-sm border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-center inline-flex items-center">
                   X
                   <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                   </svg>
                 </button>
-                <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+                <div class="dropdown-content right-0 absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
                   <div class="my-2 max-h-[160px] overflow-y-auto scroll-light dark:scroll-dark">
                     <ul>
                       {#each validVersions.filter(x => x !== release) as entry}
@@ -165,6 +169,35 @@
               </div>
             </div>
           </li>
+          {#if supportedPlatforms?.length}
+            <li class="border-t dark:border-gray-600">
+              <div class="px-2 py-3">
+                <div title="Compare YANG paths of the same release between platform">
+                  <p class="mr-3 dark:text-white text-sm">Compare platform</p>
+                </div>
+                <div class="flex items-center justify-between">
+                  <p class="mr-3 dark:text-white text-sm">{platformSelected} with</p>
+                  <div class="dropdown relative">
+                    <button class="dropdown-button px-3 py-1 text-sm border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-center inline-flex items-center">
+                      X
+                      <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                      </svg>
+                    </button>
+                    <div class="dropdown-content right-0 text-nowrap absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+                      <div class="my-2 max-h-[160px] overflow-y-auto scroll-light dark:scroll-dark">
+                        <ul>
+                          {#each supportedPlatforms.filter(x => x !== platformSelected) as entry}
+                            <li><a href="/{release}/compare/{platformSelected}..{entry}" target="_blank" class="block text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600">{entry}</a></li>
+                          {/each}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          {/if}
         </ul>
       </div>
     </aside>

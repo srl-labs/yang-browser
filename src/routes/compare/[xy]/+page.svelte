@@ -78,7 +78,7 @@
 {#if !workerComplete}
   <Loading/>
 {:else if $yangPaths.length > 0}
-  <Header model={model} modelTitle={"compare"} release={`${x};${y}`} home={true} />
+  <Header {model} modelTitle={"compare"} release={`${x};${y}`} home={true} />
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[80px]">
