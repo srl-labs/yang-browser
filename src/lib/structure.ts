@@ -44,10 +44,17 @@ export interface ComparePayLoad {
   urlPath: string,
   x: string,
   y: string,
+  model: string
+}
+
+export interface PlatformComparePayLoad {
+  urlPath: string,
   model: string,
-  xpaths: PathDef[],
-  ypaths: PathDef[],
-  yfeatures: Platforms
+  release: string,
+  x: string,
+  y: string,
+  xFeatures: string[],
+  yFeatures: string[]
 }
 
 export interface PathDef {

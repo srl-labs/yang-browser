@@ -25,7 +25,7 @@
 	<div class="flex justify-between">
 		<!-- navbar left item -->
 		<div class="flex items-center space-x-2">
-      {#if modelTitle !== "compare"}
+      {#if modelTitle !== "compare" && modelTitle !== "platformCompare"}
         <button type="button" class="flex dark:text-gray-200" on:click={toggleSidebar}>
           <svg id="open-sidebar" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
             <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"></path>
@@ -57,6 +57,24 @@
             </span>
           </div>
         </div>
+      {:else if modelTitle === "platformCompare"}
+        {@const [r, x, y] = release.split(";")}
+        <p class="text-nokia-old-blue dark:text-white font-light text-xl lg:text-2xl">Yang Compare</p>
+        <div class="text-gray-800 text-xs lg:text-sm dark:text-white">
+          <div class="flex flex-wrap items-center justify-center space-x-1">
+            <span>SR Linux {model === "openconfig" ? 'OpenConfig ' : ''} {r} —</span>
+            <span class="font-nokia-headline">{x}</span>
+            <span>to</span>
+            <span class="dropdown">
+              <button class="dropdown-button font-nokia-headline underline">{y}</button>
+              <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+                <p class="my-2 max-w-[200px] px-1 text-xs">
+                  Changes and filters shown are with respect to this platform
+                </p>
+              </div>
+            </span>
+          </div>
+        </div>
       {:else}
         <p class="text-nokia-old-blue dark:text-white font-light text-lg lg:text-2xl">SR Linux <span class="font-nokia-headline">{release}</span></p>
         <p class="text-gray-800 text-xs lg:text-sm dark:text-white">{modelTitle} YANG Model</p>
@@ -70,7 +88,7 @@
 </nav>
 
 <!-- SIDEBAR -->
-{#if modelTitle !== "compare"}
+{#if modelTitle !== "compare" && modelTitle !== "platformCompare"}
   <div id="sidebar" class="fixed h-screen overflow-hidden transform transition ease-in-out duration-300 -translate-x-full">
     <aside class="text-sm font-nokia-headline-light pb-4 overflow-y-auto scroll-light dark:scroll-dark z-20 w-[220px] h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
       <div class="px-4 space-y-4 pt-[95px] lg:pt-[100px]">

@@ -34,7 +34,16 @@
     const toTree = (treePopup() ? "" : "/tree")
     const fromParam = (treePopup() ? "" : "&from=pb")
     const modelParam = (model !== "nokia" ? `&model=${model}` : "")
-    const platParam = `&platform=${platformSelected.toUpperCase()}`
+    let platParam = `&platform=${platformSelected.toUpperCase()}`
+    if(platformSelected === "platformCompare") {
+      if(popupDetail.compare === "~") {
+        platParam = `&platform=${$page.data.y}`
+      } else if(popupDetail.compare === "+") {
+        platParam = `&platform=${$page.data.y}`
+      } else if(popupDetail.compare === "-") {
+        platParam = `&platform=${$page.data.x}`
+      }
+    }
     const release = "release" in path ? `v${path.release}` : $page.data.release
     return `/${release}${toTree}?path=${encodeURIComponent(path.path)}${platParam}${fromParam}${modelParam}`
   }
@@ -82,15 +91,27 @@
             <table>
               <tbody>
                 {#if "compare" in popupDetail}
-                  <tr>
-                    {#if popupDetail.compare === "~"}
-                      <td colspan="2" class="pt-1 pb-3 text-sm text-gray-400 dark:text-gray-400">MODIFIED in v{popupDetail.compareTo}</td>
-                    {:else if popupDetail.compare === "+"}
-                      <td colspan="2" class="pt-1 pb-3 text-sm text-green-600 dark:text-green-300">ADDED in v{popupDetail.compareTo}</td>
-                    {:else if popupDetail.compare === "-"}
-                      <td colspan="2" class="pt-1 pb-3 text-sm text-red-600 dark:text-red-300">DELETED in v{popupDetail.compareTo}</td>
-                    {/if}
-                  </tr>
+                  {#if platformSelected === "platformCompare"}
+                    <tr>
+                      {#if popupDetail.compare === "~"}
+                        <td colspan="2" class="pt-1 pb-3 text-sm text-gray-400 dark:text-gray-400">MODIFIED in {popupDetail.compareTo}</td>
+                      {:else if popupDetail.compare === "+"}
+                        <td colspan="2" class="pt-1 pb-3 text-sm text-green-600 dark:text-green-300">PRESENT in {popupDetail.compareTo}</td>
+                      {:else if popupDetail.compare === "-"}
+                        <td colspan="2" class="pt-1 pb-3 text-sm text-red-600 dark:text-red-300">NOT PRESENT in {popupDetail.compareTo}</td>
+                      {/if}
+                    </tr>
+                  {:else}
+                    <tr>
+                      {#if popupDetail.compare === "~"}
+                        <td colspan="2" class="pt-1 pb-3 text-sm text-gray-400 dark:text-gray-400">MODIFIED in v{popupDetail.compareTo}</td>
+                      {:else if popupDetail.compare === "+"}
+                        <td colspan="2" class="pt-1 pb-3 text-sm text-green-600 dark:text-green-300">ADDED in v{popupDetail.compareTo}</td>
+                      {:else if popupDetail.compare === "-"}
+                        <td colspan="2" class="pt-1 pb-3 text-sm text-red-600 dark:text-red-300">DELETED in v{popupDetail.compareTo}</td>
+                      {/if}
+                    </tr>
+                  {/if}
                 {/if}
                 <tr>
                   <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Data:</th>

@@ -15,8 +15,8 @@ export async function load({ url, params }) {
     throw error(404, "Unsupported X..Y compare parameter")
   }
 
-  const x = url.searchParams.get("x")?.trim() ?? sep[0]
-  const y = url.searchParams.get("x")?.trim() ?? sep[1]
+  const x = sep[0]
+  const y = sep[1]
   const model = url.searchParams.get("model")?.trim() ?? "nokia"
   const urlPath = url.searchParams.get("path")?.trim() ?? ""
 
