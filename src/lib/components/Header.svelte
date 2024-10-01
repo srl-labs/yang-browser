@@ -169,7 +169,7 @@
             {#if supportedPlatforms?.length}
               <div class="px-2 py-3">
                 <div class="flex items-center justify-between">
-                  <p class="mr-3 dark:text-white text-sm"><span class="font-nokia-headline">{platformSelected}</span> YANG with platform</p>
+                  <p class="mr-3 dark:text-white text-sm"><span title="Gets auto updated based on the Platform Filters field selection" class="font-nokia-headline">{platformSelected}</span> YANG with platform</p>
                   <div class="dropdown relative">
                     <button class="dropdown-button px-3 py-1 text-sm border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-center inline-flex items-center">
                       X
