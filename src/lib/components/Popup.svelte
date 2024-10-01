@@ -5,6 +5,7 @@
   import { closeSidebar, markRender } from '$lib/components/functions'
 
   export let popupDetail: any = {}
+  export let platformSelected: string
   const treePopup = () => $page.url.pathname.includes("tree") ? true : false
 
   function closePopup() {
@@ -33,8 +34,18 @@
     const toTree = (treePopup() ? "" : "/tree")
     const fromParam = (treePopup() ? "" : "&from=pb")
     const modelParam = (model !== "nokia" ? `&model=${model}` : "")
+    let platParam = `&platform=${platformSelected.toUpperCase()}`
+    if(platformSelected === "platformCompare") {
+      if(popupDetail.compare === "~") {
+        platParam = `&platform=${$page.data.y}`
+      } else if(popupDetail.compare === "+") {
+        platParam = `&platform=${$page.data.y}`
+      } else if(popupDetail.compare === "-") {
+        platParam = `&platform=${$page.data.x}`
+      }
+    }
     const release = "release" in path ? `v${path.release}` : $page.data.release
-    return `/${release}${toTree}?path=${encodeURIComponent(path.path)}${fromParam}${modelParam}`
+    return `/${release}${toTree}?path=${encodeURIComponent(path.path)}${platParam}${fromParam}${modelParam}`
   }
 
   function copyEffect() {
@@ -82,11 +93,11 @@
                 {#if "compare" in popupDetail}
                   <tr>
                     {#if popupDetail.compare === "~"}
-                      <td colspan="2" class="pt-1 pb-3 text-sm text-gray-400 dark:text-gray-400">MODIFIED in v{popupDetail.compareTo}</td>
+                      <td colspan="2" class="pt-1 pb-3 text-sm text-gray-400 dark:text-gray-400">MODIFIED in {platformSelected === "platformCompare" ? '' : 'v'}{popupDetail.compareTo}</td>
                     {:else if popupDetail.compare === "+"}
-                      <td colspan="2" class="pt-1 pb-3 text-sm text-green-600 dark:text-green-300">ADDED in v{popupDetail.compareTo}</td>
+                      <td colspan="2" class="pt-1 pb-3 text-sm text-green-600 dark:text-green-300">PRESENT in {platformSelected === "platformCompare" ? '' : 'v'}{popupDetail.compareTo}</td>
                     {:else if popupDetail.compare === "-"}
-                      <td colspan="2" class="pt-1 pb-3 text-sm text-red-600 dark:text-red-300">DELETED in v{popupDetail.compareTo}</td>
+                      <td colspan="2" class="pt-1 pb-3 text-sm text-red-600 dark:text-red-300">NOT PRESENT in {platformSelected === "platformCompare" ? '' : 'v'}{popupDetail.compareTo}</td>
                     {/if}
                   </tr>
                 {/if}

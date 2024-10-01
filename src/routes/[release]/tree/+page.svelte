@@ -103,6 +103,7 @@
       } else {
         $page.url.searchParams.delete("path")
       }
+      $page.url.searchParams.set("platform", $platSelect)
       goto(`?${$page.url.searchParams.toString()}`, {invalidateAll: true})
       loadYangTreeWorker(model, release, $page.url.origin, $searchStore, $stateStore, $featSelect)
     }
@@ -118,7 +119,7 @@
 {#if !treeWorkerComplete}
   <Loading/>
 {:else}
-  <Header model={model} modelTitle={modelTitle} release={release} allModels={allModels} home={false} />
+  <Header {model} {modelTitle} {release} {allModels} home={false} {supportedPlatforms} platformSelected={$platSelect} />
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[85px]" on:click={closeSidebar}>
@@ -144,7 +145,7 @@
             <YangTree {folder} expanded={decideExpand(folder, isCrossLaunched(), getUrlPath())} />
           {/each}
         </div>
-        <Popup {popupDetail} />
+        <Popup {popupDetail} platformSelected={$platSelect} />
         <Footer home={false}/>
       </div>
     {/if}

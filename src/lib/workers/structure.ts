@@ -7,6 +7,15 @@ export interface ComparePostMessage {
   urlOrigin: string
 }
 
+export interface PlatformComparePostMessage {
+  urlOrigin: string
+  release: string
+  x: string
+  y: string
+  xFeatures: string[]
+  yFeatures: string[]
+}
+
 export interface DiffResponseMessage extends PathDef {
   fromType?: string
   fromRel?: string

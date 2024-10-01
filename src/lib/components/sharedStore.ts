@@ -11,8 +11,8 @@ export const stateValues = [
 
 export const compareValues = [
   { label: "All", value: "" },
-  { label: "Added", value: "+" },
-  { label: "Deleted", value: "-" },
+  { label: "Present", value: "+" },
+  { label: "Not Present", value: "-" },
   { label: "Modified", value: "~" }
 ]
 

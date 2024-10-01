@@ -3,7 +3,7 @@
 
   export let showPlatformFilters: boolean
   export let supportedPlatforms: string[]
-  export let platformSelected = ""
+  export let platformSelected: string
 </script>
 
 {#if showPlatformFilters && supportedPlatforms?.length}

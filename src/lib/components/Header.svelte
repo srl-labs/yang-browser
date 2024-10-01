@@ -16,6 +16,8 @@
   export let release: string
   export let allModels: Model[] = []
   export let home: boolean
+  export let supportedPlatforms: string[] = []
+  export let platformSelected = ""
 </script>
 
 <svelte:window on:keyup={({key}) => key === "Escape" ? closeSidebar() : ""} />
@@ -25,7 +27,7 @@
 	<div class="flex justify-between">
 		<!-- navbar left item -->
 		<div class="flex items-center space-x-2">
-      {#if modelTitle !== "compare"}
+      {#if modelTitle !== "compare" && modelTitle !== "platformCompare"}
         <button type="button" class="flex dark:text-gray-200" on:click={toggleSidebar}>
           <svg id="open-sidebar" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
             <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"></path>
@@ -35,7 +37,7 @@
           </svg>
         </button>
       {/if}
-			<a href="../" class="flex px-2"><img src="/images/navbar-logo.png" alt="Logo" width="25"/></a>
+			<a href="{modelTitle === "platformCompare" ? '../../' : '../'}" class="flex px-2"><img src="/images/navbar-logo.png" alt="Logo" width="25"/></a>
 		</div>
 		<!-- navbar centre item -->
     <div class="text-center">
@@ -45,8 +47,6 @@
         <div class="text-gray-800 text-xs lg:text-sm dark:text-white">
           <div class="flex flex-wrap items-center justify-center space-x-1">
             <span>SR Linux {model === "openconfig" ? 'OpenConfig ' : ''}</span>
-            <span class="font-nokia-headline">v{x}</span>
-            <span>to</span>
             <span class="dropdown">
               <button class="dropdown-button font-nokia-headline underline">v{y}</button>
               <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
@@ -55,6 +55,26 @@
                 </p>
               </div>
             </span>
+            <span>with</span>
+            <span class="font-nokia-headline">v{x}</span>
+          </div>
+        </div>
+      {:else if modelTitle === "platformCompare"}
+        {@const [r, x, y] = release.split(";")}
+        <p class="text-nokia-old-blue dark:text-white font-light text-xl lg:text-2xl">Yang Compare</p>
+        <div class="text-gray-800 text-xs lg:text-sm dark:text-white">
+          <div class="flex flex-wrap items-center justify-center space-x-1">
+            <span>SR Linux {model === "openconfig" ? 'OpenConfig ' : ''} {r} —</span>
+            <span class="dropdown">
+              <button class="dropdown-button font-nokia-headline underline">{y}</button>
+              <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+                <p class="my-2 max-w-[200px] px-1 text-xs">
+                  Changes and filters shown are with respect to this platform
+                </p>
+              </div>
+            </span>
+            <span>with</span>
+            <span class="font-nokia-headline">{x}</span>
           </div>
         </div>
       {:else}
@@ -70,9 +90,9 @@
 </nav>
 
 <!-- SIDEBAR -->
-{#if modelTitle !== "compare"}
+{#if modelTitle !== "compare" && modelTitle !== "platformCompare"}
   <div id="sidebar" class="fixed h-screen overflow-hidden transform transition ease-in-out duration-300 -translate-x-full">
-    <aside class="text-sm font-nokia-headline-light pb-4 overflow-y-auto scroll-light dark:scroll-dark z-20 w-[220px] h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+    <aside class="text-sm font-nokia-headline-light pb-4 overflow-y-auto scroll-light dark:scroll-dark z-20 w-[250px] md:w-[320px] h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
       <div class="px-4 space-y-4 pt-[95px] lg:pt-[100px]">
         {#if allModels.length === 2}
           {@const nokiaModel = allModels.filter(x => x.title === "Nokia")[0]}
@@ -82,7 +102,6 @@
             <a data-sveltekit-reload href="{ocModel.path}" class="basis-1/2 rounded-r-lg px-2 py-1 {model === "openconfig" ? 'bg-blue-700 dark:bg-blue-700 text-white' : 'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white'}">{ocModel.title}</a>
           </div>
         {/if}
-        
         <ul class="space-y-2 text-gray-800 dark:text-gray-300">
           <li>
             <a data-sveltekit-reload class="flex items-center px-2 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 hover:rounded-lg" href="/{release}{home ? '/tree' : ''}{model !== "nokia" ? "/?model=" + model : ""}">
@@ -125,16 +144,17 @@
             </a>
           </li>
           <li>
-            <div class="flex items-center px-2 py-3">
-              <p class="mr-3 dark:text-white text-sm">Compare with</p>
-              <div class="dropdown">
+            <p class="px-2 py-2 mb-1 rounded-lg text-sm text-center font-nokia-headline bg-gray-200 dark:bg-gray-700 dark:text-white">Compare</p>
+            <div class="flex items-center justify-between px-2 py-3">
+              <p class="mr-3 dark:text-white text-sm"><span class="font-nokia-headline">{release}</span> YANG with version</p>
+              <div class="dropdown relative">
                 <button class="dropdown-button px-3 py-1 text-sm border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-center inline-flex items-center">
                   X
                   <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                   </svg>
                 </button>
-                <div id="dropdownHover" class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+                <div class="dropdown-content right-0 absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
                   <div class="my-2 max-h-[160px] overflow-y-auto scroll-light dark:scroll-dark">
                     <ul>
                       {#each validVersions.filter(x => x !== release) as entry}
@@ -146,6 +166,30 @@
                 </div>
               </div>
             </div>
+            {#if supportedPlatforms?.length}
+              <div class="px-2 py-3">
+                <div class="flex items-center justify-between">
+                  <p class="mr-3 dark:text-white text-sm"><span class="font-nokia-headline">{platformSelected}</span> YANG with platform</p>
+                  <div class="dropdown relative">
+                    <button class="dropdown-button px-3 py-1 text-sm border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-center inline-flex items-center">
+                      X
+                      <svg class="w-2.5 h-2.5 ms-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                      </svg>
+                    </button>
+                    <div class="dropdown-content right-0 text-nowrap absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+                      <div class="my-2 max-h-[160px] overflow-y-auto scroll-light dark:scroll-dark">
+                        <ul>
+                          {#each supportedPlatforms.filter(x => x !== platformSelected) as entry}
+                            <li><a href="/{release}/compare/{entry}..{platformSelected}" target="_blank" class="block text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600">{entry}</a></li>
+                          {/each}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {/if}
           </li>
         </ul>
       </div>

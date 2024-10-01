@@ -20,9 +20,9 @@ export async function load({ url, params }) {
     throw error(404, "Unsupported model")
   }
 
-  let allModels = [{title: "Nokia", path: `/${release}`}]
+  let allModels = [{title: "Nokia", path: `/${release}/tree`}]
   if(releases[release].openconfig) {
-    allModels.push({title: "OpenConfig", path: `/${release}/?model=openconfig`})
+    allModels.push({title: "OpenConfig", path: `/${release}/tree/?model=openconfig`})
   }
 
   let modelTitle = "Nokia"
@@ -35,7 +35,7 @@ export async function load({ url, params }) {
   }
 
   const urlPath = url.searchParams.get("path")?.trim().toLowerCase() ?? ""
-  const platform = url.searchParams.get("platform")?.trim().toLowerCase() ?? defaultPlatform
+  const platform = url.searchParams.get("platform")?.trim() ?? defaultPlatform
   const crossLaunched = url.searchParams.get("from")?.trim() === "pb" ? true : false
 
   return {
