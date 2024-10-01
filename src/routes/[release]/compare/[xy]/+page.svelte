@@ -72,7 +72,7 @@
       <SearchInput bind:searchInput />
       <div class="overflow-x-auto scroll-light dark:scroll-dark">
         <div class="py-2 space-x-2 flex items-center text-sm">
-          <ChangesButton bind:compareInput compareOn={"platform"} />
+          <ChangesButton bind:compareInput />
           <StateButton bind:stateInput />
         </div>
       </div>

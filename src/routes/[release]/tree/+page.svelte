@@ -119,7 +119,7 @@
 {#if !treeWorkerComplete}
   <Loading/>
 {:else}
-  <Header {model} {modelTitle} {release} {allModels} home={true} {supportedPlatforms} platformSelected={$platSelect} />
+  <Header {model} {modelTitle} {release} {allModels} home={false} {supportedPlatforms} platformSelected={$platSelect} />
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="min-w-[280px] overflow-x-auto font-nokia-headline-light dark:bg-gray-800 pt-[75px] lg:pt-[85px]" on:click={closeSidebar}>

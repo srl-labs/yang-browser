@@ -91,27 +91,15 @@
             <table>
               <tbody>
                 {#if "compare" in popupDetail}
-                  {#if platformSelected === "platformCompare"}
-                    <tr>
-                      {#if popupDetail.compare === "~"}
-                        <td colspan="2" class="pt-1 pb-3 text-sm text-gray-400 dark:text-gray-400">MODIFIED in {popupDetail.compareTo}</td>
-                      {:else if popupDetail.compare === "+"}
-                        <td colspan="2" class="pt-1 pb-3 text-sm text-green-600 dark:text-green-300">PRESENT in {popupDetail.compareTo}</td>
-                      {:else if popupDetail.compare === "-"}
-                        <td colspan="2" class="pt-1 pb-3 text-sm text-red-600 dark:text-red-300">NOT PRESENT in {popupDetail.compareTo}</td>
-                      {/if}
-                    </tr>
-                  {:else}
-                    <tr>
-                      {#if popupDetail.compare === "~"}
-                        <td colspan="2" class="pt-1 pb-3 text-sm text-gray-400 dark:text-gray-400">MODIFIED in v{popupDetail.compareTo}</td>
-                      {:else if popupDetail.compare === "+"}
-                        <td colspan="2" class="pt-1 pb-3 text-sm text-green-600 dark:text-green-300">ADDED in v{popupDetail.compareTo}</td>
-                      {:else if popupDetail.compare === "-"}
-                        <td colspan="2" class="pt-1 pb-3 text-sm text-red-600 dark:text-red-300">DELETED in v{popupDetail.compareTo}</td>
-                      {/if}
-                    </tr>
-                  {/if}
+                  <tr>
+                    {#if popupDetail.compare === "~"}
+                      <td colspan="2" class="pt-1 pb-3 text-sm text-gray-400 dark:text-gray-400">MODIFIED in {platformSelected === "platformCompare" ? '' : 'v'}{popupDetail.compareTo}</td>
+                    {:else if popupDetail.compare === "+"}
+                      <td colspan="2" class="pt-1 pb-3 text-sm text-green-600 dark:text-green-300">PRESENT in {platformSelected === "platformCompare" ? '' : 'v'}{popupDetail.compareTo}</td>
+                    {:else if popupDetail.compare === "-"}
+                      <td colspan="2" class="pt-1 pb-3 text-sm text-red-600 dark:text-red-300">NOT PRESENT in {platformSelected === "platformCompare" ? '' : 'v'}{popupDetail.compareTo}</td>
+                    {/if}
+                  </tr>
                 {/if}
                 <tr>
                   <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Data:</th>

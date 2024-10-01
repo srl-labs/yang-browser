@@ -47,8 +47,6 @@
         <div class="text-gray-800 text-xs lg:text-sm dark:text-white">
           <div class="flex flex-wrap items-center justify-center space-x-1">
             <span>SR Linux {model === "openconfig" ? 'OpenConfig ' : ''}</span>
-            <span class="font-nokia-headline">v{x}</span>
-            <span>to</span>
             <span class="dropdown">
               <button class="dropdown-button font-nokia-headline underline">v{y}</button>
               <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
@@ -57,6 +55,8 @@
                 </p>
               </div>
             </span>
+            <span>with</span>
+            <span class="font-nokia-headline">v{x}</span>
           </div>
         </div>
       {:else if modelTitle === "platformCompare"}
@@ -65,8 +65,6 @@
         <div class="text-gray-800 text-xs lg:text-sm dark:text-white">
           <div class="flex flex-wrap items-center justify-center space-x-1">
             <span>SR Linux {model === "openconfig" ? 'OpenConfig ' : ''} {r} —</span>
-            <span class="font-nokia-headline">{x}</span>
-            <span>to</span>
             <span class="dropdown">
               <button class="dropdown-button font-nokia-headline underline">{y}</button>
               <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
@@ -75,6 +73,8 @@
                 </p>
               </div>
             </span>
+            <span>with</span>
+            <span class="font-nokia-headline">{x}</span>
           </div>
         </div>
       {:else}
@@ -92,7 +92,7 @@
 <!-- SIDEBAR -->
 {#if modelTitle !== "compare" && modelTitle !== "platformCompare"}
   <div id="sidebar" class="fixed h-screen overflow-hidden transform transition ease-in-out duration-300 -translate-x-full">
-    <aside class="text-sm font-nokia-headline-light pb-4 overflow-y-auto scroll-light dark:scroll-dark z-20 w-[220px] h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+    <aside class="text-sm font-nokia-headline-light pb-4 overflow-y-auto scroll-light dark:scroll-dark z-20 w-[250px] md:w-[320px] h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
       <div class="px-4 space-y-4 pt-[95px] lg:pt-[100px]">
         {#if allModels.length === 2}
           {@const nokiaModel = allModels.filter(x => x.title === "Nokia")[0]}
@@ -102,7 +102,6 @@
             <a data-sveltekit-reload href="{ocModel.path}" class="basis-1/2 rounded-r-lg px-2 py-1 {model === "openconfig" ? 'bg-blue-700 dark:bg-blue-700 text-white' : 'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white'}">{ocModel.title}</a>
           </div>
         {/if}
-        
         <ul class="space-y-2 text-gray-800 dark:text-gray-300">
           <li>
             <a data-sveltekit-reload class="flex items-center px-2 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 hover:rounded-lg" href="/{release}{home ? '/tree' : ''}{model !== "nokia" ? "/?model=" + model : ""}">
@@ -145,10 +144,9 @@
             </a>
           </li>
           <li>
+            <p class="px-2 py-2 mb-1 rounded-lg text-sm text-center font-nokia-headline bg-gray-200 dark:bg-gray-700 dark:text-white">Compare</p>
             <div class="flex items-center justify-between px-2 py-3">
-              <div title="Compare YANG paths of the same platform between releases">
-                <p class="mr-3 dark:text-white text-sm">Compare with</p>
-              </div>
+              <p class="mr-3 dark:text-white text-sm"><span class="font-nokia-headline">{release}</span> YANG with version</p>
               <div class="dropdown relative">
                 <button class="dropdown-button px-3 py-1 text-sm border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-center inline-flex items-center">
                   X
@@ -168,15 +166,10 @@
                 </div>
               </div>
             </div>
-          </li>
-          {#if supportedPlatforms?.length}
-            <li class="border-t dark:border-gray-600">
+            {#if supportedPlatforms?.length}
               <div class="px-2 py-3">
-                <div title="Compare YANG paths of the same release between platform">
-                  <p class="mr-3 dark:text-white text-sm">Compare platform</p>
-                </div>
                 <div class="flex items-center justify-between">
-                  <p class="mr-3 dark:text-white text-sm">{platformSelected} with</p>
+                  <p class="mr-3 dark:text-white text-sm"><span class="font-nokia-headline">{platformSelected}</span> YANG with platform</p>
                   <div class="dropdown relative">
                     <button class="dropdown-button px-3 py-1 text-sm border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-gray-600 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-center inline-flex items-center">
                       X
@@ -188,7 +181,7 @@
                       <div class="my-2 max-h-[160px] overflow-y-auto scroll-light dark:scroll-dark">
                         <ul>
                           {#each supportedPlatforms.filter(x => x !== platformSelected) as entry}
-                            <li><a href="/{release}/compare/{platformSelected}..{entry}" target="_blank" class="block text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600">{entry}</a></li>
+                            <li><a href="/{release}/compare/{entry}..{platformSelected}" target="_blank" class="block text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600">{entry}</a></li>
                           {/each}
                         </ul>
                       </div>
@@ -196,8 +189,8 @@
                   </div>
                 </div>
               </div>
-            </li>
-          {/if}
+            {/if}
+          </li>
         </ul>
       </div>
     </aside>

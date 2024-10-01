@@ -1,10 +1,7 @@
 <script lang="ts">
-  import { compareValues, platformCompareValues } from '$lib/components/sharedStore'
+  import { compareValues } from '$lib/components/sharedStore'
 
   export let compareInput = ""
-  export let compareOn = "release" // do not change
-
-  let compareOptions = compareOn === "platform" ? platformCompareValues : compareValues
 </script>
 
 <div class="dropdown">
@@ -17,7 +14,7 @@
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
       </svg>
     {:else}
-    <span class="font-fira text-gray-600 dark:text-gray-300 px-1">{compareInput}</span> {compareOptions.filter(x => x.value === compareInput)[0].label}
+    <span class="font-fira text-gray-600 dark:text-gray-300 px-1">{compareInput}</span> {compareValues.filter(x => x.value === compareInput)[0].label}
       <button class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-400" on:click={() => compareInput = ""}>
         <svg class="w-4 h-4 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
           <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z" clip-rule="evenodd"/>
@@ -29,7 +26,7 @@
     bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
     <div class="my-1 overflow-y-auto scroll-light dark:scroll-dark">
       <ul>
-        {#each compareOptions as entry}
+        {#each compareValues as entry}
           {#if entry.value != ""}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
