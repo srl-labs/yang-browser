@@ -33,3 +33,7 @@ topology:
       type: ixrx3b
     7250-IXR-X1b:
       type: ixrx1b
+    7730-SXR-1d-32d:
+      type: sxr1d32d
+    7730-SXR-1x-44s:
+      type: sxr1x44s
