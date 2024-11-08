@@ -48,7 +48,7 @@ sudo -E containerlab deploy -c -t ./refer/all.clab.yml
 # remove all json files that might be there from previous extraction
 rm -f ${FEATURES_DIR}/*.json
 
-for node in "7220-IXR-D1" "7220-IXR-D2L" "7220-IXR-D3L" "7220-IXR-D4" "7220-IXR-D5" "7220-IXR-H2" "7220-IXR-H3" "7220-IXR-H4" "7250-IXR-6" "7250-IXR-6e" "7250-IXR-10" "7250-IXR-10e" "7250-IXR-X1b" "7250-IXR-X3b"
+for node in "7220-IXR-D1" "7220-IXR-D2L" "7220-IXR-D3L" "7220-IXR-D4" "7220-IXR-D5" "7220-IXR-H2" "7220-IXR-H3" "7220-IXR-H4" "7250-IXR-6" "7250-IXR-6e" "7250-IXR-10" "7250-IXR-10e" "7250-IXR-X1b" "7250-IXR-X3b" "7730-SXR-1d-32d" "7730-SXR-1x-44s"
 do
     docker exec clab-all-${node} sr_cli 'info from state system features | as json' | jq .system.features >> ${FEATURES_DIR}/${node}.json &
 done
