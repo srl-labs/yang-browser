@@ -18,6 +18,7 @@ export let featStore = writable<string[]>([])
 export let featFind = writable("")
 export let featDeviate = writable<string[]>([])
 export let featExtra = writable<string[]>([])
+export let featClear = writable(false)
 
 export let yangPaths = writable<PathDef[]>([])
 export let start = writable(0)
@@ -27,8 +28,9 @@ function featFilterAction (platFeatures: string[], deviation: string[], extras: 
   if(platFeatures?.length) {
     platFeatures = platFeatures.filter(f => !deviation.includes(f))
     return platFeatures.concat(extras)
-  } 
-  return []
+  } else {
+    return deviation.concat(extras)
+  }
 }
 
 // DERIVED STORES
@@ -38,8 +40,8 @@ export let platList = derived([platFind, platStore], ([$platFind, $platStore]) =
 export let featList = derived([featFind, featStore], ([$featFind, $featStore]) => 
   $featStore.filter((x: string) => x.includes($featFind)))
 
-export let featSelect = derived([platFeat, platSelect], ([$platFeat, $platSelect]) => 
-  $platFeat[$platSelect] || [])
+export let featSelect = derived([platFeat, platSelect, featClear], ([$platFeat, $platSelect, $featClear]) => 
+  $featClear ? [] : ($platFeat[$platSelect] || []))
 
 export let featFilter = derived([featSelect, featDeviate, featExtra], ([$featSelect, $featDeviate, $featExtra]) => 
   featFilterAction($featSelect, $featDeviate, $featExtra))

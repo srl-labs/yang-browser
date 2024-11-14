@@ -17,7 +17,7 @@
   import type { PayLoad, PathDef, PlatformFeatures } from '$lib/structure'
   import type { FetchPostMessage, FetchResponseMessage } from '$lib/workers/structure'
   import { toLower, toUpper, closeSidebar, markFilter, markRender } from '$lib/components/functions'
-	import { featDeviate, featExtra, featFilter, featFind, featList, featSelect, featStore, paginated, platFeat, platFind, platList, platSelect, platStore, prefixStore, searchStore, stateStore, total, yangPaths } from './store'
+	import { featClear, featDeviate, featExtra, featFilter, featFind, featList, featSelect, featStore, paginated, platFeat, platFind, platList, platSelect, platStore, prefixStore, searchStore, stateStore, total, yangPaths } from './store'
 
   // DEFAULTS
   let popupDetail = {}
@@ -73,6 +73,13 @@
 
   // RESET FEATURE DEVIATIONS AND EXTRAS
   function resetFeatSelect() {
+    featDeviate.set([])
+    featExtra.set([])
+    featClear.set(false)
+  }
+
+  function clearFeatSelect() {
+    featClear.set(true)
     featDeviate.set([])
     featExtra.set([])
   }
@@ -143,7 +150,10 @@
             </div>
           </div>
           <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-fit mt-5 md:mt-0">
-            <p class="px-4 py-2 font-nokia-headline text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">Features</p>
+            <div class="pl-4 pr-2 py-2 flex items-center justify-between font-nokia-headline text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">
+              <span>Features</span>
+              <button class="px-3 py-1 border border-gray-300 dark:border-gray-500 bg-gray-50 dark:bg-gray-600 hover:bg-gray-300 hover:dark:bg-gray-500 rounded-lg text-xs" on:click={clearFeatSelect}>Clear All</button>
+            </div>
             <div class="p-2 border-b border-gray-200 dark:border-gray-600">
               <input type="text" id="featureSearch" bind:value={featureSearch} placeholder="Search..." class="w-full px-3 py-1 text-sm rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
             </div>
