@@ -4,32 +4,33 @@ import { count } from '$lib/components/sharedStore'
 
 import type { DiffResponseMessage } from '$lib/workers/structure'
 import { searchBasedFilter } from '$lib/components/functions'
+import type { PathDef } from '$lib/structure'
 
 // WRITABLE STORES
-export let searchStore = writable("")
-export let stateStore = writable("")
-export let compareStore = writable("")
+export const searchStore = writable("")
+export const stateStore = writable("")
+export const compareStore = writable("")
 
-export let yangPaths = writable<DiffResponseMessage[]>([])
-export let start = writable(0)
+export const yangPaths = writable<DiffResponseMessage[]>([])
+export const start = writable(0)
 
 // DERIVED STORES
-export let compareFilter = derived([compareStore, yangPaths], ([$compareStore, $yangPaths]) => 
+export const compareFilter = derived([compareStore, yangPaths], ([$compareStore, $yangPaths]) => 
   $yangPaths.filter(x => $compareStore === "" ? true : x.compare === $compareStore))
 
-export let stateFilter = derived([stateStore, compareFilter], ([$stateStore, $compareFilter]) => 
-  $compareFilter.filter((x: any) => $stateStore == "" ? true : x["is-state"] == $stateStore))
+export const stateFilter = derived([stateStore, compareFilter], ([$stateStore, $compareFilter]) => 
+  $compareFilter.filter((x: PathDef) => $stateStore == "" ? true : x["is-state"] == $stateStore))
 
-export let searchFilter = derived([searchStore, stateFilter], ([$searchStore, $stateFilter]) => 
+export const searchFilter = derived([searchStore, stateFilter], ([$searchStore, $stateFilter]) => 
   $stateFilter.filter(x => searchBasedFilter(x, $searchStore)))
 
-export let total = derived(searchFilter, ($platformFilter) => {
+export const total = derived(searchFilter, ($platformFilter) => {
   start.set(0)
   return $platformFilter.length
 })
 
-export let end = derived([start, total], ([$start, $total]) => 
+export const end = derived([start, total], ([$start, $total]) => 
   ($start + count) <= $total ? ($start + count) : $total)
 
-export let paginated = derived([start, end, searchFilter], ([$start, $end, $platformFilter]) => 
+export const paginated = derived([start, end, searchFilter], ([$start, $end, $platformFilter]) => 
   $platformFilter.slice($start, $end))

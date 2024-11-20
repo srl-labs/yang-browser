@@ -28,13 +28,13 @@ export function closeSidebar() {
 }
 
 export function extractFeatures (data: Platforms): [PlatformFeatures, string[]] {
-  let platforms: PlatformFeatures = {}
+  const platforms: PlatformFeatures = {}
   let allFeatures: string[] = []
   let uniqueFeatures: string[] = []
 
   if (Object.keys(data)?.length) {
     for (const [platform, features] of Object.entries(data)) {
-      let platformFeatures = features.split(/\s+/)
+      const platformFeatures = features.split(/\s+/)
       platforms[platform] = platformFeatures
       allFeatures = allFeatures.concat(platformFeatures)
     }
@@ -53,7 +53,7 @@ export function removeKeyDefault(text: string) {
   return text.replaceAll("=*", "")
 }
 
-export function searchBasedFilter(x: any, searchTerm: string, showPrefix: boolean = false) {
+export function searchBasedFilter(x: PathDef, searchTerm: string, showPrefix: boolean = false) {
   const keys = searchTerm.split(/\s+/)
   const searchStr = `${showPrefix ? x["path-with-prefix"] : x.path};${x.type}`
   return keys.every(x => searchStr.includes(x))
@@ -113,24 +113,24 @@ export function featureBasedFilter (x: PathDef, f: string[]): boolean {
     exp = exp.replace(/future_0_0/g, "=")
 
     for (const feature of f) {
-      let d2h = feature.replace(/-/g, "_")
+      const d2h = feature.replace(/-/g, "_")
       if (exp.includes(d2h)) {
         exp = exp.replace(new RegExp(`\\b${d2h}\\b`, 'g'), "+")
       }
     }
 
     exp = exp.replaceAll("!+", "=")
-    let expSplit = exp.split(" ")
-    let expResult = []
+    const expSplit = exp.split(" ")
+    const expResult = []
     const validOperators = ["+", "=", "&", "|"]
 
     for (let i = 0; i < expSplit.length; i++) {
       if (expSplit[i] === "+" || expSplit[i] === "=") {
         expResult.push(expSplit[i])
       } else {
-        let validation = validOperators.some(operator => expSplit[i].includes(operator))
+        const validation = validOperators.some(operator => expSplit[i].includes(operator))
         if (!validation) {
-          let tmpRep = expSplit[i].replace(/[a-z0-9_]+/g, "=").replace("!=", "+")
+          const tmpRep = expSplit[i].replace(/[a-z0-9_]+/g, "=").replace("!=", "=")
           expResult.push(tmpRep)
         } else {
           expResult.push(expSplit[i])

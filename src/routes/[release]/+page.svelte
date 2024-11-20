@@ -17,7 +17,7 @@
   import type { PayLoad, PathDef, PlatformFeatures } from '$lib/structure'
   import type { FetchPostMessage, FetchResponseMessage } from '$lib/workers/structure'
   import { toLower, toUpper, closeSidebar, markFilter, markRender } from '$lib/components/functions'
-	import { featClear, featDeviate, featExtra, featFilter, featFind, featList, featSelect, featStore, paginated, platFeat, platFind, platList, platSelect, platStore, prefixStore, searchStore, stateStore, total, yangPaths } from './store'
+	import { commonStore, featClear, featDeviate, featExtra, featFilter, featFind, featList, featSelect, featStore, paginated, platFeat, platFind, platList, platSelect, platStore, prefixStore, searchStore, stateStore, total, yangPaths } from './store'
 
   // DEFAULTS
   let popupDetail = {}
@@ -29,10 +29,10 @@
 
   // RELEASE WORKER
   let releaseWorker: Worker | undefined = undefined
-  async function loadWorker(model: string, release: string, urlOrigin: string) {
+  async function loadWorker(model: string, release: string) {
     const ReleaseWorker = await import('$lib/workers/fetch.worker?worker')
     releaseWorker = new ReleaseWorker.default()
-    const message: FetchPostMessage = { model, release, urlOrigin }
+    const message: FetchPostMessage = { model, release }
     releaseWorker.postMessage(message)
     releaseWorker.onmessage = onWorkerMessage
   }
@@ -49,12 +49,13 @@
   // ON PAGELOAD
   export let data: PayLoad
   let {model, modelTitle, urlPath, release, allModels} = data
-  onMount(() => loadWorker(model, release, $page.url.origin))
+  onMount(() => loadWorker(model, release))
 
   // OTHER BINDING VARIABLES
   let searchInput = urlPath
   let stateInput = ""
   let showPathPrefix = false
+  let showCommon = true
   let platformSearch = ""
   let featureSearch = ""
   let showPlatformFilters = false
@@ -63,6 +64,7 @@
   $: searchStore.set(toLower(searchInput))
   $: stateStore.set(stateInput)
   $: prefixStore.set(showPathPrefix)
+  $: commonStore.set(showCommon)
   $: platFeat.set(platformFeatures)
   $: platStore.set(supportedPlatforms)
   $: platFind.set(toUpper(platformSearch))
@@ -76,10 +78,14 @@
     featDeviate.set([])
     featExtra.set([])
     featClear.set(false)
+    showCommon = true
+    featureSearch = ""
   }
 
   function clearFeatSelect() {
     featClear.set(true)
+    showCommon = false
+    featureSearch = ""
     featDeviate.set([])
     featExtra.set([])
   }
@@ -149,10 +155,16 @@
               </ul>
             </div>
           </div>
-          <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-fit mt-5 md:mt-0">
+          <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:min-w-64 md:w-fit mt-5 md:mt-0">
             <div class="pl-4 pr-2 py-2 flex items-center justify-between font-nokia-headline text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">
               <span>Features</span>
-              <button class="px-3 py-1 border border-gray-300 dark:border-gray-500 bg-gray-50 dark:bg-gray-600 hover:bg-gray-300 hover:dark:bg-gray-500 rounded-lg text-xs" on:click={clearFeatSelect}>Clear All</button>
+              <div class="flex items-center space-x-1">
+                <div class="flex items-center px-2 py-1 border border-gray-300 dark:border-gray-500 bg-gray-50 dark:bg-gray-600 hover:bg-gray-300 hover:dark:bg-gray-500 rounded-lg text-xs">
+                  <input id="common-checkbox" type="checkbox" class="w-3 h-3" bind:checked={showCommon}>
+                  <label for="common-checkbox" class="ms-1.5 text-xs text-nowrap text-gray-900 dark:text-gray-300 cursor-pointer">common</label>
+                </div>
+                <button class="px-3 py-1 border border-gray-300 dark:border-gray-500 bg-gray-50 dark:bg-gray-600 hover:bg-gray-300 hover:dark:bg-gray-500 rounded-lg text-xs" on:click={clearFeatSelect}>Clear All</button>
+              </div>
             </div>
             <div class="p-2 border-b border-gray-200 dark:border-gray-600">
               <input type="text" id="featureSearch" bind:value={featureSearch} placeholder="Search..." class="w-full px-3 py-1 text-sm rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
