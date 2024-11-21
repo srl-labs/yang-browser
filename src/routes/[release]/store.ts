@@ -25,13 +25,16 @@ export const yangPaths = writable<PathDef[]>([])
 export const start = writable(0)
 
 // FEATURE BASED FILTER
-function featFilterAction (platFeatures: string[], deviation: string[], extras: string[]) {
-  if(platFeatures?.length) {
-    platFeatures = platFeatures.filter(f => !deviation.includes(f))
-    return platFeatures.concat(extras)
+function featFilterAction (validFeatures: string[], selectedFeatures: string[], deviation: string[], extras: string[]) {
+  if(selectedFeatures?.length) {
+    selectedFeatures = selectedFeatures.filter(f => !deviation.includes(f))
+    return selectedFeatures.concat(extras)
   } else {
-    return deviation.concat(extras)
+    if(validFeatures?.length) {
+      return validFeatures.filter(f => extras.includes(f))
+    }
   }
+  return []
 }
 
 // DERIVED STORES
@@ -41,31 +44,33 @@ export const platList = derived([platFind, platStore], ([$platFind, $platStore])
 export const featList = derived([featFind, featStore], ([$featFind, $featStore]) => 
   $featStore.filter((x: string) => x.includes($featFind)))
 
-export const featSelect = derived([platFeat, platSelect, featClear], ([$platFeat, $platSelect, $featClear]) => 
-  $featClear ? [] : ($platFeat[$platSelect] || []))
+export const validFeatures = derived([platFeat, platSelect], ([$platFeat, $platSelect]) => $platFeat[$platSelect])
 
-export const featFilter = derived([featSelect, featDeviate, featExtra], ([$featSelect, $featDeviate, $featExtra]) => 
-  featFilterAction($featSelect, $featDeviate, $featExtra))
+export const platformPaths = derived([yangPaths, validFeatures, commonStore],  ([$yangPaths, $validFeatures, $commonStore]) => 
+  $yangPaths.filter((x: PathDef) => featureBasedFilter(x, $validFeatures, $commonStore)))
 
-export const stateFilter = derived([stateStore, yangPaths], ([$stateStore, $yangPaths]) => 
-  $yangPaths.filter((x: PathDef) => $stateStore == "" ? true : x["is-state"] == $stateStore))
+export const featSelect = derived([validFeatures, featClear], ([$validFeatures, $featClear]) => 
+  $featClear ? [] : $validFeatures)
+
+export const featFilter = derived([validFeatures, featSelect, featDeviate, featExtra], ([$validFeatures, $featSelect, $featDeviate, $featExtra]) => 
+  featFilterAction($validFeatures, $featSelect, $featDeviate, $featExtra))
+
+export const platFeatFilter = derived([platformPaths, featFilter, commonStore],  ([$platformPaths, $featFilter, $commonStore]) => 
+  $platformPaths.filter((x: PathDef) => featureBasedFilter(x, $featFilter, $commonStore)))
+
+export const stateFilter = derived([stateStore, platFeatFilter], ([$stateStore, $platFeatFilter]) => 
+  $platFeatFilter.filter((x: PathDef) => $stateStore == "" ? true : x["is-state"] == $stateStore))
 
 export const searchFilter = derived([searchStore, stateFilter, prefixStore], ([$searchStore, $stateFilter, $prefixStore]) => 
   $stateFilter.filter((x: PathDef) => searchBasedFilter(x, $searchStore, $prefixStore)))
 
-export const commonFilter = derived([searchFilter, commonStore], ([$searchFilter, $commonStore]) => 
-  $commonStore ? $searchFilter : $searchFilter.filter((x: PathDef) => ("if-features" in x)))
-
-export const platFeatFilter = derived([featFilter, commonFilter],  ([$featFilter, $commonFilter]) => 
-  $featFilter?.length ? $commonFilter.filter((x: PathDef) => featureBasedFilter(x, $featFilter)) : $commonFilter)
-
-export const total = derived(platFeatFilter, ($platFeatFilter) => { 
+export const total = derived(searchFilter, ($searchFilter) => { 
   start.set(0)
-  return $platFeatFilter.length
+  return $searchFilter.length
 })
 
 export const end = derived([start, total], ([$start, $total]) => 
   ($start + count) <= $total ? ($start + count) : $total)
 
-export const paginated = derived([start, end, platFeatFilter], ([$start, $end, $platFeatFilter]) => 
-  $platFeatFilter.slice($start, $end))
+export const paginated = derived([start, end, searchFilter], ([$start, $end, $searchFilter]) => 
+  $searchFilter.slice($start, $end))

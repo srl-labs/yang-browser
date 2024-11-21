@@ -83,7 +83,7 @@ export function markRender (node: HTMLSpanElement, text:string) {
 }
 
 // do not alter the flow in any means
-export function featureBasedFilter (x: PathDef, f: string[]): boolean {
+export function featureBasedFilter (x: PathDef, f: string[], c: boolean): boolean {
   const isOperator = (arg: string): boolean => (arg === "|" || arg === "&")
   
   const featureFilter = (data: string[]): string => {
@@ -106,54 +106,57 @@ export function featureBasedFilter (x: PathDef, f: string[]): boolean {
     return tmp
   }
 
-  if (f.length > 0 && x["if-features"]) {
-    let exp = featureFilter(x["if-features"])
-
-    // Since future-0-0 does not exist, mark as do not exist by default
-    exp = exp.replace(/future_0_0/g, "=")
-
-    for (const feature of f) {
-      const d2h = feature.replace(/-/g, "_")
-      if (exp.includes(d2h)) {
-        exp = exp.replace(new RegExp(`\\b${d2h}\\b`, 'g'), "+")
-      }
-    }
-
-    exp = exp.replaceAll("!+", "=")
-    const expSplit = exp.split(" ")
-    const expResult = []
-    const validOperators = ["+", "=", "&", "|"]
-
-    for (let i = 0; i < expSplit.length; i++) {
-      if (expSplit[i] === "+" || expSplit[i] === "=") {
-        expResult.push(expSplit[i])
-      } else {
-        const validation = validOperators.some(operator => expSplit[i].includes(operator))
-        if (!validation) {
-          const tmpRep = expSplit[i].replace(/[a-z0-9_]+/g, "=").replace("!=", "=")
-          expResult.push(tmpRep)
-        } else {
-          expResult.push(expSplit[i])
+  if(x["if-features"]) {
+    if (f.length > 0) {
+      let exp = featureFilter(x["if-features"])
+  
+      // Since future-0-0 does not exist, mark as do not exist by default
+      exp = exp.replace(/future_0_0/g, "=")
+  
+      for (const feature of f) {
+        const d2h = feature.replace(/-/g, "_")
+        if (exp.includes(d2h)) {
+          exp = exp.replace(new RegExp(`\\b${d2h}\\b`, 'g'), "+")
         }
       }
-      if (isOperator(expSplit[i + 1])) {
-        expResult.push(expSplit[i + 1])
-        i++
+  
+      exp = exp.replaceAll("!+", "=")
+      const expSplit = exp.split(" ")
+      const expResult = []
+      const validOperators = ["+", "=", "&", "|"]
+  
+      for (let i = 0; i < expSplit.length; i++) {
+        if (expSplit[i] === "+" || expSplit[i] === "=") {
+          expResult.push(expSplit[i])
+        } else {
+          const validation = validOperators.some(operator => expSplit[i].includes(operator))
+          if (!validation) {
+            const tmpRep = expSplit[i].replace(/[a-z0-9_]+/g, "=").replace("!=", "=")
+            expResult.push(tmpRep)
+          } else {
+            expResult.push(expSplit[i])
+          }
+        }
+        if (isOperator(expSplit[i + 1])) {
+          expResult.push(expSplit[i + 1])
+          i++
+        }
+      }
+  
+      if (expResult.length > 0) {
+        if (isOperator(expResult[expResult.length - 1])) {
+          expResult.pop()
+        }
+        let result = expResult.join(" ")
+        result = result.replaceAll("+", "1").replaceAll("=", "0")
+  
+        return evalBoolString(result)
       }
     }
-
-    if (expResult.length > 0) {
-      if (isOperator(expResult[expResult.length - 1])) {
-        expResult.pop()
-      }
-      let result = expResult.join(" ")
-      result = result.replaceAll("+", "1").replaceAll("=", "0")
-
-      return evalBoolString(result)
-    }
+  } else if(c) {
+    return true
   }
-
-  return true
+  return false
 }
 
 // cloudfare pages dont support eval() or Function()

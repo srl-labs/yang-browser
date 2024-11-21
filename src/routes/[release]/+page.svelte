@@ -17,7 +17,9 @@
   import type { PayLoad, PathDef, PlatformFeatures } from '$lib/structure'
   import type { FetchPostMessage, FetchResponseMessage } from '$lib/workers/structure'
   import { toLower, toUpper, closeSidebar, markFilter, markRender } from '$lib/components/functions'
-	import { commonStore, featClear, featDeviate, featExtra, featFilter, featFind, featList, featSelect, featStore, paginated, platFeat, platFind, platList, platSelect, platStore, prefixStore, searchStore, stateStore, total, yangPaths } from './store'
+	import { commonStore, featClear, featDeviate, featExtra, featFilter, featFind, featList, featSelect, featStore, paginated, 
+    platFeat, platFind, platList, platSelect, platStore, prefixStore, searchStore, stateStore, 
+    total, yangPaths, validFeatures } from './store'
 
   // DEFAULTS
   let popupDetail = {}
@@ -82,6 +84,7 @@
     featureSearch = ""
   }
 
+  // CLEAR FEATURE DEVIATIONS AND EXTRAS
   function clearFeatSelect() {
     featClear.set(true)
     showCommon = false
@@ -93,8 +96,8 @@
   // UPDATE FEATURE DEVIATIONS AND EXTRAS
   function updateFeatDeviate (event: any, feat: string) {
     const checked = (event.target as HTMLInputElement)?.checked
-    let fd = $featDeviate
-    let fe = $featExtra
+    let fd = [...$featDeviate]
+    let fe = [...$featExtra]
     if(!checked && $featSelect.includes(feat) && !fd.includes(feat)) {
       fd.push(feat)
       featDeviate.set(fd)
@@ -174,8 +177,8 @@
                 {#each $featList as entry, i}
                   <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
                     <div class="flex items-center px-3">
-                      <input id="checkbox-{entry}" type="checkbox" name="list-checkbox" class="w-3 h-3 cursor-pointer" on:click={(e) => updateFeatDeviate(e, entry)} checked={$featFilter.includes(entry) ? true : false}>
-                      <label for="checkbox-{entry}" class="w-full cursor-pointer py-2 ms-2 text-sm {$featSelect.includes(entry) ? 'text-gray-900 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}">{entry}</label>
+                      <input id="checkbox-{entry}" type="checkbox" class="w-3 h-3 cursor-pointer" checked={$featFilter.includes(entry) ? true : false} on:click={(e) => updateFeatDeviate(e, entry)} />
+                      <label for="checkbox-{entry}" class="w-full cursor-pointer py-2 ms-2 text-sm {$validFeatures.includes(entry) ? 'text-gray-900 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}">{entry}</label>
                     </div>
                   </li>
                 {/each}
