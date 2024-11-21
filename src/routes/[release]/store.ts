@@ -47,7 +47,7 @@ export const featList = derived([featFind, featStore], ([$featFind, $featStore])
 export const validFeatures = derived([platFeat, platSelect], ([$platFeat, $platSelect]) => $platFeat[$platSelect])
 
 export const platformPaths = derived([yangPaths, validFeatures, commonStore],  ([$yangPaths, $validFeatures, $commonStore]) => 
-  $yangPaths.filter((x: PathDef) => featureBasedFilter(x, $validFeatures, $commonStore)))
+  $yangPaths?.length && $validFeatures?.length ? $yangPaths.filter((x: PathDef) => featureBasedFilter(x, $validFeatures, $commonStore)) : [])
 
 export const featSelect = derived([validFeatures, featClear], ([$validFeatures, $featClear]) => 
   $featClear ? [] : $validFeatures)
