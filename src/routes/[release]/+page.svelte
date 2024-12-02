@@ -201,9 +201,16 @@
             <div class="pl-4 pr-2 py-2 flex items-center justify-between font-nokia-headline text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">
               <span>Features</span>
               <div class="flex items-center space-x-1">
-                <div class="flex items-center px-2 py-1 border border-gray-300 dark:border-gray-500 bg-gray-50 dark:bg-gray-600 hover:bg-gray-300 hover:dark:bg-gray-500 rounded-lg text-xs">
-                  <input id="common-checkbox" type="checkbox" class="w-3 h-3" bind:checked={showCommon}>
-                  <label for="common-checkbox" class="ms-1.5 text-xs text-nowrap text-gray-900 dark:text-gray-300 cursor-pointer">common</label>
+                <div class="dropdown">
+                  <div class="dropdown-button flex items-center px-2 py-1 border border-gray-300 dark:border-gray-500 bg-gray-50 dark:bg-gray-600 hover:bg-gray-300 hover:dark:bg-gray-500 rounded-lg text-xs">
+                    <input id="common-checkbox" type="checkbox" class="w-3 h-3" bind:checked={showCommon}>
+                    <label for="common-checkbox" class="ms-1.5 text-xs text-nowrap text-gray-900 dark:text-gray-300 cursor-pointer">common</label>
+                  </div>
+                  <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
+                    <p class="my-2 max-w-[200px] px-3 text-xs">
+                      Paths shared across all platforms
+                    </p>
+                  </div>
                 </div>
                 <button class="px-3 py-1 border border-gray-300 dark:border-gray-500 bg-gray-50 dark:bg-gray-600 hover:bg-gray-300 hover:dark:bg-gray-500 rounded-lg text-xs" on:click={clearFeatSelect}>Clear All</button>
               </div>
