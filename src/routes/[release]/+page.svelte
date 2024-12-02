@@ -115,6 +115,39 @@
       featExtra.set(fe)
     }
   }
+
+  // DECIDE FEATURE CHECK
+  function decideCheck (entry: string, position: string, clearFlag: boolean, platFocus: string) {
+    if(platFocus !== "NONE") {
+      if(clearFlag) {
+        if(position === "disabled") {
+          if($validFeatures.includes(entry)) {
+            return false
+          }
+          return true
+        } else if(position === "label") {
+          if($validFeatures.includes(entry)) {
+            return true
+          }
+          return false
+        } else if(position === "checked") {
+          return false
+        }
+      }
+      const exist = $featFilter.includes(entry) ? true : false
+      if(position === "disabled") {
+        return !exist 
+      } else if(position === "label" || position === "checked") {
+        return exist
+      }
+    } else {
+      if(position === "disabled" || position === "checked") {
+        return false
+      } else if(position === "label") {
+        return true
+      }
+    }
+  }
 </script>
 
 <svelte:head>
@@ -147,8 +180,14 @@
             </div>
             <div class="overflow-y-auto max-h-72 scroll-light dark:scroll-dark">
               <ul>
+                <li class="w-full">
+                  <div class="flex items-center px-3">
+                    <input id="radio-none" type="radio" name="list-radio" class="w-4 h-4 cursor-pointer text-blue-600 bg-gray-100 dark:bg-gray-600" bind:group={platOption} value="NONE" on:change={resetFeatSelect}>
+                    <label for="radio-none" class="w-full cursor-pointer py-2 ms-2 text-sm {$platSelect === "NONE" ? 'text-gray-900 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}">NONE</label>
+                  </div>
+                </li>
                 {#each $platList as entry, i}
-                  <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
+                  <li class="w-full border-t border-gray-200 dark:border-gray-600">
                     <div class="flex items-center px-3">
                       <input id="radio-{entry}" type="radio" name="list-radio" class="w-4 h-4 cursor-pointer text-blue-600 bg-gray-100 dark:bg-gray-600" bind:group={platOption} value="{entry}" on:change={resetFeatSelect}>
                       <label for="radio-{entry}" class="w-full cursor-pointer py-2 ms-2 text-sm {entry === $platSelect ? 'text-gray-900 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}">{entry}</label>
@@ -177,8 +216,8 @@
                 {#each $featList as entry, i}
                   <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
                     <div class="flex items-center px-3">
-                      <input id="checkbox-{entry}" type="checkbox" class="w-3 h-3 cursor-pointer" checked={$featFilter.includes(entry) ? true : false} on:click={(e) => updateFeatDeviate(e, entry)} />
-                      <label for="checkbox-{entry}" class="w-full cursor-pointer py-2 ms-2 text-sm {$validFeatures.includes(entry) ? 'text-gray-900 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}">{entry}</label>
+                      <input id="checkbox-{entry}" type="checkbox" class="w-3 h-3 {decideCheck(entry, "label", $featClear, $platSelect) ? 'cursor-pointer' : 'cursor-not-allowed'}" checked={decideCheck(entry, "checked", $featClear, $platSelect)} disabled={decideCheck(entry, "disabled", $featClear, $platSelect)} on:click={(e) => updateFeatDeviate(e, entry)} />
+                      <label for="checkbox-{entry}" class="w-full py-2 ms-2 text-sm {decideCheck(entry, "label", $featClear, $platSelect) ? 'text-gray-900 dark:text-gray-300 cursor-pointer' : 'text-gray-400 dark:text-gray-500 cursor-not-allowed'}">{entry}</label>
                     </div>
                   </li>
                 {/each}

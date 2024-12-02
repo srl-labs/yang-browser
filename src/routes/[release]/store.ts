@@ -33,6 +33,7 @@ function featFilterAction (validFeatures: string[], selectedFeatures: string[], 
     if(validFeatures?.length) {
       return validFeatures.filter(f => extras.includes(f))
     }
+    return extras
   }
   return []
 }
@@ -44,10 +45,17 @@ export const platList = derived([platFind, platStore], ([$platFind, $platStore])
 export const featList = derived([featFind, featStore], ([$featFind, $featStore]) => 
   $featStore.filter((x: string) => x.includes($featFind)))
 
-export const validFeatures = derived([platFeat, platSelect], ([$platFeat, $platSelect]) => $platFeat[$platSelect])
+export const validFeatures = derived([platFeat, platSelect], ([$platFeat, $platSelect]) => $platSelect === "NONE" ? [] : $platFeat[$platSelect])
 
-export const platformPaths = derived([yangPaths, validFeatures, commonStore],  ([$yangPaths, $validFeatures, $commonStore]) => 
-  $yangPaths?.length && $validFeatures?.length ? $yangPaths.filter((x: PathDef) => featureBasedFilter(x, $validFeatures, $commonStore)) : [])
+export const platformPaths = derived([yangPaths, validFeatures, commonStore],  ([$yangPaths, $validFeatures, $commonStore]) => {
+  if($yangPaths?.length) {
+    if($validFeatures?.length) {
+      return $yangPaths.filter((x: PathDef) => featureBasedFilter(x, $validFeatures, $commonStore))
+    }
+    return $yangPaths
+  }
+  return []
+})
 
 export const featSelect = derived([validFeatures, featClear], ([$validFeatures, $featClear]) => 
   $featClear ? [] : $validFeatures)

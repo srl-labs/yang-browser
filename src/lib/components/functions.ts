@@ -83,7 +83,7 @@ export function markRender (node: HTMLSpanElement, text:string) {
 }
 
 // do not alter the flow in any means
-export function featureBasedFilter (x: PathDef, f: string[], c: boolean): boolean {
+export function featureBasedFilter (x: PathDef, f: string[] = [], c: boolean): boolean {
   const isOperator = (arg: string): boolean => (arg === "|" || arg === "&")
   
   const featureFilter = (data: string[]): string => {
@@ -107,7 +107,7 @@ export function featureBasedFilter (x: PathDef, f: string[], c: boolean): boolea
   }
 
   if(x["if-features"]) {
-    if (f.length > 0) {
+    if (f?.length) {
       let exp = featureFilter(x["if-features"])
   
       // Since future-0-0 does not exist, mark as do not exist by default
