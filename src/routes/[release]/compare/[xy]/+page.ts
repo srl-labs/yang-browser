@@ -2,8 +2,7 @@ import { error } from '@sveltejs/kit'
 
 import yaml from 'js-yaml'
 import rel from '$lib/releases.yaml?raw'
-import type { PlatformFeatures, Platforms, Releases } from '$lib/structure'
-import { extractFeatures } from '$lib/components/functions'
+import type { Platforms, Releases } from '$lib/structure'
 
 const releases = yaml.load(rel) as Releases
 const validVersions = [...new Set(Object.keys(releases))]

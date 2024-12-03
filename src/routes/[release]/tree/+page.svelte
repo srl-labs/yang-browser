@@ -36,10 +36,10 @@
 
   // YANGTREE WORKER
   let yangTreeWorker: Worker | undefined = undefined
-  async function loadYangTreeWorker (model: string, release: string, urlOrigin: string, searchInput: string, stateInput: string, featSelect: string[]) {
+  async function loadYangTreeWorker (model: string, release: string, searchInput: string, stateInput: string, featSelect: string[]) {
     const YangTreeWorker = await import('$lib/workers/yangTree.worker?worker')
     yangTreeWorker = new YangTreeWorker.default()
-    const yangTreeMessage: YangTreePostMessage = { model, release, urlOrigin, searchInput, stateInput, featSelect }
+    const yangTreeMessage: YangTreePostMessage = { model, release, searchInput, stateInput, featSelect }
     yangTreeWorker.postMessage(yangTreeMessage)
     yangTreeWorker.onmessage = onYangTreeWorkerMessage
   }
@@ -49,10 +49,10 @@
 
   // TREE WORKER
   let treeWorker: Worker | undefined = undefined
-  async function loadReleaseWorker(model: string, release: string, urlOrigin: string) {
+  async function loadReleaseWorker(model: string, release: string) {
     const ReleaseWorker = await import('$lib/workers/fetch.worker?worker')
     treeWorker = new ReleaseWorker.default()
-    const releaseMessage: FetchPostMessage = { model, release, urlOrigin }
+    const releaseMessage: FetchPostMessage = { model, release }
     treeWorker.postMessage(releaseMessage)
     treeWorker.onmessage = onReleaseWorkerMessage
   }
@@ -66,13 +66,13 @@
     let searchInput = isCrossLaunched() ? "" : getUrlPath()
     let featureSelected = platformFeatures[$page.data.platform]
     pastYangTreeArgs = `${searchInput};;;;${platformSelected}`
-    loadYangTreeWorker(model, release, $page.url.origin, searchInput, "", featureSelected)
+    loadYangTreeWorker(model, release, searchInput, "", featureSelected)
   }
 
   // ON PAGELOAD
 	export let data: TreePayLoad
   let {model, modelTitle, release, allModels} = data
-  onMount(() => loadReleaseWorker(model, release, $page.url.origin))
+  onMount(() => loadReleaseWorker(model, release))
 
   // OTHER BINDING VARIABLES
   let searchInput = isCrossLaunched() ? "" : getUrlPath()
@@ -105,7 +105,7 @@
       }
       $page.url.searchParams.set("platform", $platSelect)
       goto(`?${$page.url.searchParams.toString()}`, {invalidateAll: true})
-      loadYangTreeWorker(model, release, $page.url.origin, $searchStore, $stateStore, $featSelect)
+      loadYangTreeWorker(model, release, $searchStore, $stateStore, $featSelect)
     }
 	}
 </script>

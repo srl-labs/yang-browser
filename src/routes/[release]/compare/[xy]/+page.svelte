@@ -29,10 +29,10 @@
 
   // COMPARE WORKER
   let compareWorker: Worker | undefined = undefined
-  async function loadWorker(urlOrigin: string, release: string, x: string, y: string, xFeatures: string[], yFeatures: string[]) {
+  async function loadWorker(release: string, x: string, y: string, xFeatures: string[], yFeatures: string[]) {
     const CompareWorker = await import('$lib/workers/platformCompare.worker?worker')
     compareWorker = new CompareWorker.default()
-    const message: PlatformComparePostMessage = { urlOrigin, release, x, y, xFeatures, yFeatures }
+    const message: PlatformComparePostMessage = { release, x, y, xFeatures, yFeatures }
     compareWorker.postMessage(message)
     compareWorker.onmessage = onWorkerMessage
   }
@@ -44,7 +44,7 @@
   // ON PAGELOAD
   export let data: PlatformComparePayLoad
   const {x, y, model, release, xFeatures, yFeatures, urlPath} = data
-  onMount(() => loadWorker($page.url.origin, release, x, y, xFeatures, yFeatures))
+  onMount(() => loadWorker(release, x, y, xFeatures, yFeatures))
 
   // OTHER BINDING VARIABLES
   let searchInput = urlPath
