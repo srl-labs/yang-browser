@@ -112,12 +112,18 @@ export function featureBasedFilter (x: PathDef, f: string[] = [], c: boolean): b
   
       // Since future-0-0 does not exist, mark as do not exist by default
       exp = exp.replace(/future_0_0/g, "=")
-  
+      
+      let proceed = false
       for (const feature of f) {
         const d2h = feature.replace(/-/g, "_")
         if (exp.includes(d2h)) {
           exp = exp.replace(new RegExp(`\\b${d2h}\\b`, 'g'), "+")
+          proceed = true
         }
+      }
+
+      if (!proceed) {
+        return false
       }
   
       exp = exp.replaceAll("!+", "=")
@@ -131,7 +137,7 @@ export function featureBasedFilter (x: PathDef, f: string[] = [], c: boolean): b
         } else {
           const validation = validOperators.some(operator => expSplit[i].includes(operator))
           if (!validation) {
-            const tmpRep = expSplit[i].replace(/[a-z0-9_]+/g, "=").replace("!=", "=")
+            const tmpRep = expSplit[i].replace(/[a-z0-9_]+/g, "=").replace("!=", "+")
             expResult.push(tmpRep)
           } else {
             expResult.push(expSplit[i])
@@ -142,14 +148,14 @@ export function featureBasedFilter (x: PathDef, f: string[] = [], c: boolean): b
           i++
         }
       }
-  
+
       if (expResult.length > 0) {
         if (isOperator(expResult[expResult.length - 1])) {
           expResult.pop()
         }
         let result = expResult.join(" ")
         result = result.replaceAll("+", "1").replaceAll("=", "0")
-  
+        
         return evalBoolString(result)
       }
     }
