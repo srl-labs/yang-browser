@@ -9,7 +9,7 @@ import rel from '$lib/releases.yaml?raw'
 const releases = yaml.load(rel) as Releases
 
 onmessage = async (event: MessageEvent<ComparePostMessage>) => {
-  const { x, y, model } = event.data
+  const { x, y, model, urlOrigin } = event.data
 
   let xpaths: PathDef[] = []
   let ypaths: PathDef[] = []
@@ -18,12 +18,12 @@ onmessage = async (event: MessageEvent<ComparePostMessage>) => {
   let uniqueFeatures: string[] = []
 
   async function fetchPaths(release: string) {
-    const versionUrl = `/releases/v${release}/${model !== "nokia" ? model + "/" : ""}paths.json`
+    const versionUrl = `${urlOrigin}/releases/v${release}/${model !== "nokia" ? model + "/" : ""}paths.json`
     const pathResponse = await fetch(versionUrl)
 
     if (pathResponse.ok) {
       const pathJson = await pathResponse.json()
-      const addDefaults = pathJson.map((k: PathDef) => ({...k, release: release, compareTo: y, "is-state": ("is-state" in k ? "R" : "RW")}))
+      const addDefaults = pathJson.map((k: any) => ({...k, release: release, compareTo: y, "is-state": ("is-state" in k ? "R" : "RW")}))
       if(release === x) {
         xpaths = addDefaults
       } else if(release === y) {
@@ -38,7 +38,7 @@ onmessage = async (event: MessageEvent<ComparePostMessage>) => {
   await fetchPaths(y)
 
   if(model === "nokia" && releases[`v${y}`]?.features) {
-    const fetchUrl = `/releases/v${y}/features.txt`
+    const fetchUrl = `${urlOrigin}/releases/v${y}/features.txt`
     
     const featResponse = await fetch(fetchUrl)
     if (featResponse.ok) {

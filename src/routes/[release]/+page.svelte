@@ -17,9 +17,7 @@
   import type { PayLoad, PathDef, PlatformFeatures } from '$lib/structure'
   import type { FetchPostMessage, FetchResponseMessage } from '$lib/workers/structure'
   import { toLower, toUpper, closeSidebar, markFilter, markRender } from '$lib/components/functions'
-	import { commonStore, featClear, featDeviate, featExtra, featFilter, featFind, featList, featSelect, featStore, paginated, 
-    platFeat, platFind, platList, platSelect, platStore, prefixStore, searchStore, stateStore, 
-    total, yangPaths, validFeatures } from './store'
+	import { featDeviate, featExtra, featFilter, featFind, featList, featSelect, featStore, paginated, platFeat, platFind, platList, platSelect, platStore, prefixStore, searchStore, stateStore, total, yangPaths } from './store'
 
   // DEFAULTS
   let popupDetail = {}
@@ -31,10 +29,10 @@
 
   // RELEASE WORKER
   let releaseWorker: Worker | undefined = undefined
-  async function loadWorker(model: string, release: string) {
+  async function loadWorker(model: string, release: string, urlOrigin: string) {
     const ReleaseWorker = await import('$lib/workers/fetch.worker?worker')
     releaseWorker = new ReleaseWorker.default()
-    const message: FetchPostMessage = { model, release }
+    const message: FetchPostMessage = { model, release, urlOrigin }
     releaseWorker.postMessage(message)
     releaseWorker.onmessage = onWorkerMessage
   }
@@ -51,13 +49,12 @@
   // ON PAGELOAD
   export let data: PayLoad
   let {model, modelTitle, urlPath, release, allModels} = data
-  onMount(() => loadWorker(model, release))
+  onMount(() => loadWorker(model, release, $page.url.origin))
 
   // OTHER BINDING VARIABLES
   let searchInput = urlPath
   let stateInput = ""
   let showPathPrefix = false
-  let showCommon = true
   let platformSearch = ""
   let featureSearch = ""
   let showPlatformFilters = false
@@ -66,7 +63,6 @@
   $: searchStore.set(toLower(searchInput))
   $: stateStore.set(stateInput)
   $: prefixStore.set(showPathPrefix)
-  $: commonStore.set(showCommon)
   $: platFeat.set(platformFeatures)
   $: platStore.set(supportedPlatforms)
   $: platFind.set(toUpper(platformSearch))
@@ -79,25 +75,13 @@
   function resetFeatSelect() {
     featDeviate.set([])
     featExtra.set([])
-    featClear.set(false)
-    showCommon = true
-    featureSearch = ""
-  }
-
-  // CLEAR FEATURE DEVIATIONS AND EXTRAS
-  function clearFeatSelect() {
-    featClear.set(true)
-    showCommon = false
-    featureSearch = ""
-    featDeviate.set([])
-    featExtra.set([])
   }
 
   // UPDATE FEATURE DEVIATIONS AND EXTRAS
   function updateFeatDeviate (event: any, feat: string) {
     const checked = (event.target as HTMLInputElement)?.checked
-    let fd = [...$featDeviate]
-    let fe = [...$featExtra]
+    let fd = $featDeviate
+    let fe = $featExtra
     if(!checked && $featSelect.includes(feat) && !fd.includes(feat)) {
       fd.push(feat)
       featDeviate.set(fd)
@@ -113,39 +97,6 @@
     else if(!checked && !$featSelect.includes(feat) && fe.includes(feat)) {
       fe = fe.filter(item => item !== feat)
       featExtra.set(fe)
-    }
-  }
-
-  // DECIDE FEATURE CHECK
-  function decideCheck (entry: string, position: string, clearFlag: boolean, platFocus: string) {
-    if(platFocus !== "NONE") {
-      if(clearFlag) {
-        if(position === "disabled") {
-          if($validFeatures.includes(entry)) {
-            return false
-          }
-          return true
-        } else if(position === "label") {
-          if($validFeatures.includes(entry)) {
-            return true
-          }
-          return false
-        } else if(position === "checked") {
-          return false
-        }
-      }
-      const exist = $featFilter.includes(entry) ? true : false
-      if(position === "disabled") {
-        return !exist 
-      } else if(position === "label" || position === "checked") {
-        return exist
-      }
-    } else {
-      if(position === "disabled" || position === "checked") {
-        return false
-      } else if(position === "label") {
-        return true
-      }
     }
   }
 </script>
@@ -180,14 +131,8 @@
             </div>
             <div class="overflow-y-auto max-h-72 scroll-light dark:scroll-dark">
               <ul>
-                <li class="w-full">
-                  <div class="flex items-center px-3">
-                    <input id="radio-none" type="radio" name="list-radio" class="w-4 h-4 cursor-pointer text-blue-600 bg-gray-100 dark:bg-gray-600" bind:group={platOption} value="NONE" on:change={resetFeatSelect}>
-                    <label for="radio-none" class="w-full cursor-pointer py-2 ms-2 text-sm {$platSelect === "NONE" ? 'text-gray-900 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}">NONE</label>
-                  </div>
-                </li>
                 {#each $platList as entry, i}
-                  <li class="w-full border-t border-gray-200 dark:border-gray-600">
+                  <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
                     <div class="flex items-center px-3">
                       <input id="radio-{entry}" type="radio" name="list-radio" class="w-4 h-4 cursor-pointer text-blue-600 bg-gray-100 dark:bg-gray-600" bind:group={platOption} value="{entry}" on:change={resetFeatSelect}>
                       <label for="radio-{entry}" class="w-full cursor-pointer py-2 ms-2 text-sm {entry === $platSelect ? 'text-gray-900 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}">{entry}</label>
@@ -197,24 +142,8 @@
               </ul>
             </div>
           </div>
-          <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:min-w-64 md:w-fit mt-5 md:mt-0">
-            <div class="pl-4 pr-2 py-2 flex items-center justify-between font-nokia-headline text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">
-              <span>Features</span>
-              <div class="flex items-center space-x-1">
-                <div class="dropdown">
-                  <div class="dropdown-button flex items-center px-2 py-1 border border-gray-300 dark:border-gray-500 bg-gray-50 dark:bg-gray-600 hover:bg-gray-300 hover:dark:bg-gray-500 rounded-lg text-xs">
-                    <input id="common-checkbox" type="checkbox" class="w-3 h-3" bind:checked={showCommon}>
-                    <label for="common-checkbox" class="ms-1.5 text-xs text-nowrap text-gray-900 dark:text-gray-300 cursor-pointer">common</label>
-                  </div>
-                  <div class="dropdown-content absolute z-10 hidden bg-gray-100 dark:bg-gray-700 dark:text-white rounded-lg shadow">
-                    <p class="my-2 max-w-[200px] px-3 text-xs">
-                      Paths shared across all platforms
-                    </p>
-                  </div>
-                </div>
-                <button class="px-3 py-1 border border-gray-300 dark:border-gray-500 bg-gray-50 dark:bg-gray-600 hover:bg-gray-300 hover:dark:bg-gray-500 rounded-lg text-xs" on:click={clearFeatSelect}>Clear All</button>
-              </div>
-            </div>
+          <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-fit mt-5 md:mt-0">
+            <p class="px-4 py-2 font-nokia-headline text-gray-900 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">Features</p>
             <div class="p-2 border-b border-gray-200 dark:border-gray-600">
               <input type="text" id="featureSearch" bind:value={featureSearch} placeholder="Search..." class="w-full px-3 py-1 text-sm rounded-lg text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:placeholder-gray-400">
             </div>
@@ -223,8 +152,8 @@
                 {#each $featList as entry, i}
                   <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
                     <div class="flex items-center px-3">
-                      <input id="checkbox-{entry}" type="checkbox" class="w-3 h-3 {decideCheck(entry, "label", $featClear, $platSelect) ? 'cursor-pointer' : 'cursor-not-allowed'}" checked={decideCheck(entry, "checked", $featClear, $platSelect)} disabled={decideCheck(entry, "disabled", $featClear, $platSelect)} on:click={(e) => updateFeatDeviate(e, entry)} />
-                      <label for="checkbox-{entry}" class="w-full py-2 ms-2 text-sm {decideCheck(entry, "label", $featClear, $platSelect) ? 'text-gray-900 dark:text-gray-300 cursor-pointer' : 'text-gray-400 dark:text-gray-500 cursor-not-allowed'}">{entry}</label>
+                      <input id="checkbox-{entry}" type="checkbox" name="list-checkbox" class="w-3 h-3 cursor-pointer" on:click={(e) => updateFeatDeviate(e, entry)} checked={$featFilter.includes(entry) ? true : false}>
+                      <label for="checkbox-{entry}" class="w-full cursor-pointer py-2 ms-2 text-sm {$featSelect.includes(entry) ? 'text-gray-900 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}">{entry}</label>
                     </div>
                   </li>
                 {/each}
