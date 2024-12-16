@@ -9,14 +9,14 @@ import rel from '$lib/releases.yaml?raw'
 const releases = yaml.load(rel) as Releases
 
 onmessage = async (event: MessageEvent<FetchPostMessage>) => {
-  const { model, release } = event.data
+  const { model, release, urlOrigin } = event.data
 
   let features: Platforms = {}
   let platforms: PlatformFeatures = {}
   let uniqueFeatures: string[] = []
 
   if(model === "nokia" && releases[release]?.features) {
-    const fetchUrl = `/releases/${release}/features.txt`
+    const fetchUrl = `${urlOrigin}/releases/${release}/features.txt`
     
     const featResponse = await fetch(fetchUrl)
     if (featResponse.ok) {

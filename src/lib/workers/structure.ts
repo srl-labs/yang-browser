@@ -1,12 +1,14 @@
-import type { PathDef, PlatformFeatures } from "$lib/structure"
+import type { PathDef, Platforms, PlatformFeatures } from "$lib/structure"
 
 export interface ComparePostMessage {
   x: string
   y: string
   model: string
+  urlOrigin: string
 }
 
 export interface PlatformComparePostMessage {
+  urlOrigin: string
   release: string
   x: string
   y: string
@@ -29,11 +31,13 @@ export interface CompareResponseMessage {
 export interface FetchPostMessage {
   model: string
   release: string
+  urlOrigin: string
 }
 
 export interface YangTreePostMessage {
   model: string
   release: string
+  urlOrigin: string
   searchInput: string
   stateInput: string 
   featSelect: string[]
@@ -50,13 +54,8 @@ export interface TreeResponseMessage {
   uniqueFeatures: string[]
 }
 
-export interface YangTreeContainer {
-  path: string
-}
-
 export interface YangTreeResponseMessage {
-  name: string
-  type: string
-  children: YangTreeResponseMessage[]
-  details: YangTreeContainer | PathDef
+  name?: string
+  children?: any[]
+  details?: any | PathDef
 }

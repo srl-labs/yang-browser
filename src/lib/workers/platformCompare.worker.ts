@@ -5,17 +5,17 @@ import type { PathDef } from "$lib/structure"
 import type { PlatformComparePostMessage, DiffResponseMessage } from "$lib/workers/structure"
 
 onmessage = async (event: MessageEvent<PlatformComparePostMessage>) => {
-  const { release, x, y, xFeatures, yFeatures } = event.data
+  const { urlOrigin, release, x, y, xFeatures, yFeatures } = event.data
 
   let paths: PathDef[] = []
 
   async function fetchPaths(release: string) {
-    const versionUrl = `/releases/${release}/paths.json`
+    const versionUrl = `${urlOrigin}/releases/${release}/paths.json`
     const pathResponse = await fetch(versionUrl)
 
     if (pathResponse.ok) {
       const pathJson = await pathResponse.json()
-      const addDefaults = pathJson.map((k: PathDef) => ({...k, release: release.substring(1), compareTo: y, "is-state": ("is-state" in k ? "R" : "RW")}))
+      const addDefaults = pathJson.map((k: any) => ({...k, release: release.substring(1), compareTo: y, "is-state": ("is-state" in k ? "R" : "RW")}))
       paths = addDefaults
     } else {
       throw error(404, `Error fetching ${release} yang tree`)

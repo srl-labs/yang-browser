@@ -20,7 +20,7 @@ export async function load({ url, params }) {
     throw error(404, "Unsupported model")
   }
 
-  const allModels = [{title: "Nokia", path: `/${release}/tree`}]
+  let allModels = [{title: "Nokia", path: `/${release}/tree`}]
   if(releases[release].openconfig) {
     allModels.push({title: "OpenConfig", path: `/${release}/tree/?model=openconfig`})
   }

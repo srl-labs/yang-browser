@@ -32,10 +32,10 @@
 
   // COMPARE WORKER
   let compareWorker: Worker | undefined = undefined
-  async function loadWorker(x: string, y: string, model: string) {
+  async function loadWorker(x: string, y: string, model: string, urlOrigin: string) {
     const CompareWorker = await import('$lib/workers/compare.worker?worker')
     compareWorker = new CompareWorker.default()
-    const message: ComparePostMessage = { x, y, model }
+    const message: ComparePostMessage = { x, y, model, urlOrigin }
     compareWorker.postMessage(message)
     compareWorker.onmessage = onWorkerMessage
   }
@@ -52,7 +52,7 @@
   // ON PAGELOAD
   export let data: ComparePayLoad
   const {x, y, model, urlPath} = data
-  onMount(() => loadWorker(x, y, model))
+  onMount(() => loadWorker(x, y, model, $page.url.origin))
 
   // OTHER BINDING VARIABLES
   let searchInput = urlPath
