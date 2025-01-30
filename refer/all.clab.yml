@@ -5,6 +5,8 @@ topology:
     kind: nokia_srlinux
     license: ${LIC_PATH:-/opt/nokia/srl/24-7.lic}
   nodes:
+    7215-IXS-A1:
+      type: ixsa1
     7220-IXR-D1:
       type: ixrd1
     7220-IXR-D2L:
