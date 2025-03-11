@@ -31,9 +31,9 @@ MODEL_TYPE="$1"
 # SR Linux release version are passed as a space separated list of release version
 SRL_VER_LIST="${@:2}"
 
-GNMIC_CONTAINER=ghcr.io/openconfig/gnmic:0.38.0
+GNMIC_CONTAINER=ghcr.io/openconfig/gnmic:0.40.0
 
-PYANG_CONTAINER=ghcr.io/hellt/pyang:2.5.3
+PYANG_CONTAINER=ghcr.io/hellt/pyang:2.6.0
 
 # Verify if model type is provided
 if [ "$MODEL_TYPE" = "srl_nokia" ]; then
@@ -169,8 +169,8 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
     find ./ -name "*tools*.yang" -exec rm -f {} \;
 
     # GENERATE PATHS. TEXT + JSON
-    docker run --rm -v $(pwd):/yang -w /yang $GNMIC_CONTAINER generate path --file $MODEL_PATH $GNMIC_ADDONS --types >$OUT_DIR/paths.txt
-    docker run --rm -v $(pwd):/yang -w /yang $GNMIC_CONTAINER generate path --file $MODEL_PATH $GNMIC_ADDONS --with-prefix --json >$OUT_DIR/paths.json
+    docker run --rm -v $(pwd):/yang -w /yang $GNMIC_CONTAINER generate path --file $MODEL_PATH $GNMIC_ADDONS --types --with-non-leaves >$OUT_DIR/paths.txt
+    docker run --rm -v $(pwd):/yang -w /yang $GNMIC_CONTAINER generate path --file $MODEL_PATH $GNMIC_ADDONS --with-prefix --with-non-leaves --json >$OUT_DIR/paths.json
 
     cd $SCRIPT_DIR
     # copy per-release index page to output dir

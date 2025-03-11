@@ -212,7 +212,9 @@ module: srl_nokia-acl
      |        +--rw ipv6-prefix    srl_nokia-comm:ipv6-prefix
      +--rw egress-mac-filtering?   boolean {srl_nokia-feat:platform-7220-d2 or srl_nokia-feat:platform-7220-d3 or srl_nokia-feat:platform-7220-d4 or srl_nokia-feat:platform-7220-d5}?
 
-module: srl_nokia-bfd
+
+
+
   +--rw bfd! {srl_nokia-feat:bfd}?
      +--rw subinterface* [id]
      |  +--rw id                                   srl_nokia-comm:subinterface-no-mgmt
@@ -295,7 +297,78 @@ module: srl_nokia-bfd
                  +--ro srl_nokia-micro-bfd:received-errored-packets?   srl_nokia-comm:zero-based-counter64
                  +--ro srl_nokia-micro-bfd:last-clear?                 srl_nokia-comm:date-and-time-delta
 
-module: srl_nokia-interfaces
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   +--rw interface* [name]
      +--rw name                              srl_nokia-comm:interface-all
      +--rw description?                      srl_nokia-comm:description
@@ -822,7 +895,42 @@ module: srl_nokia-interfaces
            +--rw srl_nokia-lacp:system-id-mac?     srl_nokia-comm:mac-address
            +--rw srl_nokia-lacp:system-priority?   uint16
 
-module: srl_nokia-network-instance
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   +--rw network-instance* [name]
      +--rw name                                           srl_nokia-comm:restricted-name
      +--rw type?                                          identityref
@@ -5385,7 +5493,50 @@ module: srl_nokia-network-instance
            +--ro srl_nokia-tcp-udp:local-port       srl_nokia-comm:port-number
            +--ro srl_nokia-tcp-udp:process-id?      uint32
 
-module: srl_nokia-platform
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   +--rw platform
      +--ro trust
      |  +--ro srl_nokia-platform-tpm:tpm
@@ -5742,7 +5893,10 @@ module: srl_nokia-platform
            +--ro srl_nokia-platform-res-mgmt:allocated-extra-mac-entries?       uint32 {srl-feat:trident3}?
            +--rw srl_nokia-platform-res-mgmt:ipv6-128bit-lpm-entries?           uint16 {srl-feat:trident3 or srl-feat:tomahawk3}?
 
-module: srl_nokia-qos
+
+
+
+
   +--rw qos {srl-feat:qos}?
      +--rw explicit-congestion-notification! {srl-feat:qos-ecn}?
      +--rw queues
@@ -5988,7 +6142,8 @@ module: srl_nokia-qos
            |           +--rw srl_nokia-acl-policers:drop-probability?   drop-probability-level
            +--rw srl_nokia-acl-policers:statistics-mode?   enumeration
 
-module: srl_nokia-routing-policy
+
+
   +--rw routing-policy
      +--rw as-path-set* [name]
      |  +--rw name          srl_nokia-comm:name
@@ -6089,7 +6244,38 @@ module: srl_nokia-routing-policy
               +--rw internal-tags {srl_nokia-feat:internal-tags}?
                  +--rw set-tag-set*   -> /routing-policy/tag-set/name
 
-module: srl_nokia-system
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   +--rw system
      +--ro features*                                                                      srl-comm:name
      +--rw trace-options*                                                                 enumeration
@@ -7288,7 +7474,13 @@ module: srl_nokia-system
            +--ro srl_nokia-sys-util:used-last-high-watermark-time?   srl_nokia-comm:date-and-time-delta
            +--ro srl_nokia-sys-util:used-upper-threshold-exceeded?   boolean
 
-module: srl_nokia-tools-acl
+
+
+
+
+
+
+
   +--rw acl
      +--rw acl-filter* [name type]
      |  +--rw name          string
@@ -7335,7 +7527,7 @@ module: srl_nokia-tools-acl
            +--rw statistics
               +--rw clear?   empty
 
-module: srl_nokia-tools-bfd
+
   +--rw bfd {srl_nokia-feat:bfd}?
      +--rw peer* [local-discriminator]
      |  +--rw local-discriminator    uint32
@@ -7357,7 +7549,35 @@ module: srl_nokia-tools-bfd
                  +--rw name     srl_nokia-comm:interface-all
                  +--rw clear?   empty
 
-module: srl_nokia-tools-interfaces
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   +--rw interface* [name]
      +--rw name            string
      +--rw statistics
@@ -7423,7 +7643,15 @@ module: srl_nokia-tools-interfaces
                     +--rw srl_nokia-tools-interfaces-bridge-table-mac-learning:address       srl_nokia-comm:mac-address
                     +--rw srl_nokia-tools-interfaces-bridge-table-mac-learning:delete-mac?   empty
 
-module: srl_nokia-tools-network-instance
+
+
+
+
+
+
+
+
+
   +--rw network-instance* [name]
      +--rw name                                       string
      +--rw protocols
@@ -7687,7 +7915,8 @@ module: srl_nokia-tools-network-instance
            +--rw srl_nokia-tools-route-table:longest-prefix-match
               +--rw srl_nokia-tools-route-table:ipv6-address?   srl_nokia-comm:ipv6-address
 
-module: srl_nokia-tools-oam
+
+
   +--rw oam!
      +--rw srl_nokia-tools-service-activation-testhead:service-activation-testhead
         +--rw srl_nokia-tools-service-activation-testhead:service-test* [test-name]
@@ -7695,7 +7924,12 @@ module: srl_nokia-tools-oam
            +--rw srl_nokia-tools-service-activation-testhead:start?       empty
            +--rw srl_nokia-tools-service-activation-testhead:stop?        empty
 
-module: srl_nokia-tools-platform
+
+
+
+
+
+
   +--rw platform
      +--rw chassis
      |  +--rw reboot!
@@ -7719,7 +7953,7 @@ module: srl_nokia-tools-platform
            |  +--rw duration?   uint16
            +--rw disable?   empty
 
-module: srl_nokia-tools-qos
+
   +--rw qos {srl-feat:qos}?
      +--rw interfaces!
      |  +--rw interface* [interface-id]
@@ -7741,7 +7975,10 @@ module: srl_nokia-tools-qos
         +--rw srl_nokia-tools-acl:multifield-classifier* [name]
            +--rw srl_nokia-tools-acl:name    srl_nokia-comm:name
 
-module: srl_nokia-tools-system
+
+
+
+
   +--rw system!
      +--rw srl-tools-aaa:aaa!
      |  +--rw srl-tools-aaa:authentication
@@ -7948,7 +8185,8 @@ module: srl_nokia-tools-system
            +--rw srl_nokia-tools-snmp:force?              empty
            +--rw srl_nokia-tools-snmp:network-instance?   srl_nokia-comm:name {srl_nokia-feat:snmp-traps}?
 
-module: srl_nokia-tools-tunnel
+
+
   +--rw tunnel {srl-feat:vxlan or srl-feat:pseudowire}?
      +--rw srl_nokia-tools-vxlan-tunnel:vxlan-tunnel {srl-feat:vxlan}?
         +--rw srl_nokia-tools-vxlan-tunnel:statistics
@@ -7958,7 +8196,14 @@ module: srl_nokia-tools-tunnel
            +--rw srl_nokia-tools-vxlan-tunnel:statistics
               +--rw srl_nokia-tools-vxlan-tunnel:clear?   empty
 
-module: srl_nokia-tunnel-interfaces
+
+
+
+
+
+
+
+
   +--rw tunnel-interface* [name] {srl-feat:vxlan}?
      +--rw name               tunnel-interface-all
      +--rw vxlan-interface* [index]
@@ -8037,7 +8282,7 @@ module: srl_nokia-tunnel-interfaces
                  +--ro srl_nokia-tunnel-if-vxlan-if-bt:total-entries?    srl_nokia-comm:zero-based-counter64
                  +--ro srl_nokia-tunnel-if-vxlan-if-bt:failed-entries?   srl_nokia-comm:zero-based-counter64
 
-module: srl_nokia-tunnel
+
   +--rw tunnel {srl-feat:vxlan or srl-feat:pseudowire}?
      +--rw srl_nokia-vxlan-tunnel:vxlan-tunnel {srl_nokia-feat:vxlan}?
         +--ro srl_nokia-vxlan-tunnel:vtep* [address]
@@ -8060,4 +8305,5 @@ module: srl_nokia-tunnel
            +--ro srl_nokia-vxlan-tunnel:out-octets?             srl_nokia-comm:zero-based-counter64
            +--ro srl_nokia-vxlan-tunnel:out-packets?            srl_nokia-comm:zero-based-counter64
            +--ro srl_nokia-vxlan-tunnel:last-clear?             srl_nokia-comm:date-and-time-delta
+
 
