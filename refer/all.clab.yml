@@ -23,12 +23,8 @@ topology:
       type: ixrh3
     7220-IXR-H4:
       type: ixrh4
-    7250-IXR-6:
-      type: ixr6
     7250-IXR-6e:
       type: ixr6e
-    7250-IXR-10:
-      type: ixr10
     7250-IXR-10e:
       type: ixr10e
     7250-IXR-X3b:
@@ -39,3 +35,9 @@ topology:
       type: sxr1d32d
     7730-SXR-1x-44s:
       type: sxr1x44s
+    7220-IXR-H4-32D:
+      binds:
+        - srl_topo/ixrh432d.yml:/tmp/topology.yml
+    7250-IXR-18e:
+      binds:
+        - srl_topo/ixr18e.yml:/tmp/topology.yml

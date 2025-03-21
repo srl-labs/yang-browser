@@ -41,7 +41,8 @@ if [ "$MODEL_TYPE" = "srl_nokia" ]; then
   GNMIC_ADDONS="--dir ietf/ --dir openconfig"
 elif [ "$MODEL_TYPE" = "openconfig" ]; then
   MODEL_PATH="openconfig"
-  GNMIC_ADDONS="--dir ietf/ --dir iana/ --exclude ietf-interfaces"
+  GNMIC_ADDONS="--dir ietf/ --dir iana/ --dir srl_nokia/models/common --exclude ietf-interfaces"
+  PYANG_ADDONS="--deviation-module combined/openconfig-srl-deviations.yang"
 else
   echo "Error: Model must be specified (srl_nokia | openconfig)."
   exit 1
@@ -75,6 +76,7 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
 
   mkdir -p $YANG_DIR_NAME
   docker cp $id:/opt/srlinux/models/. $YANG_DIR_NAME
+  docker cp $id:/opt/srlinux/deviations/openconfig/openconfig-srl-deviations.yang $YANG_DIR_NAME/openconfig
   docker rm $id
 
   cd $YANG_DIR_NAME
@@ -96,7 +98,7 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
 
   if [ $PROCEED -eq 1 ]; then
     # if [ "$1" = "srl_nokia" ]; then
-      # placeholder for models massaging if needed for a particual model/release
+      # placeholder for models massaging if needed for a particular model/release
       # sed -i 's/modifier "invert-match";//g' srl_nokia/models/common/srl_nokia-common.yang # remove modifiers that are not supported by goyang
       # echo ""
     # fi
@@ -107,7 +109,9 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
     # Create combined folder with all YANG files
     mkdir -p combined
     find ./$MODEL_PATH -name "*.yang" | xargs -I % cp % combined
-
+    if [ "$MODEL_TYPE" = "openconfig" ]; then
+      find ./srl_nokia/models/common -name "*.yang" | xargs -I % cp % combined
+    fi
     # extract pyang features
     features=$(extract_pyang_features)
     # echo "Features: $features"
@@ -119,11 +123,11 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
     # exit 1
     # end of testing
 
-    RESPONSE=$(docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH -f tree -F ${features} combined/*.yang -o tree.txt 2>&1 >/dev/null)
+    RESPONSE=$(docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH ${PYANG_ADDONS} -f tree -F ${features} combined/*.yang -o tree.txt 2>&1 >/dev/null)
     response_handler "$RESPONSE" "$SRL_VER-tree"
 
     # PYANG JSTREE
-    RESPONSE=$(docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH --plugindir /opt/pyang-oc-plugin -f oc-jstree -F ${features} --oc-jstree-strip combined/*.yang -o tree.html 2>&1 >/dev/null)
+    RESPONSE=$(docker run --rm -v $(pwd):/yang $PYANG_CONTAINER pyang -p ietf:iana:$MODEL_PATH ${PYANG_ADDONS} --plugindir /opt/pyang-oc-plugin -f oc-jstree -F ${features} --oc-jstree-strip combined/*.yang -o tree.html 2>&1 >/dev/null)
     response_handler "$RESPONSE" "$SRL_VER-jstree"
 
     # Delete combined folder
@@ -167,6 +171,9 @@ for SRL_VER in ${SRL_VER_LIST[@]}; do
     # remove tools modules as they clash with regular leaves and are not relevant for the path search
     cd $YANG_DIR_NAME
     find ./ -name "*tools*.yang" -exec rm -f {} \;
+
+    # remove deviation module as it causes issues with gnmic/goyang
+    rm -f ./openconfig/openconfig-srl-deviations.yang
 
     # GENERATE PATHS. TEXT + JSON
     docker run --rm -v $(pwd):/yang -w /yang $GNMIC_CONTAINER generate path --file $MODEL_PATH $GNMIC_ADDONS --types --with-non-leaves >$OUT_DIR/paths.txt

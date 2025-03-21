@@ -1,0 +1,9 @@
+chassis_configuration:
+ "chassis_type": 70
+ "base_mac": "00:BC:BD"
+ "cpm_card_type": 184
+
+slot_configuration:
+ 1:
+   "card_type": 33
+   "mda_type": 13
