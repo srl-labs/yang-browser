@@ -21,23 +21,34 @@
 	}
 </script>
 
-<button class="flex items-center text-left py-0.5 
-		{expanded ? 'text-gray-400 dark:text-gray-500': 'dark:text-gray-300'} 
-		hover:text-green-600 hover:dark:text-green-600" on:click={toggle}>
-  <span class="flex pr-1">
-    <!--minus-circle-->
-    <svg class="w-5 h-5 {expanded ? 'minus-circle-active': 'hidden'}" fill="none" 
-      stroke-width="1.5" stroke="currentColor" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-    </svg>
-    <!--plus-circle-->
-    <svg class="w-5 h-5 {expanded ? 'plus-circle-inactive hidden': ''}" fill="none" 
-      stroke-width="1.5" stroke="currentColor" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-    </svg>
-  </span>
-  <div class="flex" title="{folder.details.path}" use:markRender={markFilter(folder.name, getUrlPath(), "tree")}>{folder.name}</div>
-</button>
+<div class="flex items-center">
+	<button class="flex items-center text-left py-0.5 
+			{expanded ? 'text-gray-400 dark:text-gray-500': 'dark:text-gray-300'} 
+			hover:text-green-600 hover:dark:text-green-600" on:click={toggle}>
+		<span class="flex pr-1">
+			<!--minus-circle-->
+			<svg class="w-5 h-5 {expanded ? 'minus-circle-active': 'hidden'}" fill="none" 
+				stroke-width="1.5" stroke="currentColor" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+			</svg>
+			<!--plus-circle-->
+			<svg class="w-5 h-5 {expanded ? 'plus-circle-inactive hidden': ''}" fill="none" 
+				stroke-width="1.5" stroke="currentColor" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+			</svg>
+		</span>
+	</button>
+	<button class="px-2 py-0.5 rounded hover:underline 
+		hover:bg-gray-200 hover:text-black hover:dark:bg-gray-600 hover:dark:text-gray-200 
+		{getUrlPath() === folder.details.path ? 'bg-gray-200 dark:bg-gray-600 dark:text-gray-200' : 'text-blue-600 dark:text-blue-500'}" 
+		on:click={() => leafClick(folder.details)}>
+		{#if getUrlPath() === folder.details.path}
+			<div>{folder.name}</div>
+		{:else}
+			<div use:markRender={markFilter(folder.name, getUrlPath(), "tree")}></div>
+		{/if}
+	</button>
+</div>
 
 {#if expanded}
 	{#if folder.children && folder.children?.length}

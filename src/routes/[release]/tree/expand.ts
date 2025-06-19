@@ -7,10 +7,17 @@ export function nameMatchesTerm(urlPath: string, targetName: string) {
 
 export function decideExpand(folder: any, crossLaunched: boolean = false, urlPath: string = "") {
   let result = false
+  //urlPath = removeKeyDefault(urlPath)
   if(crossLaunched && urlPath !== "") {
-    return removeKeyDefault(urlPath).indexOf(folder.details.path) !== -1
+    return urlPath.indexOf(folder.details.path) !== -1
   } 
   if(urlPath !== "") {
+    // temporary until we have a good solution
+    if(urlPath.split(/(\s+)/).length === 1 && urlPath.indexOf("/") != -1) {
+      return urlPath.indexOf(folder.details.path) !== -1
+    }
+    urlPath = urlPath.replaceAll("/", " ")
+
     result = result || nameMatchesTerm(urlPath, folder.name)
     
     if(folder.children) {
