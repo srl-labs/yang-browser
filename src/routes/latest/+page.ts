@@ -7,7 +7,8 @@ import type { Releases } from '$lib/structure'
 const releases = yaml.load(rel) as Releases
 const validVersions = [...new Set(Object.keys(releases))]
 
-export async function load() {
+export async function load({ url }) {
   const latest = validVersions[0]
-  throw redirect(307, `/${latest}`);
+  const params = url.search
+  throw redirect(307, `/${latest}${params}`);
 }
