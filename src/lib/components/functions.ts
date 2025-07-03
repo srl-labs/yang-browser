@@ -206,3 +206,32 @@ function evalBoolString(expression: string): boolean {
 
   return Boolean(parseExpression());
 }
+
+export function gnmiToJsPath(gnmiPath: string) {
+  return gnmiPath
+    .split('/')
+    .filter(Boolean)
+    .map(segment => {
+      const base = segment.split('[')[0]
+      const keys = [...segment.matchAll(/\[([^=\]]+)=([^\]]+)\]/g)]
+      const keyStr = keys.map(k => `{.${k[1]}==${k[2]}}`).join('')
+      return `.${base}${keyStr}`
+    })
+    .join('')
+}
+
+export function gnmiToModelPath(jsonInstancePath: string) {
+  return jsonInstancePath
+    .split('/')
+    .filter(Boolean)
+    .map(segment => {
+      const base = segment.split('[')[0]
+      // Match [key="value"], [key=value], or [key=*]
+      const keyMatch = segment.match(/\[.*?=(?:"([^"]+)"|([^\]]+))\]/)
+      const rawValue = keyMatch ? (keyMatch[1] || keyMatch[2]) : null
+      const value = rawValue !== null ? encodeURIComponent(rawValue) : null
+      return value ? `${base}=${value}` : base
+    })
+    .join('/')
+    .replace(/^/, '/')
+}
