@@ -91,7 +91,7 @@
 
 <!-- SIDEBAR -->
 {#if modelTitle !== "compare" && modelTitle !== "platformCompare"}
-  <div id="sidebar" class="fixed h-screen overflow-hidden transform transition ease-in-out duration-300 -translate-x-full">
+  <div id="sidebar" class="fixed z-10 h-screen overflow-hidden transform transition ease-in-out duration-300 -translate-x-full">
     <aside class="text-sm font-nokia-headline-light pb-4 overflow-y-auto scroll-light dark:scroll-dark z-20 w-[250px] md:w-[320px] h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
       <div class="px-4 space-y-4 pt-[95px] lg:pt-[100px]">
         {#if allModels.length === 2}
