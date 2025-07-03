@@ -128,7 +128,7 @@
       <SearchInput bind:searchInput />
       <div class="flex py-1 items-center space-x-2">
         <StateButton bind:stateInput />
-        <PlatformButton enabled={supportedPlatforms?.length} bind:showPlatformFilters />
+        <PlatformButton enabled={supportedPlatforms?.length} bind:showPlatformFilters platOption={platformSelected} />
       </div>
       <PlatformGrid bind:showPlatformFilters bind:supportedPlatforms bind:platformSelected />
       <div class="text-right mt-6">

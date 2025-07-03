@@ -2,7 +2,8 @@
   import { page } from '$app/stores'
 	import { copy } from 'svelte-copy'
 
-  import { closeSidebar, markRender } from '$lib/components/functions'
+  import { closeSidebar, gnmiToJsPath, gnmiToModelPath, markRender } from '$lib/components/functions'
+	import CopyPath from './CopyPath.svelte';
 
   export let popupDetail: any = {}
   export let platformSelected: string
@@ -122,7 +123,31 @@
                 {/if}
                 <tr class="border-t border-gray-200 dark:border-gray-600">
                   <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Path:</th>
-                  <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{popupDetail.path}</td>
+                  <td class="group relative py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">
+                    <span>{popupDetail.path}</span>
+                    <CopyPath pathType={"path"} path={popupDetail.path}/>
+                  </td>
+                </tr>
+                <tr class="border-t border-gray-200 dark:border-gray-600">
+                  <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Path with Prefix:</th>
+                  <td class="group relative py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">
+                    <span>{popupDetail["path-with-prefix"]}</span>
+                    <CopyPath pathType={"path-with-prefix"} path={popupDetail["path-with-prefix"]}/>
+                  </td>
+                </tr>
+                <tr class="border-t border-gray-200 dark:border-gray-600">
+                  <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">JS Path:</th>
+                  <td class="group relative py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">
+                    <span>{gnmiToJsPath(popupDetail.path)}</span>
+                    <CopyPath pathType={"js-path"} path={gnmiToJsPath(popupDetail.path)}/>
+                  </td>
+                </tr>
+                <tr class="border-t border-gray-200 dark:border-gray-600">
+                  <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Restconf Path:</th>
+                  <td class="group relative py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">
+                    <span>{gnmiToModelPath(popupDetail["path-with-prefix"])}</span>
+                    <CopyPath pathType={"restconf-path"} path={gnmiToModelPath(popupDetail["path-with-prefix"])}/>
+                  </td>
                 </tr>
                 <tr class="border-t border-gray-200 dark:border-gray-600">
                   <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Description:</th>

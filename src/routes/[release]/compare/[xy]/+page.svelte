@@ -2,7 +2,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { page } from '$app/stores'
-  import { defaultPlatform } from '$lib/components/sharedStore'
 
 	import Header from '$lib/components/Header.svelte'
   import Footer from '$lib/components/Footer.svelte'

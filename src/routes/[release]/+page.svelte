@@ -118,7 +118,7 @@
       <div class="overflow-x-auto scroll-light dark:scroll-dark">
         <div class="py-2 space-x-2 flex items-center">
           <StateButton bind:stateInput />
-          <PlatformButton enabled={supportedPlatforms?.length} bind:showPlatformFilters />
+          <PlatformButton enabled={supportedPlatforms?.length} bind:showPlatformFilters {platOption} />
           <ShowPrefixCheck bind:showPathPrefix />
         </div>
       </div>
@@ -131,8 +131,14 @@
             </div>
             <div class="overflow-y-auto max-h-72 scroll-light dark:scroll-dark">
               <ul>
+                <li class="w-full">
+                  <div class="flex items-center px-3">
+                    <input id="radio-plat-none" type="radio" name="list-radio" class="w-4 h-4 cursor-pointer text-blue-600 bg-gray-100 dark:bg-gray-600" bind:group={platOption} value="" on:change={resetFeatSelect}>
+                    <label for="radio-plat-none" class="w-full cursor-pointer py-2 ms-2 text-sm {$platSelect === "" ? 'text-gray-900 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}">NONE</label>
+                  </div>
+                </li>
                 {#each $platList as entry, i}
-                  <li class="w-full {i == 0 ? '' : 'border-t border-gray-200 dark:border-gray-600'}">
+                  <li class="w-full border-t border-gray-200 dark:border-gray-600">
                     <div class="flex items-center px-3">
                       <input id="radio-{entry}" type="radio" name="list-radio" class="w-4 h-4 cursor-pointer text-blue-600 bg-gray-100 dark:bg-gray-600" bind:group={platOption} value="{entry}" on:change={resetFeatSelect}>
                       <label for="radio-{entry}" class="w-full cursor-pointer py-2 ms-2 text-sm {entry === $platSelect ? 'text-gray-900 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}">{entry}</label>

@@ -2,7 +2,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { page } from '$app/stores'
-  import { defaultPlatform } from '$lib/components/sharedStore'
 
 	import Header from '$lib/components/Header.svelte'
   import Footer from '$lib/components/Footer.svelte'
@@ -60,7 +59,7 @@
   let stateInput = ""
   let platformSearch = ""
   let showPlatformFilters = false
-  let platformSelected = defaultPlatform
+  let platformSelected = ""
 
   $: searchStore.set(toLower(searchInput))
   $: compareStore.set(compareInput)
@@ -88,7 +87,7 @@
         <div class="py-2 space-x-2 flex items-center text-sm">
           <ChangesButton bind:compareInput />
           <StateButton bind:stateInput />
-          <PlatformButton enabled={supportedPlatforms?.length} bind:showPlatformFilters />
+          <PlatformButton enabled={supportedPlatforms?.length} bind:showPlatformFilters platOption={platformSelected} />
           <div class="dropdown">
             <a href="https://github.com/nokia/srlinux-yang-models/compare/v{x}..v{y}" target="_blank" class="dropdown-button font-nokia-headline-light px-3 py-1 rounded-full text-xs text-nowrap bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white inline-flex items-center align-bottom">
               <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
