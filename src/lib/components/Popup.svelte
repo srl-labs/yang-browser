@@ -49,6 +49,11 @@
     return `/${release}${toTree}?path=${encodeURIComponent(path.path)}${platParam}${fromParam}${modelParam}`
   }
 
+  function launchQuery(path: any) {
+    const release = "release" in path ? `v${path.release}` : $page.data.release
+    return `/${release}/query?path=${encodeURIComponent(path.path)}`
+  }
+
   function copyEffect() {
     const toggle = () => {
       document.getElementById("clip")?.classList.toggle("hidden")
@@ -159,7 +164,10 @@
             </table>
           </div>
         </div>
-        <div id="popupFooter" class="text-right p-4 border-t border-gray-200 rounded-b dark:border-gray-600">
+        <div id="popupFooter" class="flex items-center justify-between text-right p-4 border-t border-gray-200 rounded-b dark:border-gray-600">
+          <a href="{launchQuery(popupDetail)}" class="text-sm px-3 py-1 rounded text-white bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-800">
+            JSON-RPC Query
+          </a>
           <a href="{crossLaunch(popupDetail)}" target="_blank" class="text-sm px-3 py-1 rounded text-white bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">Show in {"release" in popupDetail ? popupDetail.release : ''} {treePopup() ? 'Path' : 'Tree'} Browser</a>
         </div>
       </div>
