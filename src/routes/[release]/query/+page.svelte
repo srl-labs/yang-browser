@@ -7,7 +7,7 @@
 	import { closeSidebar, copyAnimation } from "$lib/components/functions"
 
   let isSubmitting = false
-  let jsonRpcResponse = {}
+  let jsonRpcResponse: any = {}
 
   export let data
   let {model, modelTitle, allModels, urlPath, release} = data
@@ -20,38 +20,32 @@
     formData.forEach(function(value, key) {
       req[key] = value
     })
-    
-    const headers = new Headers()
+
+    const headers = new Headers();
     headers.set('Authorization', 'Basic ' + btoa(req.user + ":" + req.pass))
 
-    const url = `${req.type}://${req.neId}/jsonrpc`
+    const url = `${req.type.toLowerCase()}://${req.neId}/jsonrpc`
     const payload = {
-      "id": 0,
-      "jsonrpc": "2.0",
-      "method": "get",
-      "params": {
-        "commands": [
-          {
-            "path": req.path,
-            "datastore": req.datastore
-          }
-        ]
-      }
-  }
-
-    const query = await fetch(url, {
-      method: "POST", body: JSON.stringify(payload), headers: headers
-    })
-    if(query.ok) {
-      const response = await query.json()
-      if("result" in response) {
-        jsonRpcResponse = response.result[0]
-      } else {
-        jsonRpcResponse = response
-      }
-    } else {
-      jsonRpcResponse["error"] = await query.text()
+      "id": 0, "jsonrpc": "2.0", "method": "get",
+      "params": { "commands": [{ "path": req.path, "datastore": req.datastore }] }
     }
+
+    try {
+      const query = await fetch(url, { method: "POST", headers: headers, body: JSON.stringify(payload) })
+      if(query.ok) {
+        const response = await query.json()
+        if("result" in response) {
+          jsonRpcResponse = response.result[0]
+        } else {
+          jsonRpcResponse = response
+        }
+      } else {
+        jsonRpcResponse["error"] = await query.text()
+      }
+    } catch (err) {
+      jsonRpcResponse["error"] = "Unknown Error. Check CERTs or Credentials"
+    }
+    
     isSubmitting = false
   }
 </script>
@@ -87,10 +81,7 @@
         <div>
           <label for="neId" class="block uppercase text-gray-800 dark:text-gray-200 text-xs mb-2">Address*</label>
           <div class="flex items-center">
-            <select id="type" name="type" class="font-fira px-3 py-2 rounded-l-lg text-[12.5px] border-t border-b border-l border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 pointer-events-none">
-              <option selected value="http">HTTP</option>
-              <option value="https">HTTPS</option>
-            </select>
+            <input id="type" name="type" type="text" readonly value="HTTPS" class="font-fira px-3 py-2 rounded-l-lg text-[12.5px] border-t border-b border-l border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 w-1/2 lg:w-1/4">
             <input id="neId" name="neId" type="text" required class="font-fira px-3 py-2 rounded-r-lg w-full text-[12.5px] border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 {isSubmitting ? 'bg-gray-300' : 'bg-gray-100'}" disabled={isSubmitting}>
           </div>
         </div>
