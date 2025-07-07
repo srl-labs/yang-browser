@@ -235,3 +235,12 @@ export function gnmiToModelPath(jsonInstancePath: string) {
     .join('/')
     .replace(/^/, '/')
 }
+
+export function copyAnimation() {
+  const toggle = () => {
+    document.getElementById("clip")?.classList.toggle("hidden")
+    document.getElementById("copied")?.classList.toggle("hidden")
+  }
+  setTimeout(toggle, 1000)
+  toggle()
+}
