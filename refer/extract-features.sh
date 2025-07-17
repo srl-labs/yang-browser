@@ -43,7 +43,7 @@ FEATURES_DIR=${RELEASE_DIR}/platform_features
 echo "making directory ${FEATURES_DIR}"
 mkdir -p ${FEATURES_DIR}
 
-sudo -E containerlab deploy -c -t ./refer/all.clab.yml
+containerlab deploy -c -t ./refer/all.clab.yml
 
 # remove all json files that might be there from previous extraction
 rm -f ${FEATURES_DIR}/*.json
