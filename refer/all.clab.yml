@@ -23,6 +23,10 @@ topology:
       type: ixrh3
     7220-IXR-H4:
       type: ixrh4
+    7220-IXR-H5-64D:
+      type: ixrh564d
+    7220-IXR-H5-64O:
+      type: ixrh564o
     7250-IXR-6e:
       type: ixr6e
     7250-IXR-10e:
