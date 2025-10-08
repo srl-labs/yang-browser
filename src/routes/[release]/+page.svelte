@@ -122,6 +122,9 @@
           <ShowPrefixCheck bind:showPathPrefix />
         </div>
       </div>
+      {#if model == "openconfig"}
+        <p class="mt-2 text-yellow-600 dark:text-yellow-400 text-xs">Note: The OpenConfig browser does not take into account the SRL deviations.</p>
+      {/if}
       {#if showPlatformFilters}
         <div transition:fade class="flex flex-wrap items-start mt-4 md:space-x-6">
           <div class="rounded-lg border border-gray-200 dark:border-gray-600 w-full md:w-40">
