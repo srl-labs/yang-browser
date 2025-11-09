@@ -6,42 +6,42 @@ topology:
     license: ${LIC_PATH:-/opt/nokia/srl/24-7.lic}
   nodes:
     7215-IXS-A1:
-      type: ixsa1
+      type: ixs-a1
     7220-IXR-D1:
-      type: ixrd1
+      type: ixr-d1
     7220-IXR-D2L:
-      type: ixrd2l
+      type: ixr-d2l
     7220-IXR-D3L:
-      type: ixrd3l
+      type: ixr-d3l
     7220-IXR-D4:
-      type: ixrd4
+      type: ixr-d4
     7220-IXR-D5:
-      type: ixrd5
+      type: ixr-d5
     7220-IXR-H2:
-      type: ixrh2
+      type: ixr-h2
     7220-IXR-H3:
-      type: ixrh3
+      type: ixr-h3
     7220-IXR-H4:
-      type: ixrh4
-    7220-IXR-H5-64D:
-      type: ixrh564d
-    7220-IXR-H5-64O:
-      type: ixrh564o
-    7250-IXR-6e:
-      type: ixr6e
-    7250-IXR-10e:
-      type: ixr10e
-    7250-IXR-X3b:
-      type: ixrx3b
-    7250-IXR-X1b:
-      type: ixrx1b
-    7730-SXR-1d-32d:
-      type: sxr1d32d
-    7730-SXR-1x-44s:
-      type: sxr1x44s
+      type: ixr-h4
     7220-IXR-H4-32D:
-      binds:
-        - srl_topo/ixrh432d.yml:/tmp/topology.yml
+      type: ixr-h4-32d
+    7220-IXR-H5-32D:
+      type: ixr-h5-32d
+    7220-IXR-H5-64D:
+      type: ixr-h5-64d
+    7220-IXR-H5-64O:
+      type: ixr-h5-64o
+    7250-IXR-6e:
+      type: ixr-6e
+    7250-IXR-10e:
+      type: ixr-10e
+    7250-IXR-X3b:
+      type: ixr-x3b
+    7250-IXR-X1b:
+      type: ixr-x1b
+    7730-SXR-1d-32d:
+      type: sxr-1d-32d
+    7730-SXR-1x-44s:
+      type: sxr-1x-44s
     7250-IXR-18e:
-      binds:
-        - srl_topo/ixr18e.yml:/tmp/topology.yml
+      type: ixr-18e
