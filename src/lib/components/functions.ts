@@ -97,6 +97,7 @@ export function featureBasedFilter (x: PathDef, f: string[]): boolean {
     }
 
     tmp = tmp.replaceAll("srl_nokia-feat:", "")
+      .replaceAll("srl-nokia-feat:", "")
       .replaceAll("srl-feat:", "")
       .replaceAll("srl_feat:", "")
       .replaceAll(" or ", " | ")
