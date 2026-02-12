@@ -121,6 +121,12 @@
                     <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{popupDetail["enum-values"].join(", ")}</td>
                   </tr>
                 {/if}
+                {#if popupDetail["is-state"] === "RW" && "default" in popupDetail}
+                  <tr class="border-t border-gray-200 dark:border-gray-600">
+                    <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Default:</th>
+                    <td class="py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">{popupDetail["default"]}</td>
+                  </tr>
+                {/if}
                 <tr class="border-t border-gray-200 dark:border-gray-600">
                   <th scope="row" class="py-1 whitespace-nowrap text-sm dark:text-gray-400">Path:</th>
                   <td class="group relative py-1 px-2 dark:text-gray-300 font-fira text-[13px] tracking-tight">
