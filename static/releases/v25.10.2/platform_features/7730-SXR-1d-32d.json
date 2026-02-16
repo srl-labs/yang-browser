@@ -68,6 +68,7 @@
   "bgp-rib-afi-safi-list-for-evpn",
   "bgp-rib-afi-safi-route",
   "bgp-route-flap-damping",
+  "bgp-rr-for-rtc",
   "bgp-rtc",
   "bgp-send-community-leaflist",
   "bgp-single-hop-connected-check",

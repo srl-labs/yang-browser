@@ -28,6 +28,7 @@
   "bgp-afi-safi-default-policy-action",
   "bgp-afi-safi-policy",
   "bgp-auth-password",
+  "bgp-auto-link-bandwidth",
   "bgp-cfg-afi-safi-list",
   "bgp-graceful-restart-gaps",
   "bgp-graceful-restart-state-additions",
